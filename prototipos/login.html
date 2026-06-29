@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Login</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #1e2024;
+      background:
+        radial-gradient(circle at top left, rgba(255, 214, 183, 0.9) 0%, rgba(255, 214, 183, 0) 32%),
+        radial-gradient(circle at bottom right, rgba(255, 199, 170, 0.58) 0%, rgba(255, 199, 170, 0) 34%),
+        #f3efe9;
+    }
+
+    #screen-login {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 44px 22px;
+      overflow: hidden;
+    }
+
+    .login-bg-1,
+    .login-bg-2 {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(24px);
+      pointer-events: none;
+    }
+
+    .login-bg-1 {
+      width: min(620px, 70vw);
+      height: min(620px, 70vw);
+      top: -180px;
+      left: -150px;
+      background: radial-gradient(circle, rgba(255, 204, 169, 0.62) 0%, rgba(255, 204, 169, 0) 72%);
+    }
+
+    .login-bg-2 {
+      width: min(640px, 76vw);
+      height: min(640px, 76vw);
+      right: -180px;
+      bottom: -230px;
+      background: radial-gradient(circle, rgba(255, 166, 120, 0.34) 0%, rgba(255, 166, 120, 0) 72%);
+    }
+
+    .login-frame {
+      position: relative;
+      z-index: 1;
+      width: min(948px, 100%);
+      display: grid;
+      grid-template-columns: minmax(300px, 0.97fr) minmax(380px, 1.03fr);
+      gap: 40px;
+      padding: 26px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.92);
+      border-radius: 28px;
+      box-shadow: 0 28px 80px rgba(73, 54, 31, 0.12);
+      backdrop-filter: blur(14px);
+    }
+
+    .login-visual {
+      position: relative;
+      min-height: 640px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #efe6dd url('images/dinamize-bg-login.png') center center / cover no-repeat;
+      isolation: isolate;
+    }
+
+    .login-visual-shadow::before,
+    .login-visual-shadow::after {
+      content: '';
+      position: absolute;
+      background: inherit;
+    }
+
+    .login-visual-shadow::before {
+      inset: 0 58% 0 0;
+    }
+
+    .login-visual-shadow::after {
+      inset: 26% 18% -12% 34%;
+    }
+
+    .login-visual-copy {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      z-index: 3;
+      color: #fff;
+    }
+
+    .login-visual-title {
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3.8vw, 58px);
+      line-height: 0.92;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+      max-width: 292px;
+      text-wrap: balance;
+      margin-bottom: 12px;
+    }
+
+    .login-visual-text {
+      font-size: 13px;
+      line-height: 1.45;
+      max-width: 252px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .login-panel {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 640px;
+      padding: 0 8px 0 0;
+    }
+
+    .login-card {
+      width: min(100%, 420px);
+    }
+
+    .login-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .login-logo {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .login-logo img {
+      width: 128px;
+      height: auto;
+    }
+
+    .login-lang-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 999px;
+      background: rgba(248, 244, 238, 0.92);
+      border: 1px solid rgba(29, 30, 34, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .login-lang-option {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #717682;
+      transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+      opacity: 0.6;
+    }
+
+    .login-lang-option:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    .login-lang-option.active {
+      background: #fff;
+      opacity: 1;
+      box-shadow: 0 6px 14px rgba(29, 30, 34, 0.08);
+    }
+
+    .login-lang-option input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .login-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 4vw, 40px);
+      line-height: 0.92;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: #1d1e22;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: #7b7e86;
+      margin-bottom: 28px;
+    }
+
+    .login-form-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .login-form-shell .form-group {
+      margin-bottom: 0;
+      gap: 7px;
+    }
+
+    .login-form-shell .form-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: #636772;
+    }
+
+    .login-form-shell .form-input,
+    .login-form-shell .form-select {
+      height: 46px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border-color: rgba(29, 30, 34, 0.08);
+      background: #faf7f2;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      font-size: 14px;
+    }
+
+    .login-form-shell .form-input:focus,
+    .login-form-shell .form-select:focus {
+      border-color: rgba(234, 84, 86, 0.58);
+      box-shadow: 0 0 0 4px rgba(234, 84, 86, 0.08);
+      background: #fff;
+    }
+
+    .login-password-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 2px;
+    }
+
+    .forgot-link {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1d1e22;
+    }
+
+    .forgot-link:hover {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    .checkbox-row {
+      display: none;
+    }
+
+    .login-submit {
+      height: 48px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      box-shadow: 0 16px 28px rgba(234, 84, 86, 0.18);
+      margin-top: 6px;
+    }
+
+    .login-footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #878b96;
+    }
+
+    .login-footer a {
+      color: #1d1e22;
+      font-weight: 700;
+    }
+
+    .login-footer a:hover {
+      color: var(--brand);
+    }
+
+    .login-loading {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(61, 61, 59, 0.36);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+    }
+
+    .login-loading.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .loading-card {
+      width: min(420px, 100%);
+      padding: 32px 30px 28px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 22px 60px rgba(25, 26, 31, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .loading-card h2 {
+      font-family: var(--font-display);
+      font-size: 29px;
+      line-height: 1.05;
+      letter-spacing: -0.9px;
+      color: var(--text-1);
+      margin-bottom: 10px;
+    }
+
+    .loading-card p {
+      font-size: 14px;
+      color: var(--text-2);
+      margin-bottom: 22px;
+    }
+
+    .loading-progress-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .loading-progress-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .loading-progress-value {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -1.5px;
+      color: var(--brand);
+    }
+
+    .loading-progress-track {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #f2d4d5;
+    }
+
+    .loading-progress-bar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #ea5456 0%, #f47779 100%);
+      transition: width 0.18s ease;
+    }
+
+    .loading-progress-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    @media (max-width: 900px) {
+      #screen-login {
+        padding: 24px 16px;
+      }
+
+      .login-frame {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: min(560px, 100%);
+        padding: 16px;
+      }
+
+      .login-visual,
+      .login-panel {
+        min-height: auto;
+      }
+
+      .login-visual {
+        min-height: 360px;
+      }
+
+      .login-panel {
+        padding: 2px 10px 12px;
+        justify-content: center;
+      }
+
+      .login-card {
+        width: 100%;
+        max-width: none;
+      }
+
+      .login-title {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .login-frame {
+        padding: 12px;
+        border-radius: 22px;
+      }
+
+      .login-visual {
+        min-height: 300px;
+      }
+
+      .login-visual-title {
+        max-width: 220px;
+        font-size: 40px;
+      }
+
+      .login-panel {
+        padding: 0 6px 10px;
+      }
+
+      .login-title {
+        font-size: 40px;
+      }
+
+      .login-submit {
+        height: 50px;
+      }
+
+      .login-topbar {
+        margin-bottom: 22px;
+      }
+
+      .login-logo img {
+        width: 112px;
+      }
+
+      .login-lang-option {
+        width: 28px;
+        height: 28px;
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="screen-login" class="screen active">
+    <div class="login-bg-1"></div>
+    <div class="login-bg-2"></div>
+    <div class="login-frame">
+      <section class="login-visual" aria-hidden="true">
+      </section>
+
+      <section class="login-panel">
+        <div class="login-card">
+          <div class="login-topbar">
+            <div class="login-logo">
+              <img src="../images/mp5krbgm-Dinamize-Logo.svg" alt="Dinamize Logo">
+            </div>
+
+            <div class="login-lang-switch" role="radiogroup" aria-label="Idioma">
+              <label class="login-lang-option active" data-lang-option>
+                <input type="radio" name="language-option" value="pt-BR" checked>
+                <span aria-hidden="true">🇧🇷</span>
+              </label>
+              <label class="login-lang-option" data-lang-option>
+                <input type="radio" name="language-option" value="en">
+                <span aria-hidden="true">🇺🇸</span>
+              </label>
+              <label class="login-lang-option" data-lang-option>
+                <input type="radio" name="language-option" value="es">
+                <span aria-hidden="true">🇪🇸</span>
+              </label>
+            </div>
+          </div>
+
+          <h1 class="login-title">Entre na sua conta</h1>
+          <p class="login-subtitle">Acesse sua plataforma de email marketing.</p>
+
+          <form id="login-form" class="login-form-shell">
+            <div class="form-group">
+              <label class="form-label" for="email">E-mail</label>
+              <input class="form-input" id="email" type="email" placeholder="voce@email.com"
+                value="joao.mendes@empresa.com.br" autocomplete="email" required>
+            </div>
+
+            <div class="form-group">
+              <div class="login-password-head">
+                <label class="form-label" for="password" style="margin:0">Senha</label>
+                <a href="esqueci-senha.html" class="forgot-link">Esqueci minha senha</a>
+              </div>
+              <input class="form-input" id="password" type="password" value="••••••••••" autocomplete="current-password"
+                required>
+            </div>
+
+            <button id="login-submit" type="button" class="btn btn-primary btn-full login-submit">
+              Entrar na plataforma
+            </button>
+          </form>
+
+          <input type="hidden" id="language" value="pt-BR">
+
+          <div class="login-footer">Não possui acesso? <a href="#">Solicite ao administrador</a></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="login-loading" class="login-loading" aria-hidden="true">
+    <div class="loading-card" role="status" aria-live="polite">
+      <h2>Preparando seus produtos</h2>
+      <p>Estamos validando o acesso e montando a sua vitrine de ambientes.</p>
+      <div class="loading-progress-row">
+        <span class="loading-progress-label">Carregando</span>
+        <span id="loading-progress-value" class="loading-progress-value">0%</span>
+      </div>
+      <div class="loading-progress-track" aria-hidden="true">
+        <div id="loading-progress-bar" class="loading-progress-bar"></div>
+      </div>
+      <div id="loading-progress-note" class="loading-progress-note">Iniciando autenticação...</div>
+    </div>
+  </div>
+
+  <script>
+    let loadingTimer = null;
+    const loginForm = document.getElementById('login-form');
+    const loginButton = document.getElementById('login-submit');
+    const languageInput = document.getElementById('language');
+    const languageOptions = Array.from(document.querySelectorAll('[data-lang-option]'));
+    const loadingMessages = [
+      { threshold: 18, text: 'Iniciando autenticação...' },
+      { threshold: 42, text: 'Confirmando credenciais...' },
+      { threshold: 73, text: 'Carregando produtos disponíveis...' },
+      { threshold: 100, text: 'Redirecionando para a plataforma...' }
+    ];
+
+    function handleLogin(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const submitButton = loginButton;
+
+      if (!email || !password) {
+        alert("Por favor, preencha todos os campos.");
+        return false;
+      }
+
+      // Save to localStorage for demo persistence
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userName", "João Mendes");
+      localStorage.setItem("userLanguage", languageInput.value);
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.style.opacity = '0.7';
+      }
+
+      startLoginLoading();
+      return false;
+    }
+
+    loginForm.addEventListener('submit', handleLogin);
+    loginButton.addEventListener('click', handleLogin);
+
+    languageOptions.forEach(option => {
+      const control = option.querySelector('input');
+
+      control.addEventListener('change', () => {
+        languageOptions.forEach(item => item.classList.toggle('active', item === option));
+        languageInput.value = control.value;
+      });
+    });
+
+    function startLoginLoading() {
+      const loadingOverlay = document.getElementById('login-loading');
+      const progressValue = document.getElementById('loading-progress-value');
+      const progressBar = document.getElementById('loading-progress-bar');
+      const progressNote = document.getElementById('loading-progress-note');
+      let progress = 0;
+
+      if (loadingTimer) {
+        window.clearInterval(loadingTimer);
+      }
+
+      loadingOverlay.classList.add('active');
+      loadingOverlay.setAttribute('aria-hidden', 'false');
+
+      loadingTimer = window.setInterval(() => {
+        const increment = progress < 60 ? 11 : progress < 85 ? 7 : 5;
+        progress = Math.min(progress + increment, 100);
+
+        progressValue.textContent = `${progress}%`;
+        progressBar.style.width = `${progress}%`;
+
+        const currentMessage = loadingMessages.find(message => progress <= message.threshold) || loadingMessages[loadingMessages.length - 1];
+        progressNote.textContent = currentMessage.text;
+
+        if (progress === 100) {
+          window.clearInterval(loadingTimer);
+          window.location.href = 'produtos.html';
+        }
+      }, 180);
+    }
+  </script>
+
+</body>
+
+</html>

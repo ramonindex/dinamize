@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Ajuda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    /* Video grid */
+    .video-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+    .video-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; cursor:pointer; transition:box-shadow .15s, transform .15s; }
+    .video-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+    .video-thumb { position:relative; background:var(--bg-subtle); aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; }
+    .video-thumb-bg { position:absolute; inset:0; background:linear-gradient(135deg,var(--brand) 0%,#c84243 100%); opacity:.08; }
+    .video-play { width:44px; height:44px; border-radius:50%; background:var(--brand); display:flex; align-items:center; justify-content:center; position:relative; z-index:1; }
+    .video-duration { position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,.65); color:#fff; font-size:10px; font-weight:600; padding:1px 6px; border-radius:4px; }
+    .video-body { padding:12px 14px; }
+    .video-category { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); margin-bottom:4px; }
+    .video-title { font-size:13px; font-weight:600; color:var(--text-1); line-height:1.35; }
+    .video-meta { font-size:11px; color:var(--text-3); margin-top:4px; }
+    /* Category filter pills */
+    .cat-pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .cat-pill { padding:4px 14px; border-radius:20px; border:1px solid var(--border); font-size:12px; font-weight:500; color:var(--text-2); background:var(--surface); cursor:pointer; transition:.12s; }
+    .cat-pill.active, .cat-pill:hover { background:var(--brand); color:#fff; border-color:var(--brand); }
+    /* Chamados */
+    .atendimento-banner { background:rgba(14,166,121,.07); border:1px solid rgba(14,166,121,.18); border-radius:var(--radius-md); padding:12px 16px; display:flex; align-items:center; gap:10px; margin-bottom:20px; font-size:13px; color:var(--text-1); }
+    /* Central de ajuda hero */
+    .help-hero { background:linear-gradient(135deg,#534CE7 0%,#7B75F0 100%); border-radius:var(--radius-lg); padding:32px; color:#fff; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; }
+    .help-hero h2 { font-size:20px; font-weight:800; margin-bottom:6px; }
+    .help-hero p { font-size:13px; opacity:.85; }
+    .help-hero-btn { background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); color:#fff; padding:9px 20px; border-radius:var(--radius-md); font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; transition:.15s; }
+    .help-hero-btn:hover { background:rgba(255,255,255,.25); }
+    .help-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .help-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; text-align:center; cursor:pointer; transition:.12s; }
+    .help-card:hover { border-color:var(--brand); box-shadow:0 0 0 3px rgba(234,84,86,.07); }
+    .help-card-icon { font-size:28px; margin-bottom:10px; }
+    .help-card-title { font-size:13px; font-weight:700; color:var(--text-1); margin-bottom:4px; }
+    .help-card-desc { font-size:12px; color:var(--text-3); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><div class="sidebar-logo-text">Dinamize</div><div class="sidebar-logo-sub">Automation</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="nav-item-label">Página inicial</span></a>
+      <button class="nav-item" data-sub="nav-contatos"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span class="nav-item-label">Contatos</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-contatos"><li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Listas</a></li></ul>
+      <button class="nav-item" data-sub="nav-canais"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><span class="nav-item-label">Canais</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-canais"><li><a class="nav-sub-item" href="canais.html"><span class="nav-sub-dot"></span>E-mail</a></li></ul>
+      <a class="nav-item" href="fluxos.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span><span class="nav-item-label">Fluxos</span></a>
+      <button class="nav-item" data-sub="nav-relatorios"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-item-label">Relatórios</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-relatorios"><li><a class="nav-sub-item" href="relatorios.html"><span class="nav-sub-dot"></span>E-mail</a></li></ul>
+      <a class="nav-item" href="ia.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span><span class="nav-item-label">IA</span><span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span></a>
+      <a class="nav-item" href="configuracoes.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span><span class="nav-item-label">Configurações</span></a>
+      <button class="nav-item active open" data-sub="nav-ajuda"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nav-item-label">Ajuda</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub open" id="nav-ajuda" style="display:flex">
+        <li><a class="nav-sub-item active" id="snav-central" href="#" onclick="switchAjuda('central');return false;"><span class="nav-sub-dot"></span>Central de ajuda</a></li>
+        <li><a class="nav-sub-item" id="snav-tutoriais" href="#" onclick="switchAjuda('tutoriais');return false;"><span class="nav-sub-dot"></span>Tutoriais</a></li>
+        <li><a class="nav-sub-item" id="snav-chamados" href="#" onclick="switchAjuda('chamados');return false;"><span class="nav-sub-dot"></span>Chamados</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-widget"><div class="avatar avatar-sm">RO</div><div class="user-info"><div class="user-name">Ramon Oliveira</div><div class="user-role">Index Digital</div></div></div>
+    </div>
+  </aside>
+
+  <div class="app-body" id="ajuda-app">
+    <header class="topbar">
+      <div class="topbar-breadcrumb"><a href="index.html">Início</a><span class="sep">›</span><span class="current" id="topbar-ajuda-label">Ajuda · Central de ajuda</span></div>
+      <div class="topbar-search"><svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Buscar na central de ajuda…"><span class="topbar-search-shortcut">⌘K</span></div>
+      <div class="topbar-actions"><div class="avatar avatar-sm">RO</div></div>
+    </header>
+
+    <div class="sub-nav">
+      <a class="sub-nav-item active" data-aj="central" href="#" onclick="switchAjuda('central');return false;">Central de ajuda</a>
+      <a class="sub-nav-item" data-aj="tutoriais" href="#" onclick="switchAjuda('tutoriais');return false;">Tutoriais</a>
+      <a class="sub-nav-item" data-aj="chamados" href="#" onclick="switchAjuda('chamados');return false;">Chamados</a>
+    </div>
+
+    <div id="view-central" class="view active">
+      <div class="page-content">
+        <div class="help-hero">
+          <div><h2>Central de Ajuda Dinamize</h2><p>Encontre respostas, guias e tutoriais para tirar o máximo do Dinamize Automation.</p></div>
+          <button class="help-hero-btn" onclick="window.open('https://help.dinamize.com','_blank')">Acessar central de ajuda →</button>
+        </div>
+        <div class="help-cards">
+          <div class="help-card" onclick="switchAjuda('tutoriais')"><div class="help-card-icon">🎬</div><div class="help-card-title">Tutoriais em vídeo</div><div class="help-card-desc">Aprenda com passo a passo em vídeo para cada funcionalidade</div></div>
+          <div class="help-card" onclick="switchAjuda('chamados')"><div class="help-card-icon">🎫</div><div class="help-card-title">Abrir chamado</div><div class="help-card-desc">Fale com nosso time de suporte · Seg-Sex 8:30–18:00</div></div>
+          <div class="help-card" onclick="showToast('Abrindo chat…',{type:'info'})"><div class="help-card-icon">💬</div><div class="help-card-title">Chat ao vivo</div><div class="help-card-desc">Suporte em tempo real com nossa equipe de especialistas</div></div>
+        </div>
+        <div class="page-header" style="margin-top:28px"><h2 class="page-title" style="font-size:16px">Artigos populares</h2></div>
+        <div class="table-card">
+          <table class="data-table">
+            <tbody>
+              <tr><td><a href="#" onclick="showToast('Abrindo artigo…',{type:'info'});return false;" style="color:var(--brand);font-weight:500">Como configurar meu primeiro envio de e-mail</a></td><td class="c-3 t-sm" style="text-align:right">E-mail</td></tr>
+              <tr><td><a href="#" onclick="showToast('Abrindo artigo…',{type:'info'});return false;" style="color:var(--brand);font-weight:500">Importar contatos via planilha CSV</a></td><td class="c-3 t-sm" style="text-align:right">Contatos</td></tr>
+              <tr><td><a href="#" onclick="showToast('Abrindo artigo…',{type:'info'});return false;" style="color:var(--brand);font-weight:500">Criar um fluxo de automação do zero</a></td><td class="c-3 t-sm" style="text-align:right">Fluxos</td></tr>
+              <tr><td><a href="#" onclick="showToast('Abrindo artigo…',{type:'info'});return false;" style="color:var(--brand);font-weight:500">Configurar SPF e DKIM no seu domínio</a></td><td class="c-3 t-sm" style="text-align:right">Configurações</td></tr>
+              <tr><td><a href="#" onclick="showToast('Abrindo artigo…',{type:'info'});return false;" style="color:var(--brand);font-weight:500">Entender as métricas do relatório de e-mail</a></td><td class="c-3 t-sm" style="text-align:right">Relatórios</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="view-tutoriais" class="view">
+      <div class="page-content">
+        <div class="page-header"><div><h1 class="page-title">Tutoriais</h1><p class="page-desc">Aprenda no seu ritmo com nossos vídeos passo a passo</p></div></div>
+        <div class="cat-pills">
+          <span class="cat-pill active">Todos</span><span class="cat-pill">E-mail</span><span class="cat-pill">SMS</span><span class="cat-pill">Fluxos</span><span class="cat-pill">Contatos</span><span class="cat-pill">Configurações</span>
+        </div>
+        <div class="video-grid">
+          <div class="video-card" onclick="showToast('Abrindo vídeo…',{type:'info'})"><div class="video-thumb"><div class="video-thumb-bg"></div><div class="video-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="video-duration">4:32</span></div><div class="video-body"><div class="video-category">E-mail</div><div class="video-title">Criando seu primeiro envio de e-mail</div><div class="video-meta">Básico · 8.4k visualizações</div></div></div>
+          <div class="video-card" onclick="showToast('Abrindo vídeo…',{type:'info'})"><div class="video-thumb" style="background:#f0f0ff"><div class="video-thumb-bg" style="background:linear-gradient(135deg,#534CE7,#7B75F0)"></div><div class="video-play" style="background:#534CE7"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="video-duration">7:18</span></div><div class="video-body"><div class="video-category" style="color:#534CE7">Fluxos</div><div class="video-title">Automação de boas-vindas em 5 minutos</div><div class="video-meta">Intermediário · 5.1k visualizações</div></div></div>
+          <div class="video-card" onclick="showToast('Abrindo vídeo…',{type:'info'})"><div class="video-thumb" style="background:#f0faf6"><div class="video-thumb-bg" style="background:linear-gradient(135deg,#0EA679,#07c98a)"></div><div class="video-play" style="background:#0EA679"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="video-duration">3:55</span></div><div class="video-body"><div class="video-category" style="color:#0EA679">Contatos</div><div class="video-title">Importando contatos via CSV</div><div class="video-meta">Básico · 12.3k visualizações</div></div></div>
+          <div class="video-card" onclick="showToast('Abrindo vídeo…',{type:'info'})"><div class="video-thumb"><div class="video-thumb-bg"></div><div class="video-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="video-duration">6:10</span></div><div class="video-body"><div class="video-category">E-mail</div><div class="video-title">Usando o editor de templates drag-and-drop</div><div class="video-meta">Intermediário · 4.8k visualizações</div></div></div>
+          <div class="video-card" onclick="showToast('Abrindo vídeo…',{type:'info'})"><div class="video-thumb" style="background:#fffbf0"><div class="video-thumb-bg" style="background:linear-gradient(135deg,#F59E0B,#d97706)"></div><div class="video-play" style="background:#F59E0B"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="video-duration">9:24</span></div><div class="video-body"><div class="video-category" style="color:#d97706">SMS</div><div class="video-title">Envio de SMS em massa com segmentação</div><div class="video-meta">Intermediário · 2.9k visualizações</div></div></div>
+          <div class="video-card" onclick="showToast('Abrindo vídeo…',{type:'info'})"><div class="video-thumb" style="background:#f0f0ff"><div class="video-thumb-bg" style="background:linear-gradient(135deg,#534CE7,#7B75F0)"></div><div class="video-play" style="background:#534CE7"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="video-duration">11:02</span></div><div class="video-body"><div class="video-category" style="color:#534CE7">Configurações</div><div class="video-title">Configurando SPF, DKIM e CNAME</div><div class="video-meta">Avançado · 6.7k visualizações</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div id="view-chamados" class="view">
+      <div class="page-content">
+        <div class="page-header"><div><h1 class="page-title">Chamados</h1><p class="page-desc">Histórico de tickets com o suporte Dinamize</p></div><button class="btn btn-primary btn-sm" onclick="showToast('Formulário de chamado em breve.',{type:'info'})">+ Abrir um chamado</button></div>
+        <div class="atendimento-banner"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--fluxos)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Horário de atendimento: <strong>Segunda a Sexta, 8:30 – 18:00</strong>. Chamados fora desse horário serão respondidos no próximo dia útil.</span></div>
+        <div class="table-card">
+          <div class="table-header">
+            <h3 class="table-title">Todos os chamados</h3>
+            <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm">Abertos</button><button class="btn btn-ghost btn-sm">Fechados</button></div>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Assunto</th><th>Status</th><th>Prioridade</th><th>Atualizado em</th><th></th></tr></thead>
+            <tbody>
+              <tr><td class="c-3 t-sm fw-6">#1042</td><td><div class="cell-primary">Erro ao importar CSV com caracteres especiais</div><div class="cell-secondary">Aberto em 17/06/2026</div></td><td><span class="badge badge-warning">Em andamento</span></td><td><span class="badge badge-error">Alta</span></td><td class="c-3 t-sm">Hoje, 10:24</td><td><div class="row-actions"><button class="btn btn-ghost btn-sm">Ver</button></div></td></tr>
+              <tr><td class="c-3 t-sm fw-6">#1038</td><td><div class="cell-primary">Fluxo não dispara para novos contatos importados</div><div class="cell-secondary">Aberto em 14/06/2026</div></td><td><span class="badge badge-warning">Em andamento</span></td><td><span class="badge badge-warning">Média</span></td><td class="c-3 t-sm">16/06/2026</td><td><div class="row-actions"><button class="btn btn-ghost btn-sm">Ver</button></div></td></tr>
+              <tr><td class="c-3 t-sm fw-6">#1029</td><td><div class="cell-primary">Taxa de entrega abaixo do esperado em novo domínio</div><div class="cell-secondary">Aberto em 08/06/2026</div></td><td><span class="badge badge-success">Resolvido</span></td><td><span class="badge badge-warning">Média</span></td><td class="c-3 t-sm">11/06/2026</td><td><div class="row-actions"><button class="btn btn-ghost btn-sm">Ver</button></div></td></tr>
+              <tr><td class="c-3 t-sm fw-6">#1018</td><td><div class="cell-primary">Dúvida: como usar variáveis personalizadas no template</div><div class="cell-secondary">Aberto em 01/06/2026</div></td><td><span class="badge badge-success">Resolvido</span></td><td><span class="badge badge-neutral">Baixa</span></td><td class="c-3 t-sm">03/06/2026</td><td><div class="row-actions"><button class="btn btn-ghost btn-sm">Ver</button></div></td></tr>
+              <tr><td class="c-3 t-sm fw-6">#1005</td><td><div class="cell-primary">Solicitar aumento de limite de envios mensais</div><div class="cell-secondary">Aberto em 22/05/2026</div></td><td><span class="badge badge-success">Resolvido</span></td><td><span class="badge badge-neutral">Baixa</span></td><td class="c-3 t-sm">25/05/2026</td><td><div class="row-actions"><button class="btn btn-ghost btn-sm">Ver</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script>
+const AJUDA_LABELS = { central:'Central de ajuda', tutoriais:'Tutoriais', chamados:'Chamados' };
+function switchAjuda(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('[data-aj]').forEach(a => a.classList.toggle('active', a.dataset.aj === id));
+  document.querySelectorAll('[id^="snav-"]').forEach(a => a.classList.remove('active'));
+  const s = document.getElementById('snav-' + id); if (s) s.classList.add('active');
+  document.getElementById('topbar-ajuda-label').textContent = 'Ajuda · ' + AJUDA_LABELS[id];
+}
+document.addEventListener('DOMContentLoaded', () => { initSidebarNav(); });
+</script>
+</body>
+</html>

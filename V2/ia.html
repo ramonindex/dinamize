@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    .ia-badge { background:rgba(245,158,11,.12); color:#d97706; font-size:11px; font-weight:700; padding:2px 7px; border-radius:20px; letter-spacing:.02em; }
+    .ia-layout { display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start; }
+    .ia-form-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; }
+    .ia-form-card h3 { font-size:14px; font-weight:700; color:var(--text-1); margin-bottom:4px; }
+    .ia-form-card .sub { font-size:12px; color:var(--text-3); margin-bottom:20px; }
+    .ia-btn { width:100%; justify-content:center; background:var(--ia); color:#fff; border:none; }
+    .ia-btn:hover { background:#d97706; }
+    .ia-output { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); min-height:400px; }
+    .ia-output-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .ia-output-title { font-weight:700; font-size:13px; color:var(--text-1); }
+    /* Calendar grid */
+    .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); }
+    .cal-day-header { text-align:center; font-size:11px; font-weight:600; color:var(--text-3); padding:8px 4px; text-transform:uppercase; letter-spacing:.04em; background:var(--bg-subtle); }
+    .cal-day { min-height:78px; padding:6px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); font-size:11px; }
+    .cal-day:nth-child(7n) { border-right:none; }
+    .cal-day-num { font-weight:600; color:var(--text-2); margin-bottom:4px; font-size:12px; }
+    .cal-day.today .cal-day-num { background:var(--ia); color:#fff; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+    .cal-day.empty { background:var(--bg-subtle); }
+    .cal-event { background:rgba(245,158,11,.12); color:#92400e; border-radius:4px; padding:2px 5px; margin-bottom:3px; font-size:10px; line-height:1.4; cursor:default; }
+    .cal-event:hover { background:rgba(245,158,11,.22); }
+    /* Flow diagram */
+    .flow-diagram { padding:24px; }
+    .flow-node { display:flex; align-items:flex-start; gap:12px; margin-bottom:0; }
+    .flow-connector { display:flex; flex-direction:column; align-items:center; margin-bottom:0; }
+    .flow-connector-line { width:2px; height:28px; background:var(--border); }
+    .flow-connector-arrow { width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid var(--border); }
+    .flow-node-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+    .flow-node-icon.trigger { background:rgba(234,84,86,.1); color:var(--brand); }
+    .flow-node-icon.wait    { background:rgba(14,166,121,.1); color:var(--fluxos); }
+    .flow-node-icon.email   { background:rgba(83,76,231,.1); color:#534CE7; }
+    .flow-node-icon.cond    { background:rgba(245,158,11,.15); color:#d97706; }
+    .flow-node-icon.action  { background:var(--bg-subtle); color:var(--text-3); }
+    .flow-node-body { flex:1; padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:4px; }
+    .flow-node-type { font-size:10px; font-weight:700; color:var(--text-3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:2px; }
+    .flow-node-title { font-size:13px; font-weight:600; color:var(--text-1); }
+    .flow-node-desc { font-size:12px; color:var(--text-3); margin-top:2px; }
+    .flow-branch { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-left:48px; margin-bottom:4px; }
+    .flow-branch-item { padding:10px 14px; background:var(--bg-subtle); border:1px dashed var(--border); border-radius:var(--radius-md); }
+    .flow-branch-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+    .flow-branch-label.yes { color:var(--success); }
+    .flow-branch-label.no  { color:var(--error); }
+    .flow-branch-text { font-size:12px; color:var(--text-2); }
+    /* Empty/loading state */
+    .ia-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; gap:12px; }
+    .ia-empty-icon { width:52px; height:52px; border-radius:50%; background:rgba(245,158,11,.1); display:flex; align-items:center; justify-content:center; }
+    .ia-empty-title { font-size:14px; font-weight:600; color:var(--text-2); }
+    .ia-empty-desc  { font-size:12px; color:var(--text-3); text-align:center; max-width:260px; }
+    /* Generating animation */
+    @keyframes iaShimmer { 0%{opacity:.4} 50%{opacity:.9} 100%{opacity:.4} }
+    .ia-generating { animation:iaShimmer 1.4s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><div class="sidebar-logo-text">Dinamize</div><div class="sidebar-logo-sub">Automation</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="nav-item-label">Página inicial</span></a>
+      <button class="nav-item" data-sub="nav-contatos"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-item-label">Contatos</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-contatos"><li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Listas</a></li></ul>
+      <button class="nav-item" data-sub="nav-canais"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><span class="nav-item-label">Canais</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-canais"><li><a class="nav-sub-item" href="canais.html"><span class="nav-sub-dot"></span>E-mail</a></li></ul>
+      <a class="nav-item" href="fluxos.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span><span class="nav-item-label">Fluxos</span></a>
+      <button class="nav-item" data-sub="nav-relatorios"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-item-label">Relatórios</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-relatorios">
+        <li><a class="nav-sub-item" href="relatorios.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consolidado"><span class="nav-sub-dot"></span>Consolidado</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consumo"><span class="nav-sub-dot"></span>Consumo</a></li>
+      </ul>
+      <button class="nav-item active open" data-sub="nav-ia"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span><span class="nav-item-label">IA</span><span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub open" id="nav-ia" style="display:flex">
+        <li><a class="nav-sub-item active" id="snav-calendario" href="#" onclick="switchIA('calendario');return false;"><span class="nav-sub-dot"></span>Calendário Inteligente</a></li>
+        <li><a class="nav-sub-item" id="snav-assistente" href="#" onclick="switchIA('assistente');return false;"><span class="nav-sub-dot"></span>Assistente de Fluxo</a></li>
+      </ul>
+      <a class="nav-item" href="configuracoes.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span><span class="nav-item-label">Configurações</span></a>
+      <a class="nav-item" href="ajuda.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nav-item-label">Ajuda</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-widget"><div class="avatar avatar-sm">RO</div><div class="user-info"><div class="user-name">Ramon Oliveira</div><div class="user-role">Index Digital</div></div></div>
+    </div>
+  </aside>
+
+  <!-- ══ APP BODY ══ -->
+  <div class="app-body" id="ia-app">
+    <header class="topbar">
+      <div class="topbar-breadcrumb"><a href="index.html">Início</a><span class="sep">›</span><span class="current" id="topbar-ia-label">IA · Calendário Inteligente</span></div>
+      <div class="topbar-search"><svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Buscar…"><span class="topbar-search-shortcut">⌘K</span></div>
+      <div class="topbar-actions"><button class="topbar-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></button><div class="avatar avatar-sm">RO</div></div>
+    </header>
+
+    <div class="sub-nav" id="ia-subnav">
+      <a class="sub-nav-item active" data-ia="calendario" href="#" onclick="switchIA('calendario');return false;">Calendário Inteligente</a>
+      <a class="sub-nav-item" data-ia="assistente" href="#" onclick="switchIA('assistente');return false;">Assistente de Fluxo</a>
+    </div>
+
+    <div id="view-calendario" class="view active">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Calendário Inteligente</h1><p class="page-subtitle">Gere um calendário de envios otimizado com Inteligência Artificial</p></div>
+        </div>
+        <div class="ia-layout">
+          <div class="ia-form-card">
+            <h3>Configure a geração</h3>
+            <p class="sub">A IA analisa seu segmento e sugere as melhores datas e temas para envios</p>
+            <div class="form-group">
+              <label class="form-label">Domínio / Segmento</label>
+              <select class="form-select" id="cal-seg">
+                <option>E-commerce</option><option>Moda</option><option>Saúde e Bem-estar</option>
+                <option>Financeiro</option><option>Educação</option><option>SaaS / Tecnologia</option>
+                <option>Alimentação</option><option>Beleza</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Frequência desejada</label>
+              <select class="form-select" id="cal-freq">
+                <option>1 envio por semana</option><option>2 envios por semana</option>
+                <option>3 envios por semana</option><option>Diário</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mês de referência</label>
+              <input type="month" class="form-input" id="cal-mes" value="2026-06">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Observações adicionais</label>
+              <textarea class="form-input" id="cal-obs" rows="3" placeholder="Ex: temos promoção no dia 15, queremos focar em reativação…" style="resize:vertical"></textarea>
+            </div>
+            <button class="btn ia-btn" id="cal-gen-btn" onclick="generateCalendar()">✨ Gerar calendário</button>
+          </div>
+          <div class="ia-output">
+            <div id="cal-output-body">
+              <div class="ia-empty">
+                <div class="ia-empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></div>
+                <div class="ia-empty-title">Seu calendário aparece aqui</div>
+                <div class="ia-empty-desc">Configure as opções ao lado e clique em "Gerar calendário" para receber sugestões personalizadas.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div id="view-assistente" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Assistente de Fluxo</h1><p class="page-subtitle">Gere fluxos de automação completos com Inteligência Artificial</p></div>
+        </div>
+        <div class="ia-layout">
+          <div class="ia-form-card">
+            <h3>Configure o fluxo</h3>
+            <p class="sub">A IA cria a sequência de e-mails e regras de automação baseada no seu objetivo</p>
+            <div class="form-group">
+              <label class="form-label">Domínio / Segmento</label>
+              <select class="form-select" id="ass-seg">
+                <option>E-commerce</option><option>Moda</option><option>Saúde e Bem-estar</option>
+                <option>Financeiro</option><option>Educação</option><option>SaaS / Tecnologia</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de automação</label>
+              <select class="form-select" id="ass-tipo">
+                <option value="boas-vindas">Boas-vindas</option>
+                <option value="carrinho">Carrinho abandonado</option>
+                <option value="reengajamento">Reengajamento</option>
+                <option value="aniversario">Aniversário</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tom de comunicação</label>
+              <select class="form-select" id="ass-tom">
+                <option>Profissional e formal</option><option>Amigável e casual</option>
+                <option>Urgente / Promocional</option><option>Emocional / Storytelling</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Observações</label>
+              <textarea class="form-input" id="ass-obs" rows="3" placeholder="Ex: foco em conversão, produto principal é X…" style="resize:vertical"></textarea>
+            </div>
+            <button class="btn ia-btn" id="ass-gen-btn" onclick="generateFlow()">✨ Gerar fluxo</button>
+          </div>
+          <div class="ia-output">
+            <div id="ass-output-body">
+              <div class="ia-empty">
+                <div class="ia-empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></div>
+                <div class="ia-empty-title">Seu fluxo aparece aqui</div>
+                <div class="ia-empty-desc">Escolha o tipo de automação e clique em "Gerar fluxo" para receber um diagrama completo.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script>
+const IA_META = {
+  'calendario': { label:'Calendário Inteligente' },
+  'assistente': { label:'Assistente de Fluxo' },
+};
+let currentIA = 'calendario';
+
+function switchIA(id) {
+  currentIA = id;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('[data-ia]').forEach(a => a.classList.toggle('active', a.dataset.ia === id));
+  document.querySelectorAll('[id^="snav-"]').forEach(a => a.classList.remove('active'));
+  const s = document.getElementById('snav-' + id); if (s) s.classList.add('active');
+  document.getElementById('topbar-ia-label').textContent = 'IA · ' + IA_META[id].label;
+}
+
+/* ── CALENDÁRIO INTELIGENTE ── */
+const CAL_EVENTS = [
+  { day:2,  emoji:'🎯', assunto:'Oferta especial de abertura de mês', tipo:'Promoção' },
+  { day:5,  emoji:'📰', assunto:'Newsletter: tendências da semana', tipo:'Conteúdo' },
+  { day:9,  emoji:'🛒', assunto:'Lembrança de carrinho abandonado', tipo:'Automação' },
+  { day:12, emoji:'💡', assunto:'Dica de produto: como usar melhor', tipo:'Educação' },
+  { day:16, emoji:'🎁', assunto:'Benefício exclusivo para clientes', tipo:'Fidelização' },
+  { day:19, emoji:'📊', assunto:'Resultados: o que nossos clientes dizem', tipo:'Prova social' },
+  { day:23, emoji:'⚡', assunto:'Flash sale — 48 horas apenas', tipo:'Promoção' },
+  { day:26, emoji:'📰', assunto:'Newsletter: resumo da semana', tipo:'Conteúdo' },
+  { day:30, emoji:'🌟', assunto:'Encerramento do mês: top produtos', tipo:'Engajamento' },
+];
+
+let calGenerated = false;
+
+function generateCalendar() {
+  calGenerated = false;
+  const btn = document.getElementById('cal-gen-btn');
+  const output = document.getElementById('cal-output-body');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="ia-generating">Gerando com IA…</span>';
+  output.innerHTML = `<div class="ia-empty"><div class="ia-empty-icon ia-generating"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></div><div class="ia-empty-title ia-generating">Consultando IA…</div></div>`;
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '✨ Gerar calendário';
+    calGenerated = true;
+    renderCalGrid();
+  }, 1800);
+}
+
+function renderCalGrid() {
+  const seg = document.getElementById('cal-seg').value || 'E-commerce';
+  const mes = document.getElementById('cal-mes').value || '2026-06';
+  const [year, month] = mes.split('-').map(Number);
+  const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const monthName = monthNames[(month||6)-1];
+  const daysInMonth = new Date(year||2026, month||6, 0).getDate();
+  const firstDow = new Date(year||2026, (month||6)-1, 1).getDay();
+  const eventMap = {};
+  CAL_EVENTS.forEach(e => { if (e.day <= daysInMonth) eventMap[e.day] = e; });
+  const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  let html = `<div style="padding:16px 20px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><span class="fw-6 t-sm">${monthName} ${year||2026} · <span class="ia-badge">${CAL_EVENTS.length} envios sugeridos</span></span><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="showToast('Calendário exportado!',{type:'success'})">Exportar PDF</button><button class="btn btn-ghost btn-sm" onclick="showToast('Criando envios na agenda…',{type:'info'})">Agendar todos</button></div></div>`;
+  html += `<div class="cal-grid">${DOW.map(d=>`<div class="cal-day-header">${d}</div>`).join('')}`;
+  for (let i=0; i<firstDow; i++) html += `<div class="cal-day empty"></div>`;
+  const today = new Date();
+  for (let d=1; d<=daysInMonth; d++) {
+    const isToday = today.getFullYear()===(year||2026) && today.getMonth()===(month||6)-1 && today.getDate()===d;
+    const ev = eventMap[d];
+    html += `<div class="cal-day${isToday?' today':''}"><div class="cal-day-num">${d}</div>${ev?`<div class="cal-event" title="${ev.assunto}">${ev.emoji} ${ev.tipo}</div>`:''}</div>`;
+  }
+  html += `</div>`;
+  document.getElementById('cal-output-body').innerHTML = html;
+}
+
+/* ── ASSISTENTE DE FLUXO ── */
+const FLOW_TEMPLATES = {
+  'boas-vindas': [
+    { type:'trigger', icon:'⚡', label:'Gatilho', title:'Novo cadastro', desc:'Contato se cadastra em qualquer lista' },
+    { type:'wait',    icon:'⏳', label:'Aguardar', title:'Imediatamente', desc:'Envio automático em tempo real' },
+    { type:'email',   icon:'✉️', label:'E-mail', title:'Boas-vindas + benefício', desc:'Apresente a marca e ofereça um cupom de 10%' },
+    { type:'wait',    icon:'⏳', label:'Aguardar', title:'3 dias', desc:'Intervalo antes do próximo toque' },
+    { type:'cond',    icon:'🔀', label:'Condição', title:'Abriu o e-mail?', desc:'Verifica engajamento com o primeiro envio', branches:{ yes:'Enviar e-mail com dica de produto', no:'Reenviar boas-vindas com assunto diferente' } },
+    { type:'email',   icon:'✉️', label:'E-mail', title:'Follow-up de engajamento', desc:'Conteúdo diferenciado conforme comportamento' },
+  ],
+  'carrinho': [
+    { type:'trigger', icon:'⚡', label:'Gatilho', title:'Carrinho abandonado', desc:'Contato abandona checkout sem finalizar compra' },
+    { type:'wait',    icon:'⏳', label:'Aguardar', title:'1 hora', desc:'Aguarda para evitar envio prematuro' },
+    { type:'email',   icon:'✉️', label:'E-mail', title:'Lembrete: seu carrinho espera!', desc:'Mostre os itens deixados com link direto' },
+    { type:'wait',    icon:'⏳', label:'Aguardar', title:'24 horas', desc:'Aguarda antes de nova abordagem' },
+    { type:'cond',    icon:'🔀', label:'Condição', title:'Comprou após lembrete?', desc:'Verifica se a conversão ocorreu', branches:{ yes:'Enviar e-mail de confirmação de compra', no:'Enviar oferta com desconto de 15%' } },
+  ],
+  'reengajamento': [
+    { type:'trigger', icon:'⚡', label:'Gatilho', title:'Inatividade detectada', desc:'Contato não interage há 90+ dias' },
+    { type:'email',   icon:'✉️', label:'E-mail', title:'Sentimos sua falta!', desc:'Mensagem emocional + oferta especial de retorno' },
+    { type:'wait',    icon:'⏳', label:'Aguardar', title:'7 dias', desc:'Aguarda resposta ao primeiro contato' },
+    { type:'cond',    icon:'🔀', label:'Condição', title:'Reengajou?', desc:'Verificar abertura ou clique no período', branches:{ yes:'Mover para segmento "Reativados"', no:'Enviar última tentativa com super oferta' } },
+    { type:'action',  icon:'🏷️', label:'Ação', title:'Segmentação automática', desc:'Atualizar marcadores e score do contato' },
+  ],
+  'aniversario': [
+    { type:'trigger', icon:'⚡', label:'Gatilho', title:'Aniversário do contato', desc:'Data de nascimento registrada no campo personalizado' },
+    { type:'wait',    icon:'⏳', label:'Aguardar', title:'Enviar na data', desc:'Programado para 9h da manhã do aniversário' },
+    { type:'email',   icon:'✉️', label:'E-mail', title:'🎂 Feliz aniversário, {{nome}}!', desc:'Template especial com oferta exclusiva de aniversário' },
+    { type:'wait',    icon:'⏳', label:'Aguardar', title:'3 dias', desc:'Prazo para usar o presente de aniversário' },
+    { type:'email',   icon:'✉️', label:'E-mail', title:'Último aviso: seu presente expira hoje!', desc:'Lembrete da oferta com urgência' },
+  ],
+};
+
+let assGenerated = false;
+
+function generateFlow() {
+  assGenerated = false;
+  const btn = document.getElementById('ass-gen-btn');
+  const output = document.getElementById('ass-output-body');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="ia-generating">Gerando com IA…</span>';
+  output.innerHTML = `<div class="ia-empty"><div class="ia-empty-icon ia-generating"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></div><div class="ia-empty-title ia-generating">Desenhando fluxo…</div></div>`;
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.innerHTML = '✨ Gerar fluxo';
+    assGenerated = true;
+    renderFlowDiagram();
+  }, 1800);
+}
+
+function renderFlowDiagram() {
+  const type = document.getElementById('ass-tipo').value || 'boas-vindas';
+  const nodes = FLOW_TEMPLATES[type] || FLOW_TEMPLATES['boas-vindas'];
+  const typeLabel = { 'boas-vindas':'Boas-vindas', 'carrinho':'Carrinho Abandonado', 'reengajamento':'Reengajamento', 'aniversario':'Aniversário' }[type] || type;
+  let html = `<div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between"><span class="fw-6 t-sm">Fluxo: ${typeLabel} <span class="ia-badge">${nodes.length} etapas</span></span><div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="showToast('Fluxo exportado!',{type:'success'})">Exportar</button><button class="btn btn-primary btn-sm" onclick="showToast('Fluxo criado em Fluxos!',{type:'success'})">Criar fluxo</button></div></div>`;
+  html += `<div class="flow-diagram">`;
+  nodes.forEach((node, i) => {
+    html += `<div class="flow-node"><div class="flow-node-icon ${node.type}"><span style="font-size:16px">${node.icon}</span></div><div class="flow-node-body"><div class="flow-node-type">${node.label}</div><div class="flow-node-title">${node.title}</div><div class="flow-node-desc">${node.desc}</div></div></div>`;
+    if (node.branches) {
+      html += `<div style="height:16px;width:2px;background:var(--border);margin-left:17px"></div><div class="flow-branch"><div class="flow-branch-item"><div class="flow-branch-label yes">Sim ✓</div><div class="flow-branch-text">${node.branches.yes}</div></div><div class="flow-branch-item"><div class="flow-branch-label no">Não ✗</div><div class="flow-branch-text">${node.branches.no}</div></div></div>`;
+    }
+    if (i < nodes.length - 1 && !node.branches) {
+      html += `<div class="flow-connector"><div class="flow-connector-line"></div><div class="flow-connector-arrow"></div></div>`;
+    } else if (node.branches && i < nodes.length - 1) {
+      html += `<div style="height:16px;width:2px;background:var(--border);margin-left:17px"></div>`;
+    }
+  });
+  html += `</div>`;
+  document.getElementById('ass-output-body').innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSidebarNav();
+});
+</script>
+</body>
+</html>

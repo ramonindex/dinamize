@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Recuperar Senha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Animation for success box reveal */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .success-view {
+      display: none;
+      animation: fadeInUp 0.3s ease forwards;
+      text-align: center;
+    }
+    .success-icon-wrap {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--success-light);
+      color: var(--success);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="screen-login" class="screen active">
+  <div class="login-bg-1"></div>
+  <div class="login-bg-2"></div>
+  
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="../images/mp5krbgm-Dinamize-Logo.svg" alt="Dinamize Logo" style="width:191px;height:52px">
+    </div>
+
+    <!-- Form View -->
+    <div id="recovery-form-view">
+      <h1 class="login-title">Recuperar senha</h1>
+      <p class="login-subtitle">Insira o e-mail corporativo associado à sua conta para receber instruções de redefinição.</p>
+
+      <form onsubmit="handleRecovery(event)">
+        <div class="form-group" style="margin-bottom:24px">
+          <label class="form-label" for="email">E-mail corporativo</label>
+          <input class="form-input" id="email" type="email" placeholder="voce@empresa.com.br" value="joao.mendes@empresa.com.br" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg">
+          Enviar link de recuperação
+        </button>
+      </form>
+      
+      <div class="login-footer">
+        Lembrou a senha? <a href="login.html">Voltar ao login</a>
+      </div>
+    </div>
+
+    <!-- Success View -->
+    <div id="recovery-success-view" class="success-view">
+      <div class="success-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h1 class="login-title" style="margin-bottom:12px">E-mail enviado!</h1>
+      <p class="login-subtitle" style="margin-bottom:28px; line-height: 1.6;">
+        Enviamos instruções de recuperação de senha para <br><strong id="display-email" style="color:var(--text-1)"></strong>.
+      </p>
+      
+      <a href="login.html" class="btn btn-secondary btn-full btn-lg">
+        Voltar para a tela de Login
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function handleRecovery(e) {
+    e.preventDefault();
+    const emailVal = document.getElementById('email').value;
+    
+    if(!emailVal) return;
+    
+    document.getElementById('display-email').innerText = emailVal;
+    
+    // Switch views
+    document.getElementById('recovery-form-view').style.display = 'none';
+    document.getElementById('recovery-success-view').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

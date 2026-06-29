@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+.Spotlight-V100
+.Trashes
+
+# Editor
+.vscode/
+.claude/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+fix_colors.py
+update_paths.py
+
+# Playwright artifacts
+.playwright-mcp/
+
+# Scratch
+scratch/

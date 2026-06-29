@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · CRM Atendimento</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      min-height: 100vh;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="">
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div id="screen-dashboard" class="screen active">
+  <div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="../images/CRM_ATENDIMENTO.svg" alt="CRM Atendimento">
+      </div>
+      <div class="workspace-switch" onclick="window.location.href='produtos.html'">
+        <div class="workspace-dot"></div>
+        <span class="workspace-name">CRM Atendimento</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#EA5456" stroke-width="2"><path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-item active" onclick="navTo('screen-dashboard',this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">Operação</div>
+          <div class="nav-item" onclick="navTo('screen-contacts',this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Contatos
+            <span class="nav-badge">84k</span>
+          </div>
+          <div class="nav-item" onclick="navTo('screen-wizard',this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            Campanhas
+          </div>
+          <div class="nav-item" onclick="navTo('screen-reports',this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Relatórios
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">Criação</div>
+          <div class="nav-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            Templates
+          </div>
+          <div class="nav-item" onclick="navTo('screen-landing',this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Landing Pages
+          </div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">Sistema</div>
+          <div class="nav-item" onclick="navTo('screen-settings',this)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            Configurações
+          </div>
+          <div class="nav-item">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Ajuda
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar">JM</div>
+          <div class="user-info">
+            <div class="user-name">João Mendes</div>
+            <div class="user-role">Administrador</div>
+          </div>
+          <div class="icon-btn" style="border:none;width:28px;height:28px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-wrap">
+      <header class="topbar">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-breadcrumb"><span>CRM Atendimento</span> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg> <span class="current">Dashboard</span></div>
+        <div class="ml-auto topbar-actions">
+          <div class="topbar-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input placeholder="Buscar campanhas, contatos...">
+          </div>
+          <div class="notif-menu-wrap" id="notif-menu-wrap">
+            <button class="icon-btn notif-dot notif-trigger" id="notif-trigger" aria-label="Abrir notificações" aria-expanded="false" aria-controls="notif-dropdown" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown" aria-hidden="true">
+              <div class="notif-dropdown-header">
+                <div>
+                  <div class="notif-dropdown-title">Notificações</div>
+                  <div class="notif-dropdown-subtitle">3 atualizações recentes</div>
+                </div>
+                <span class="notif-dropdown-badge">3 novas</span>
+              </div>
+              <div class="notif-list">
+                <div class="notif-item">
+                  <div class="notif-item-icon notif-item-icon-warning">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18A2 2 0 0 0 3.53 21h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  </div>
+                  <div class="notif-item-content">
+                    <div class="notif-item-title">DKIM ainda não configurado</div>
+                    <div class="notif-item-text">Sua autenticação DNS segue pendente e pode impactar a entregabilidade.</div>
+                  </div>
+                  <div class="notif-item-time">Agora</div>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-item-icon notif-item-icon-info">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  </div>
+                  <div class="notif-item-content">
+                    <div class="notif-item-title">Envio "Newsletter Março 2026" agendado</div>
+                    <div class="notif-item-text">A campanha está pronta para disparo em 18/03 às 10h.</div>
+                  </div>
+                  <div class="notif-item-time">12 min</div>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-item-icon notif-item-icon-success">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                  </div>
+                  <div class="notif-item-content">
+                    <div class="notif-item-title">Importação de contatos concluída</div>
+                    <div class="notif-item-text">1.240 novos contatos foram adicionados à base principal.</div>
+                  </div>
+                  <div class="notif-item-time">1 h</div>
+                </div>
+              </div>
+              <button class="notif-dropdown-footer" type="button">Ver todas</button>
+            </div>
+          </div>
+          <div class="icon-btn" data-tip="Ajuda">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div class="avatar-menu-wrap" id="avatar-menu-wrap">
+            <button class="avatar avatar-trigger" id="avatar-trigger" aria-label="Abrir menu do usuário" aria-expanded="false" aria-controls="avatar-dropdown" type="button">JM</button>
+            <div class="avatar-dropdown" id="avatar-dropdown" aria-hidden="true">
+              <button class="avatar-menu-item" type="button" onclick="openModal('modal-profile')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="5"/></svg>
+                <span>Meu perfil</span>
+              </button>
+              <button class="avatar-menu-item" type="button" onclick="navTo('screen-settings')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                <span>Configurações</span>
+              </button>
+              <button class="avatar-menu-item avatar-menu-item-danger" type="button" onclick="logout()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Sair</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-content">
+
+        <!-- ══ HEADER + QUICK ACTIONS (zona primária — sempre visível) ══ -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:26px">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">Página inicial · 16 de março, 2026</div>
+            <h1 style="font-family:var(--font-display);font-size:26px;font-weight:800;color:var(--text-1);letter-spacing:-0.6px;margin:0">Bom dia, João 👋</h1>
+          </div>
+          <!-- Quick Actions: horizontal, proeminente, sempre no topo -->
+          <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+            <div id="qa-assist" style="display:flex;align-items:center;gap:7px;padding:0 14px;height:38px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;cursor:pointer;font-size:12px;font-weight:500;color:var(--text-2);transition:all .14s" onmouseenter="this.style.borderColor='var(--text-3)'" onmouseleave="this.style.borderColor='var(--border)'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Assistente
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;padding:0 14px;height:38px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;cursor:pointer;font-size:12px;font-weight:500;color:var(--text-2);transition:all .14s" onmouseenter="this.style.borderColor='var(--text-3)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="openModal('modal-import')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Importar
+            </div>
+            <div style="display:flex;align-items:center;gap:7px;padding:0 14px;height:38px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#fff;cursor:pointer;font-size:12px;font-weight:500;color:var(--text-2);transition:all .14s" onmouseenter="this.style.borderColor='var(--text-3)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="navTo('screen-reports')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Relatórios
+            </div>
+            <!-- CTA principal destacado -->
+            <div style="display:flex;align-items:center;gap:8px;padding:0 18px;height:38px;background:var(--brand);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:600;color:#fff;letter-spacing:-0.1px;transition:all .14s;box-shadow:0 4px 14px rgba(234,84,86,.28)" onmouseenter="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 18px rgba(234,84,86,.36)'" onmouseleave="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(234,84,86,.28)'" onclick="navTo('screen-wizard')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Criar novo envio
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ DKIM ALERT (abaixo do header, inline, não bloqueia) ══ -->
+        <div id="dkim-banner" style="display:flex;align-items:center;gap:10px;border-left:3px solid var(--warning);background:var(--warning-light);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:10px 14px;margin-bottom:22px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span style="font-size:12px;color:var(--text-2);flex:1"><strong style="color:var(--text-1)">DKIM ausente</strong> — Sua entregabilidade no Gmail e Outlook está comprometida.</span>
+          <a href="#" onclick="navTo('screen-settings')" style="font-size:12px;font-weight:600;color:var(--warning);text-decoration:none;flex-shrink:0">Configurar agora →</a>
+          <button onclick="document.getElementById('dkim-banner').style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-4);font-size:18px;line-height:1;padding:0 0 0 8px;flex-shrink:0">×</button>
+        </div>
+
+        <!-- ══ KPI CARDS (forte presença visual, hierarquia clara) ══ -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px">
+
+          <!-- Contatos: acento vermelho -->
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:box-shadow .15s" onclick="navTo('screen-contacts')" onmouseenter="this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.boxShadow=''">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--brand);border-radius:var(--radius-lg) var(--radius-lg) 0 0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.7px">Contatos ativos</span>
+              <div style="width:32px;height:32px;border-radius:8px;background:var(--brand-light);display:flex;align-items:center;justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+            </div>
+            <div style="font-family:var(--font-display);font-size:30px;font-weight:800;color:var(--text-1);letter-spacing:-1.2px;line-height:1;margin-bottom:8px">84.320</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--success)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              +1.240 este mês
+            </div>
+          </div>
+
+          <!-- Taxa de Abertura: acento verde -->
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;position:relative;overflow:hidden;transition:box-shadow .15s" onmouseenter="this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.boxShadow=''">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--success);border-radius:var(--radius-lg) var(--radius-lg) 0 0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.7px">Taxa de Abertura</span>
+              <div style="width:32px;height:32px;border-radius:8px;background:var(--success-light);display:flex;align-items:center;justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </div>
+            </div>
+            <div style="font-family:var(--font-display);font-size:30px;font-weight:800;color:var(--text-1);letter-spacing:-1.2px;line-height:1;margin-bottom:8px">27,4%</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--success)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              +2,1pp vs. mês anterior
+            </div>
+          </div>
+
+          <!-- Taxa de Clique: acento azul -->
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;position:relative;overflow:hidden;transition:box-shadow .15s" onmouseenter="this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.boxShadow=''">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--info);border-radius:var(--radius-lg) var(--radius-lg) 0 0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.7px">Taxa de Clique</span>
+              <div style="width:32px;height:32px;border-radius:8px;background:var(--info-light);display:flex;align-items:center;justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
+              </div>
+            </div>
+            <div style="font-family:var(--font-display);font-size:30px;font-weight:800;color:var(--text-1);letter-spacing:-1.2px;line-height:1;margin-bottom:8px">4,8%</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--error)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              -0,3pp vs. mês anterior
+            </div>
+          </div>
+
+          <!-- Envios: acento cinza neutro -->
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;position:relative;overflow:hidden;transition:box-shadow .15s" onmouseenter="this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.boxShadow=''">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--text-3);border-radius:var(--radius-lg) var(--radius-lg) 0 0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.7px">Créditos usados</span>
+              <div style="width:32px;height:32px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-2)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </div>
+            </div>
+            <div style="font-family:var(--font-display);font-size:30px;font-weight:800;color:var(--text-1);letter-spacing:-1.2px;line-height:1;margin-bottom:8px">1,24M</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="width:62%;height:100%;background:var(--text-3);border-radius:2px"></div></div>
+              <span style="font-size:11px;color:var(--text-3)">62% de 2M do plano</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ ENVIOS PENDENTES (zona visual clara, não mais um pill escondido) ══ -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:22px;overflow:hidden">
+          <!-- Label coluna -->
+          <div style="grid-column:1/-1;padding:12px 20px 10px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.7px">Envios pendentes</span>
+            <button class="btn btn-ghost btn-sm" onclick="navTo('screen-wizard')" style="font-size:11px;color:var(--info)">Gerenciar →</button>
+          </div>
+          <!-- Agendados -->
+          <div style="padding:16px 20px;cursor:pointer;transition:background .12s" onclick="navTo('screen-wizard')" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--info);flex-shrink:0"></div>
+              <span style="font-size:11px;font-weight:700;color:var(--info);text-transform:uppercase;letter-spacing:0.5px">Agendados</span>
+            </div>
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--text-1);letter-spacing:-1px;line-height:1;margin-bottom:4px">2</div>
+            <div style="font-size:12px;color:var(--text-3)">próximo: 18/03 às 10h</div>
+          </div>
+          <!-- Rascunhos -->
+          <div style="padding:16px 20px;border-left:1px solid var(--border-light);cursor:pointer;transition:background .12s" onclick="navTo('screen-wizard')" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--warning);flex-shrink:0"></div>
+              <span style="font-size:11px;font-weight:700;color:var(--warning);text-transform:uppercase;letter-spacing:0.5px">Sem data</span>
+            </div>
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--warning);letter-spacing:-1px;line-height:1;margin-bottom:4px">1</div>
+            <div style="font-size:12px;color:var(--text-3)">Oferta Março — Rascunho</div>
+          </div>
+          <!-- Testes A/B -->
+          <div style="padding:16px 20px;border-left:1px solid var(--border-light)">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0"></div>
+              <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px">Testes A/B</span>
+            </div>
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--text-4);letter-spacing:-1px;line-height:1;margin-bottom:4px">0</div>
+            <div style="font-size:12px;color:var(--text-4)">nenhum pendente</div>
+          </div>
+          <!-- Automações ativas -->
+          <div style="padding:16px 20px;border-left:1px solid var(--border-light)">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0;animation:pulse-dot 2s infinite"></div>
+              <span style="font-size:11px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.5px">Automações</span>
+            </div>
+            <div style="font-family:var(--font-display);font-size:28px;font-weight:800;color:var(--text-1);letter-spacing:-1px;line-height:1;margin-bottom:4px">1</div>
+            <div style="font-size:12px;color:var(--text-3)">Boas-vindas · ativa</div>
+          </div>
+        </div>
+
+        <!-- ══ MAIN GRID ══ -->
+        <div style="display:grid;grid-template-columns:1fr 264px;gap:18px;align-items:start">
+
+          <!-- ── ENVIOS RECENTES: apenas o essencial ── -->
+          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+            <div style="padding:16px 20px 14px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between">
+              <div>
+                <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text-1)">Envios Recentes</div>
+                <div style="font-size:12px;color:var(--text-3);margin-top:2px">Março 2026</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="navTo('screen-reports-sends')" style="font-size:12px;color:var(--info)">Ver relatório →</button>
+            </div>
+
+            <!-- Cabeçalho da lista -->
+            <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:12px;padding:8px 20px;background:var(--bg);border-bottom:1px solid var(--border-light)">
+              <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.6px">Campanha</span>
+              <span style="font-size:11px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.6px;width:72px;text-align:right">Abriram</span>
+              <span style="font-size:11px;font-weight:700;color:var(--info);text-transform:uppercase;letter-spacing:0.6px;width:72px;text-align:right">Clicaram</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.6px;width:44px;text-align:right"></span>
+            </div>
+
+            <!-- Row 1: mais recente, destacado -->
+            <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border-light);background:#fdfbfb;transition:background .12s;cursor:pointer" onmouseenter="this.style.background='var(--brand-light)'" onmouseleave="this.style.background='#fdfbfb'">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0"></div>
+                  <span style="font-size:13px;font-weight:600;color:var(--text-1)">Black Friday — Antecipada</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:3px;padding-left:14px">10/03 · Clientes · 24.300 enviados</div>
+              </div>
+              <div style="width:72px;text-align:right;display:flex;align-items:center;justify-content:flex-end">
+                <span style="font-size:14px;font-weight:700;color:var(--success)">31,2%</span>
+              </div>
+              <div style="width:72px;text-align:right;display:flex;align-items:center;justify-content:flex-end">
+                <span style="font-size:14px;font-weight:700;color:var(--info)">6,4%</span>
+              </div>
+              <div style="width:44px;display:flex;align-items:center;justify-content:flex-end">
+                <div class="icon-btn btn-icon-sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+              </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border-light);transition:background .12s;cursor:pointer" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0"></div>
+                  <span style="font-size:13px;font-weight:500;color:var(--text-1)">Reengajamento Q1</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:3px;padding-left:14px">28/02 · Inativos · 8.140</div>
+              </div>
+              <div style="width:72px;text-align:right;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:14px;font-weight:700;color:var(--success)">18,7%</span></div>
+              <div style="width:72px;text-align:right;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:14px;font-weight:700;color:var(--info)">2,1%</span></div>
+              <div style="width:44px;display:flex;align-items:center;justify-content:flex-end"><div class="icon-btn btn-icon-sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div></div>
+            </div>
+
+            <!-- Row 3 -->
+            <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border-light);transition:background .12s;cursor:pointer" onmouseenter="this.style.background='var(--bg)'" onmouseleave="this.style.background=''">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0"></div>
+                  <span style="font-size:13px;font-weight:500;color:var(--text-1)">Newsletter Fevereiro 2026</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:3px;padding-left:14px">18/02 · Geral · 82.100</div>
+              </div>
+              <div style="width:72px;text-align:right;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:14px;font-weight:700;color:var(--success)">24,1%</span></div>
+              <div style="width:72px;text-align:right;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:14px;font-weight:700;color:var(--info)">4,2%</span></div>
+              <div style="width:44px;display:flex;align-items:center;justify-content:flex-end"><div class="icon-btn btn-icon-sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div></div>
+            </div>
+
+            <!-- Row 4: Agendado (estado diferente) -->
+            <div style="display:grid;grid-template-columns:1fr auto auto auto;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border-light);opacity:.65">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="width:6px;height:6px;border-radius:50%;background:var(--info);flex-shrink:0"></div>
+                  <span style="font-size:13px;font-weight:500;color:var(--text-1)">Newsletter Março 2026</span>
+                  <span style="font-size:10px;font-weight:600;background:var(--info-light);color:var(--info);padding:1px 7px;border-radius:10px">Agendado 18/03</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-3);margin-top:3px;padding-left:14px">Geral · ~84.320</div>
+              </div>
+              <div style="width:72px;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:14px;color:var(--text-4)">—</span></div>
+              <div style="width:72px;display:flex;align-items:center;justify-content:flex-end"><span style="font-size:14px;color:var(--text-4)">—</span></div>
+              <div style="width:44px;display:flex;align-items:center;justify-content:flex-end"><div class="icon-btn btn-icon-sm" onclick="navTo('screen-wizard')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></div></div>
+            </div>
+
+            <!-- Footer: 3 alertas globais -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr">
+              <div style="padding:11px 20px;display:flex;align-items:center;gap:10px">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="2"><line x1="3" y1="21" x2="21" y2="3"/><polyline points="15 3 21 3 21 9"/></svg>
+                <div><div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px">Descadastros</div><div style="font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--text-1);letter-spacing:-.5px">18</div></div>
+              </div>
+              <div style="padding:11px 20px;display:flex;align-items:center;gap:10px;border-left:1px solid var(--border-light)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <div><div style="font-size:11px;font-weight:600;color:var(--error);text-transform:uppercase;letter-spacing:.5px">Spam</div><div style="font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--error);letter-spacing:-.5px">1</div></div>
+              </div>
+              <div style="padding:11px 20px;display:flex;align-items:center;gap:10px;border-left:1px solid var(--border-light)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+                <div><div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px">Não entregues</div><div style="font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--warning);letter-spacing:-.5px">284</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── COLUNA DIREITA ── -->
+          <div style="display:flex;flex-direction:column;gap:14px">
+
+            <!-- Saúde + Entregabilidade unificado -->
+            <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden">
+              <div style="padding:14px 18px 12px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between">
+                <div style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--text-1)">Saúde da lista</div>
+                <div style="display:flex;align-items:baseline;gap:2px">
+                  <span style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--warning)">72</span>
+                  <span style="font-size:11px;color:var(--text-3)">/100</span>
+                </div>
+              </div>
+              <div style="padding:14px 18px;border-bottom:1px solid var(--border-light)">
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text-2)">Ativos</span><span style="font-size:12px;font-weight:700;color:var(--success)">78,4%</span></div>
+                    <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:78%;height:100%;background:var(--success);border-radius:3px"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text-2)">Descadastrados</span><span style="font-size:12px;font-weight:700;color:var(--warning)">8,2%</span></div>
+                    <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:8%;height:100%;background:var(--warning);border-radius:3px"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text-2)">Hard bounces</span><span style="font-size:12px;font-weight:700;color:var(--error)">3,1%</span></div>
+                    <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden"><div style="width:3%;height:100%;background:var(--error);border-radius:3px"></div></div>
+                  </div>
+                </div>
+              </div>
+              <!-- DNS compacto -->
+              <div style="padding:12px 18px;border-bottom:1px solid var(--border-light)">
+                <div style="font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Autenticação DNS</div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font-size:12px;color:var(--text-2)">SPF</span>
+                    <span style="font-size:10px;font-weight:600;background:var(--success-light);color:var(--success);padding:2px 8px;border-radius:10px">Válido</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font-size:12px;color:var(--text-2)">DKIM</span>
+                    <span style="font-size:10px;font-weight:600;background:var(--error-light);color:var(--error);padding:2px 8px;border-radius:10px">Ausente</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <span style="font-size:12px;color:var(--text-2)">DMARC</span>
+                    <span style="font-size:10px;font-weight:600;background:var(--warning-light);color:var(--warning);padding:2px 8px;border-radius:10px">Parcial</span>
+                  </div>
+                </div>
+              </div>
+              <div style="padding:12px 18px">
+                <div onclick="navTo('screen-settings')" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--brand);color:#fff;font-size:12px;font-weight:600;padding:9px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:all .14s" onmouseenter="this.style.background='var(--brand-dark)'" onmouseleave="this.style.background='var(--brand)'">
+                  Resolver DKIM agora →
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /right col -->
+        </div><!-- /main grid -->
+
+      </div><!-- /page-content -->
+    </div><!-- /main-wrap -->
+  </div><!-- /app-shell -->
+</div><!-- /screen-dashboard -->
+
+<div class="modal-overlay" id="modal-profile" onclick="closeModal('modal-profile')">
+  <div class="modal modal-lg profile-drawer" onclick="event.stopPropagation()">
+    <div class="modal-header profile-drawer-header">
+      <div class="profile-drawer-title-wrap">
+        <div class="profile-drawer-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="5"/></svg>
+        </div>
+        <div>
+          <div class="modal-title">Meu perfil</div>
+          <div class="modal-subtitle">Mantenha suas informações atualizadas e revise a segurança da conta.</div>
+        </div>
+      </div>
+      <button class="modal-close-btn" type="button" onclick="closeModal('modal-profile')" aria-label="Fechar perfil">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body profile-drawer-body">
+      <div class="profile-drawer-hint-row">
+        <div class="profile-drawer-hint">Atualize dados pessoais, idioma, fuso e senha periodicamente.</div>
+        <div class="profile-required-badge">
+          <span class="profile-required-dot"></span>
+          Campos obrigatórios
+        </div>
+      </div>
+
+      <div class="profile-form-grid">
+        <div class="profile-photo-row" style="display:flex;align-items:center;gap:20px;padding:12px 0 18px;border-bottom:1px solid var(--border-light);margin-bottom:10px">
+          <div class="profile-photo-avatar avatar" style="width:72px;height:72px;font-size:24px;border-radius:50%;cursor:pointer;position:relative;overflow:hidden" onclick="document.getElementById('profile-photo-input').click()">
+            JM
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span class="form-label" style="margin:0">Foto de perfil</span>
+            <span style="font-size:12px;color:var(--text-3)">PNG, JPG ou SVG. Máximo 1MB.</span>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-secondary btn-sm" type="button" onclick="document.getElementById('profile-photo-input').click()" style="height:30px;padding:0 12px;font-size:12px">Alterar foto</button>
+              <button class="btn btn-ghost btn-sm" id="btn-remove-photo" type="button" onclick="removeProfilePhoto()" style="height:30px;padding:0 12px;font-size:12px;color:var(--error);display:none">Remover</button>
+            </div>
+            <input type="file" id="profile-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+          </div>
+        </div>
+
+        <div class="form-group profile-form-row">
+          <label class="form-label" for="profile-name">Nome do usuário</label>
+          <input class="form-input" id="profile-name" type="text" value="João Mendes">
+        </div>
+
+        <div class="form-group profile-form-row">
+          <label class="form-label" for="profile-email">E-mail do usuário</label>
+          <div class="profile-inline-field">
+            <input class="form-input" id="profile-email" type="email" value="joao.mendes@empresa.com.br" readonly>
+            <button class="btn btn-secondary" type="button">Alterar e-mail</button>
+          </div>
+        </div>
+
+        <div class="form-group profile-form-row">
+          <label class="form-label" for="profile-language">Idioma</label>
+          <select class="form-select" id="profile-language">
+            <option selected>Português</option>
+            <option>English</option>
+            <option>Español</option>
+          </select>
+        </div>
+
+        <div class="form-group profile-form-row">
+          <label class="form-label" for="profile-timezone">Fuso horário</label>
+          <select class="form-select" id="profile-timezone">
+            <option selected>(UTC-03:00) Recife</option>
+            <option>(UTC-03:00) São Paulo</option>
+            <option>(UTC-04:00) Manaus</option>
+          </select>
+        </div>
+
+        <div class="form-group profile-form-row profile-checkbox-row">
+          <span class="form-label">Autenticação em duas etapas</span>
+          <label class="checkbox-row" for="profile-2fa" style="margin-top:4px">
+            <input type="checkbox" id="profile-2fa">
+            <span>Ativar proteção adicional no login</span>
+          </label>
+        </div>
+
+        <div class="profile-password-block">
+          <div class="form-group profile-form-row">
+            <label class="form-label profile-label-danger" for="profile-password">Digite sua nova senha</label>
+            <input class="form-input" id="profile-password" type="password" placeholder="Nova senha">
+          </div>
+
+          <div class="form-group profile-form-row">
+            <label class="form-label profile-label-danger" for="profile-password-confirm">Confirme sua nova senha</label>
+            <input class="form-input" id="profile-password-confirm" type="password" placeholder="Confirme a senha">
+          </div>
+
+          <div class="profile-password-rules">
+            <div class="profile-password-rules-title">A senha deve conter:</div>
+            <div class="profile-password-rules-grid">
+              <div>Uma letra minúscula.</div>
+              <div>Uma letra maiúscula.</div>
+              <div>Um caractere especial.</div>
+              <div>Um número.</div>
+              <div>Mínimo de 12 caracteres.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer profile-drawer-footer">
+      <button class="btn btn-secondary" type="button" onclick="closeModal('modal-profile')">Fechar</button>
+      <button class="btn btn-primary" type="button" onclick="saveProfile()">Aplicar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+   SCREEN: CONTACTS
+══════════════════════════════════════ -->
+
+<script>
+  // Sidebar responsiveness togglers
+  function toggleSidebar() {
+    const sb = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (sb) sb.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('open');
+  }
+  
+  function closeSidebar() {
+    const sb = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+    if (sb) sb.classList.remove('open');
+    if (overlay) overlay.classList.remove('open');
+  }
+
+  // Load session variables if present
+  const email = localStorage.getItem("userEmail") || "joao.mendes@empresa.com.br";
+  const name = localStorage.getItem("userName") || "João Mendes";
+  
+  // Update name in document if elements exist
+  document.querySelectorAll('.user-name').forEach(el => {
+    el.innerText = name;
+  });
+
+  const profileNameInput = document.getElementById('profile-name');
+  const profileEmailInput = document.getElementById('profile-email');
+  if (profileNameInput) profileNameInput.value = name;
+  if (profileEmailInput) profileEmailInput.value = email;
+
+  function updateAvatars() {
+    const userPhoto = localStorage.getItem("userPhoto");
+    const currentName = localStorage.getItem("userName") || "João Mendes";
+    const initials = currentName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+
+    document.querySelectorAll('.avatar').forEach(el => {
+      if (userPhoto) {
+        const existingImg = el.querySelector('img');
+        if (existingImg) {
+          existingImg.src = userPhoto;
+        } else {
+          el.innerHTML = `<img src="${userPhoto}" alt="${currentName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+        }
+      } else {
+        el.innerHTML = initials;
+      }
+    });
+
+    const removeBtn = document.getElementById('btn-remove-photo');
+    if (removeBtn) {
+      removeBtn.style.display = userPhoto ? 'inline-block' : 'none';
+    }
+  }
+
+  function handlePhotoUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    if (file.size > 1024 * 1024) {
+      alert("A imagem deve ter no máximo 1MB.");
+      input.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const dataUrl = e.target.result;
+      localStorage.setItem("userPhoto", dataUrl);
+      updateAvatars();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function removeProfilePhoto() {
+    localStorage.removeItem("userPhoto");
+    const fileInput = document.getElementById('profile-photo-input');
+    if (fileInput) fileInput.value = "";
+    updateAvatars();
+  }
+
+  function saveProfile() {
+    const nameInput = document.getElementById('profile-name');
+    if (nameInput) {
+      const newName = nameInput.value.trim();
+      if (newName) {
+        localStorage.setItem("userName", newName);
+        document.querySelectorAll('.user-name').forEach(el => {
+          el.innerText = newName;
+        });
+      }
+    }
+    updateAvatars();
+    closeModal('modal-profile');
+  }
+
+  // Call on initialization
+  updateAvatars();
+
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+
+    setNotifMenu(false);
+    setAvatarMenu(false);
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+
+    modal.classList.remove('open');
+
+    const hasOpenModal = document.querySelector('.modal-overlay.open');
+    if (!hasOpenModal) {
+      document.body.style.overflow = '';
+    }
+  }
+
+  const notifMenuWrap = document.getElementById('notif-menu-wrap');
+  const notifTrigger = document.getElementById('notif-trigger');
+  const notifDropdown = document.getElementById('notif-dropdown');
+  const avatarMenuWrap = document.getElementById('avatar-menu-wrap');
+  const avatarTrigger = document.getElementById('avatar-trigger');
+  const avatarDropdown = document.getElementById('avatar-dropdown');
+
+  function setNotifMenu(open) {
+    if (!notifMenuWrap || !notifTrigger || !notifDropdown) return;
+
+    notifMenuWrap.classList.toggle('open', open);
+    notifTrigger.setAttribute('aria-expanded', String(open));
+    notifDropdown.setAttribute('aria-hidden', String(!open));
+  }
+
+  function setAvatarMenu(open) {
+    if (!avatarMenuWrap || !avatarTrigger || !avatarDropdown) return;
+
+    avatarMenuWrap.classList.toggle('open', open);
+    avatarTrigger.setAttribute('aria-expanded', String(open));
+    avatarDropdown.setAttribute('aria-hidden', String(!open));
+  }
+
+  if (notifTrigger) {
+    notifTrigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const willOpen = !notifMenuWrap.classList.contains('open');
+      setAvatarMenu(false);
+      setNotifMenu(willOpen);
+    });
+  }
+
+  if (notifDropdown) {
+    notifDropdown.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+  }
+
+  if (avatarTrigger) {
+    avatarTrigger.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const willOpen = !avatarMenuWrap.classList.contains('open');
+      setNotifMenu(false);
+      setAvatarMenu(willOpen);
+    });
+  }
+
+  if (avatarDropdown) {
+    avatarDropdown.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    if (notifMenuWrap && !notifMenuWrap.contains(event.target)) {
+      setNotifMenu(false);
+    }
+    if (avatarMenuWrap && !avatarMenuWrap.contains(event.target)) {
+      setAvatarMenu(false);
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setNotifMenu(false);
+      setAvatarMenu(false);
+      document.querySelectorAll('.modal-overlay.open').forEach(modal => {
+        modal.classList.remove('open');
+      });
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Navigation redirect helpers to intercept goTo('screen-select') and goTo('screen-login')
+  function logout() {
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    window.location.href = "login.html";
+  }
+
+  function convertFormSelects() {
+    document.querySelectorAll('select.form-select').forEach(select => {
+      if (select.dataset.customSelectInit) return;
+      select.dataset.customSelectInit = "true";
+      const wrapper = document.createElement('div');
+      wrapper.className = 'custom-select-wrapper';
+      if (select.getAttribute('style')) {
+        wrapper.setAttribute('style', select.getAttribute('style'));
+      }
+      wrapper.style.display = '';
+      select.style.display = 'none';
+      
+      const trigger = document.createElement('div');
+      trigger.className = 'form-select custom-select-trigger';
+      select.classList.forEach(cls => {
+        if (cls !== 'form-select') trigger.classList.add(cls);
+      });
+      const triggerText = document.createElement('span');
+      triggerText.textContent = select.options[select.selectedIndex]?.textContent || '';
+      trigger.appendChild(triggerText);
+      wrapper.appendChild(trigger);
+      
+      const dropdown = document.createElement('div');
+      dropdown.className = 'custom-select-dropdown';
+      Array.from(select.options).forEach((opt, idx) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'custom-select-option';
+        optionDiv.textContent = opt.textContent;
+        optionDiv.dataset.value = opt.value;
+        if (idx === select.selectedIndex) optionDiv.classList.add('selected');
+        
+        optionDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.selectedIndex = idx;
+          triggerText.textContent = opt.textContent;
+          dropdown.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+          optionDiv.classList.add('selected');
+          wrapper.classList.remove('open');
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        dropdown.appendChild(optionDiv);
+      });
+      wrapper.appendChild(dropdown);
+      select.parentNode.insertBefore(wrapper, select);
+      
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = wrapper.classList.contains('open');
+        document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+        if (!isOpen) wrapper.classList.add('open');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.custom-select-wrapper').forEach(w => w.classList.remove('open'));
+    });
+  }
+  convertFormSelects();
+</script>
+</body>
+</html>

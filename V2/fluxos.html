@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Fluxos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    /* Flow canvas */
+    .flow-canvas {
+      background: var(--bg);
+      background-image:
+        radial-gradient(circle, var(--border) 1px, transparent 1px);
+      background-size: 24px 24px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      min-height: 520px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px;
+    }
+    .flow-nodes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      position: relative;
+    }
+    .flow-node {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 260px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all var(--dur);
+      position: relative;
+      z-index: 2;
+    }
+    .flow-node:hover { border-color: var(--fluxos); box-shadow: var(--shadow-md); }
+    .flow-node.trigger { border-color: var(--fluxos); background: var(--fluxos-light); }
+    .flow-node.action  { border-color: var(--auto); }
+    .flow-node.condition { border-color: var(--warning); }
+    .flow-node-icon {
+      width: 36px; height: 36px; border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .flow-node.trigger  .flow-node-icon { background: var(--fluxos-light); color: var(--fluxos); }
+    .flow-node.action   .flow-node-icon { background: var(--auto-light);   color: var(--auto);   }
+    .flow-node.condition .flow-node-icon { background: var(--warning-light); color: var(--warning); }
+    .flow-node-label { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .flow-node-sub   { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .flow-connector {
+      width: 2px; height: 32px;
+      background: var(--border);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .flow-connector::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--border);
+    }
+    .flow-connector.active {
+      background: var(--fluxos);
+    }
+    .flow-connector.active::after { border-top-color: var(--fluxos); }
+    .flow-add-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #fff; border: 2px dashed var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-3);
+      transition: all var(--dur-fast);
+      margin: 0 auto;
+    }
+    .flow-add-btn:hover {
+      border-color: var(--fluxos); color: var(--fluxos);
+      background: var(--fluxos-light);
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-logo-text">Dinamize</div>
+        <div class="sidebar-logo-sub">Automation</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+        <span class="nav-item-label">Página inicial</span>
+      </a>
+      <button class="nav-item" data-sub="nav-contatos">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <span class="nav-item-label">Contatos</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-contatos">
+        <li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Listas</a></li>
+      </ul>
+      <button class="nav-item" data-sub="nav-canais">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        <span class="nav-item-label">Canais</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-canais">
+        <li><a class="nav-sub-item" href="canais.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+      </ul>
+      <a class="nav-item active" href="fluxos.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span>
+        <span class="nav-item-label">Fluxos</span>
+      </a>
+      <button class="nav-item" data-sub="nav-relatorios">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+        <span class="nav-item-label">Relatórios</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-relatorios">
+        <li><a class="nav-sub-item" href="relatorios.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consolidado"><span class="nav-sub-dot"></span>Consolidado</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consumo"><span class="nav-sub-dot"></span>Consumo</a></li>
+      </ul>
+      <a class="nav-item" href="ia.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span><span class="nav-item-label">IA</span><span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span></a>
+      <a class="nav-item" href="configuracoes.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span><span class="nav-item-label">Configurações</span></a>
+      <a class="nav-item" href="ajuda.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nav-item-label">Ajuda</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-widget">
+        <div class="avatar avatar-sm">RO</div>
+        <div class="user-info"><div class="user-name">Ramon Oliveira</div><div class="user-role">Index Digital</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- App body -->
+  <div class="app-body" id="fluxos-app">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Início</a>
+        <span class="sep">›</span>
+        <span class="current" id="topbar-current">Fluxos</span>
+      </div>
+      <div class="topbar-search">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Buscar fluxos…">
+        <span class="topbar-search-shortcut">⌘K</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></button>
+        <div class="avatar avatar-sm">RO</div>
+      </div>
+    </header>
+
+    <!-- ══ VIEW: Flows list ══ -->
+    <div id="view-flows" class="view active">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Fluxos de Automação</h1>
+            <p class="page-subtitle">Crie jornadas automáticas para seus contatos.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="showToast('Usar IA para gerar fluxo em breve.',{type:'info'})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg>
+              Gerar com IA
+            </button>
+            <button class="btn btn-auto" onclick="openNewFlow()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo Fluxo
+            </button>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card">
+            <div class="kpi-label">Fluxos ativos</div>
+            <div class="kpi-value" style="font-size:24px">4</div>
+            <div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+1 este mês</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Contatos em fluxo</div>
+            <div class="kpi-value" style="font-size:24px">5,6K</div>
+            <div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+420 esta semana</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Ações executadas</div>
+            <div class="kpi-value" style="font-size:24px">28,4K</div>
+            <div class="kpi-trend trend-neutral">Últimos 30 dias</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Taxa de conclusão</div>
+            <div class="kpi-value" style="font-size:24px">78,3%</div>
+            <div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+4,2% vs mês ant.</div>
+          </div>
+        </div>
+
+        <!-- Filter + search -->
+        <div class="filter-bar" style="margin-bottom:14px">
+          <div class="segmented">
+            <button class="seg-btn active" onclick="filterFlows('all',this)">Todos</button>
+            <button class="seg-btn" onclick="filterFlows('active',this)">Ativos</button>
+            <button class="seg-btn" onclick="filterFlows('paused',this)">Pausados</button>
+            <button class="seg-btn" onclick="filterFlows('draft',this)">Rascunhos</button>
+          </div>
+          <div class="search-wrap" style="max-width:260px;margin-left:auto">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar fluxo…" oninput="searchFlows(this.value)">
+          </div>
+        </div>
+
+        <!-- Flows grid -->
+        <div class="grid-3" id="flows-grid"></div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: Flow Detail ══ -->
+    <div id="view-flow-detail" class="view">
+      <div class="sub-nav">
+        <button class="sub-nav-item" onclick="showView('view-flows','fluxos-app');document.getElementById('topbar-current').textContent='Fluxos'" style="gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Fluxos
+        </button>
+        <span class="sub-nav-item active" id="flow-detail-name-nav">—</span>
+        <div style="margin-left:auto;padding:8px 24px;display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="showToast('Salvo como rascunho.',{type:'success'})">Salvar rascunho</button>
+          <button class="btn btn-auto btn-sm" id="flow-toggle-btn" onclick="toggleFlowStatus()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Ativar fluxo
+          </button>
+        </div>
+      </div>
+
+      <main class="main-content">
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+          <!-- Canvas -->
+          <div>
+            <div class="section-header" style="margin-bottom:14px">
+              <div>
+                <div class="section-title" id="flow-detail-title">—</div>
+                <div class="c-3 t-sm" id="flow-detail-meta">—</div>
+              </div>
+            </div>
+            <div class="flow-canvas" id="flow-canvas"></div>
+          </div>
+
+          <!-- Config panel -->
+          <div class="flex flex-col gap-4">
+            <div class="card card-padded">
+              <div class="card-title" style="margin-bottom:14px">Configurações</div>
+              <div class="form-group">
+                <label class="form-label">Nome do fluxo</label>
+                <input type="text" class="form-input" id="flow-name-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Período mínimo entre execuções</label>
+                <select class="form-select">
+                  <option>Sem limite</option>
+                  <option>1 dia</option>
+                  <option selected>7 dias</option>
+                  <option>30 dias</option>
+                  <option>90 dias</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pausar em fins de semana</label>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+                  <button class="toggle" id="flow-weekend-toggle" onclick="this.classList.toggle('on')"></button>
+                  <span class="t-sm c-2">Não enviar sábado e domingo</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-padded">
+              <div class="card-title" style="margin-bottom:14px">Desempenho</div>
+              <div class="stat-row">
+                <span class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--auto)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Em andamento</span>
+                <span class="stat-value" id="flow-stat-active">—</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Concluídos</span>
+                <span class="stat-value" id="flow-stat-done">—</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Saíram</span>
+                <span class="stat-value" id="flow-stat-exit">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<div id="modal-delete-flow" class="overlay" onclick="if(event.target===this)closeOverlay('modal-delete-flow')">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header">
+      <h3 class="modal-title">Excluir fluxo</h3>
+      <button class="btn btn-ghost btn-icon-sm" onclick="closeOverlay('modal-delete-flow')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="t-sm c-2" style="margin-bottom:6px">Você está prestes a excluir:</p>
+      <p class="fw-6" id="delete-flow-name" style="margin-bottom:14px;font-size:14px">—</p>
+      <p class="t-sm c-3">Todos os dados e configurações do fluxo serão removidos permanentemente.</p>
+    </div>
+    <div class="modal-footer">
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeOverlay('modal-delete-flow')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmDeleteFlow()">Excluir fluxo</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script>
+let currentFlowId = null;
+let flowsFilter = 'all';
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderFlowsGrid('all');
+  initSidebarNav();
+});
+
+function renderFlowsGrid(filter, query = '') {
+  let flows = DB.flows;
+  if (filter !== 'all') flows = flows.filter(f => f.status === filter);
+  if (query) flows = flows.filter(f => f.name.toLowerCase().includes(query.toLowerCase()));
+
+  const grid = document.getElementById('flows-grid');
+  if (!grid) return;
+
+  if (!flows.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1"><div class="empty-state">
+      <div class="empty-state-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></div>
+      <div class="empty-state-title">Nenhum fluxo encontrado</div>
+      <div class="empty-state-text">Crie um novo fluxo para automatizar suas jornadas.</div>
+      <button class="btn btn-auto" style="margin-top:8px" onclick="openNewFlow()">Criar fluxo</button>
+    </div></div>`;
+    return;
+  }
+
+  const statusMeta = {
+    active: { label:'Ativo',    cls:'badge-active', icon:'M5 3l14 9-14 9V3z' },
+    paused: { label:'Pausado',  cls:'badge-paused', icon:'M10 9v6m4-6v6M4 6h16M4 18h16' },
+    draft:  { label:'Rascunho', cls:'badge-draft',  icon:'M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z' },
+  };
+
+  grid.innerHTML = flows.map(f => {
+    const sm = statusMeta[f.status] || statusMeta.draft;
+    return `
+    <div class="flow-card" onclick="openFlowDetail('${f.id}')">
+      <div class="flow-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${f.name}</div>
+          <span class="badge ${sm.cls}" style="flex-shrink:0">${sm.label}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-3)">Gatilho: ${f.trigger}</div>
+        <div style="display:flex;gap:16px;margin-top:10px">
+          <div>
+            <div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.4px">Contatos</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-1)">${fmtNum(f.contacts)}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.4px">Etapas</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-1)">${f.steps}</div>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.4px">Atualizado</div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-2)">${f.updated}</div>
+          </div>
+        </div>
+      </div>
+      <div class="dropdown" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </button>
+        <div class="dropdown-menu">
+          <div class="dropdown-item" onclick="openFlowDetail('${f.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar fluxo</div>
+          <div class="dropdown-item" onclick="showToast('Duplicar em breve.',{type:'info'})"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Duplicar</div>
+          <div class="dropdown-item" onclick="showToast('Relatório em breve.',{type:'info'})"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Relatório</div>
+          <div class="dropdown-separator"></div>
+          <div class="dropdown-item danger" onclick="openDeleteFlow('${f.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Excluir</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openFlowDetail(id) {
+  const f = DB.flows.find(x => x.id === id);
+  if (!f) return;
+  currentFlowId = id;
+  document.getElementById('flow-detail-title').textContent = f.name;
+  document.getElementById('flow-detail-name-nav').textContent = f.name;
+  document.getElementById('flow-detail-meta').textContent =
+    `Gatilho: ${f.trigger} · ${f.steps} etapas · Atualizado em ${f.updated}`;
+  document.getElementById('flow-name-input').value = f.name;
+  document.getElementById('flow-stat-active').textContent = fmtNum(f.contacts);
+  document.getElementById('flow-stat-done').textContent = fmtNum(Math.floor(f.contacts * 0.78));
+  document.getElementById('flow-stat-exit').textContent = fmtNum(Math.floor(f.contacts * 0.08));
+  document.getElementById('topbar-current').textContent = f.name;
+
+  const toggleBtn = document.getElementById('flow-toggle-btn');
+  if (f.status === 'active') {
+    toggleBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pausar fluxo`;
+    toggleBtn.style.background = 'var(--warning)';
+    toggleBtn.style.borderColor = 'var(--warning)';
+  } else {
+    toggleBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> Ativar fluxo`;
+    toggleBtn.style.background = '';
+    toggleBtn.style.borderColor = '';
+  }
+
+  renderFlowCanvas(f);
+  showView('view-flow-detail', 'fluxos-app');
+}
+
+function renderFlowCanvas(f) {
+  const canvas = document.getElementById('flow-canvas');
+  if (!canvas) return;
+
+  const triggerIcons = {
+    'Entrada de novos contatos': 'M19 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M16 3.13a4 4 0 0 1 0 7.75M21 21v-2a4 4 0 0 0-3-3.87',
+    'Verificação diária':        'M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm0-6v-4m0-4h.01',
+    'Comportamento do contato':  'M18 20V10M12 20V4M6 20v-6',
+    'Conversão':                 'M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4',
+    'Atualização no contato':    'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z',
+  };
+
+  const demoSteps = [
+    { type:'trigger',   label:'Gatilho', sub: f.trigger },
+    { type:'action',    label:'Aguardar', sub:'1 dia após entrada' },
+    { type:'action',    label:'Enviar e-mail', sub:'Boas-vindas ao fluxo' },
+    { type:'condition', label:'Abriu o e-mail?', sub:'Verificar abertura' },
+    { type:'action',    label:'Enviar e-mail', sub:'Follow-up — Não abriu' },
+    { type:'action',    label:'Atualizar contato', sub:'Score +5 pontos' },
+  ];
+
+  const tIcon = triggerIcons[f.trigger] || 'M13 2L3 14h9l-1 8 10-12h-9l1-8z';
+
+  canvas.innerHTML = `<div class="flow-nodes">
+    ${demoSteps.map((s, i) => `
+      ${i > 0 ? `<div class="flow-connector ${i <= 2 ? 'active' : ''}"></div>` : ''}
+      <div class="flow-node ${s.type}">
+        <div class="flow-node-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="${i === 0 ? tIcon : s.type==='action' ? 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z' : 'M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01'}"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flow-node-label">${s.label}</div>
+          <div class="flow-node-sub">${s.sub}</div>
+        </div>
+        <div style="margin-left:auto">
+          <button class="btn btn-ghost btn-icon-xs" onclick="showToast('Editar nó em breve.',{type:'info'})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+    `).join('')}
+    <div class="flow-connector"></div>
+    <div class="flow-add-btn" onclick="showToast('Adicionar etapa em breve.',{type:'info'})">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+  </div>`;
+}
+
+function openNewFlow() {
+  const newF = {
+    id: 'f'+Date.now(),
+    name: 'Novo Fluxo',
+    status: 'draft',
+    contacts: 0,
+    trigger: 'Entrada de novos contatos',
+    steps: 1,
+    created: new Date().toLocaleDateString('pt-BR'),
+    updated: new Date().toLocaleDateString('pt-BR'),
+  };
+  DB.flows.unshift(newF);
+  renderFlowsGrid(flowsFilter);
+  openFlowDetail(newF.id);
+}
+
+function toggleFlowStatus() {
+  const f = DB.flows.find(x => x.id === currentFlowId);
+  if (!f) return;
+  f.status = f.status === 'active' ? 'paused' : 'active';
+  openFlowDetail(currentFlowId);
+  showToast(f.status === 'active' ? 'Fluxo ativado!' : 'Fluxo pausado.', {type:'success'});
+}
+
+function filterFlows(filter, btn) {
+  flowsFilter = filter;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFlowsGrid(filter);
+}
+function searchFlows(q) { renderFlowsGrid(flowsFilter, q); }
+
+let _deleteFlowId = null;
+function openDeleteFlow(id) {
+  _deleteFlowId = id;
+  const f = DB.flows.find(x => x.id === id);
+  document.getElementById('delete-flow-name').textContent = f ? f.name : id;
+  openOverlay('modal-delete-flow');
+}
+function confirmDeleteFlow() {
+  if (!_deleteFlowId) return;
+  DB.flows = DB.flows.filter(x => x.id !== _deleteFlowId);
+  closeOverlay('modal-delete-flow');
+  renderFlowsGrid(flowsFilter);
+  showToast('Fluxo excluído com sucesso.', {type:'success'});
+  _deleteFlowId = null;
+}
+</script>
+</body>
+</html>

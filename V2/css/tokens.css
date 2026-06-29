@@ -1,0 +1,90 @@
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS — Dinamize V2
+══════════════════════════════════════════════ */
+:root {
+  /* Brand */
+  --brand:        #EA5456;
+  --brand-dark:   #D43840;
+  --brand-light:  #FEF1F1;
+  --brand-mid:    #FCCECE;
+  --brand-rgb:    234, 84, 86;
+
+  /* Module accents — usando brand como cor principal */
+  --auto:         #EA5456;
+  --auto-dark:    #D43840;
+  --auto-light:   #FEF1F1;
+  --auto-mid:     #FCCECE;
+  --auto-rgb:     234, 84, 86;
+
+  --canal:        #EA5456;  /* same as brand */
+  --fluxos:       #0EA679;
+  --fluxos-light: #E6FAF3;
+  --ia:           #F59E0B;
+  --ia-light:     #FFFBEB;
+
+  /* Surfaces */
+  --bg:           #F2F3F7;
+  --bg-subtle:    #EDEEF2;
+  --surface:      #FFFFFF;
+  --surface-2:    #F8F9FB;
+
+  /* Borders */
+  --border:       #E2E4EA;
+  --border-light: #ECEEF3;
+  --border-strong:#C8CBD5;
+
+  /* Text */
+  --text-1:       #1E2130;
+  --text-2:       #4A5168;
+  --text-3:       #8891A8;
+  --text-4:       #B8BECC;
+
+  /* Semantic */
+  --success:      #1a9e6f;
+  --success-light:#e8f8f2;
+  --success-mid:  #a3e6cb;
+  --warning:      #d97b0e;
+  --warning-light:#fef7e8;
+  --warning-mid:  #fcd998;
+  --info:         #2d74d8;
+  --info-light:   #eff5fe;
+  --info-mid:     #aac8f5;
+  --error:        #d63b3b;
+  --error-light:  #fdf2f2;
+  --error-mid:    #f5aaaa;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.04);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 2px 8px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.10), 0 3px 10px rgba(0,0,0,.05);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,.12), 0 6px 16px rgba(0,0,0,.06);
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius:    8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl:20px;
+  --radius-full:9999px;
+
+  /* Typography */
+  --font-display: 'Nunito', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  /* Layout */
+  --sidebar-w:    220px;
+  --sidebar-w-collapsed: 60px;
+  --topbar-h:     52px;
+  --content-max:  1400px;
+
+  /* Transitions */
+  --ease:       cubic-bezier(.32, 0, .18, 1);
+  --ease-out:   cubic-bezier(0, 0, .58, 1);
+  --dur-fast:   .12s;
+  --dur:        .18s;
+  --dur-slow:   .28s;
+}

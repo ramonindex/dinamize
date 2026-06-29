@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Contatos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    /* ── RFM Matrix ── */
+    .rfm-layout { display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start; }
+    .rfm-grid-wrap { overflow-x:auto; }
+    .rfm-grid { display:grid; grid-template-columns:48px repeat(5,1fr); gap:3px; min-width:480px; }
+    .rfm-axis-label { font-size:10px; color:var(--text-3); font-weight:700; text-transform:uppercase; letter-spacing:.06em; display:flex; align-items:center; justify-content:center; padding:4px; line-height:1.3; text-align:center; }
+    .rfm-cell { border-radius:6px; padding:8px 6px; cursor:pointer; transition:transform .12s,box-shadow .12s; text-align:center; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .rfm-cell:hover { transform:scale(1.04); box-shadow:0 4px 14px rgba(0,0,0,.14); z-index:1; position:relative; }
+    .rfm-cell-name { font-size:9px; font-weight:800; line-height:1.3; letter-spacing:.02em; }
+    .rfm-cell-count { font-size:10px; margin-top:2px; font-weight:500; }
+    .rfm-legend { display:flex; flex-direction:column; gap:8px; }
+    .rfm-legend-item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:var(--surface); border:1px solid var(--border-light); border-radius:8px; cursor:pointer; transition:border-color .12s; }
+    .rfm-legend-item:hover { border-color:var(--border); }
+    .rfm-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+    .rfm-legend-name { font-size:12px; font-weight:700; }
+    .rfm-legend-count { font-size:11px; color:var(--text-3); margin-top:1px; }
+
+    /* ── Drop zone ── */
+    .drop-zone { border:2px dashed var(--border); border-radius:10px; padding:32px 24px; text-align:center; transition:border-color .15s,background .15s; cursor:pointer; }
+    .drop-zone:hover,.drop-zone.drag-over { border-color:var(--auto); background:var(--auto-light); }
+    .drop-zone-icon { color:var(--text-3); margin-bottom:12px; }
+    .drop-zone-text { font-size:14px; color:var(--text-2); font-weight:500; }
+    .drop-zone-hint { font-size:12px; color:var(--text-3); margin-top:6px; }
+
+    /* ── Segment Builder Rules ── */
+    .rules-wrap { display:flex; flex-direction:column; gap:0; }
+    .rule-row { display:grid; grid-template-columns:1fr 144px 1fr 32px; gap:8px; align-items:center; padding:10px; background:var(--surface-2); border-radius:8px; margin-bottom:4px; }
+    .rule-connector-row { padding:4px 0; text-align:center; }
+    .rule-connector-badge { display:inline-block; font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; background:var(--border); color:var(--text-3); border-radius:20px; padding:2px 10px; cursor:pointer; transition:background .15s,color .15s; }
+    .rule-connector-badge.and { background:var(--auto-light); color:var(--auto); }
+    .rule-connector-badge.or  { background:var(--fluxos-light); color:var(--fluxos); }
+
+    /* ── Score Rules ── */
+    .score-rule-card { display:grid; grid-template-columns:1fr auto 100px; gap:16px; align-items:center; padding:14px 16px; background:var(--surface); border:1px solid var(--border-light); border-radius:8px; margin-bottom:8px; }
+    .score-event-icon { width:32px; height:32px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; margin-right:10px; flex-shrink:0; }
+    .score-pts-input { display:flex; align-items:center; gap:6px; }
+    .score-pts-input input { width:64px; text-align:center; }
+
+    /* ── Conversion cards ── */
+    .conv-card { display:flex; gap:14px; align-items:center; padding:16px; background:var(--surface); border:1px solid var(--border-light); border-radius:10px; transition:border-color .12s; }
+    .conv-card:hover { border-color:var(--border); }
+    .conv-icon { width:40px; height:40px; border-radius:8px; background:var(--auto-light); color:var(--auto); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .conv-info { flex:1; min-width:0; }
+    .conv-name { font-size:14px; font-weight:700; }
+    .conv-desc { font-size:12px; color:var(--text-3); margin-top:2px; line-height:1.5; }
+    .conv-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+
+    /* ── Segment template cards ── */
+    .seg-templates-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(188px,1fr)); gap:12px; margin-bottom:28px; }
+    .seg-tpl-card { border:1px solid var(--border-light); border-radius:10px; padding:14px; background:var(--surface); transition:border-color .15s,box-shadow .15s; cursor:pointer; position:relative; }
+    .seg-tpl-card:not(.disabled):hover { border-color:var(--auto); box-shadow:0 2px 10px rgba(83,76,231,.08); }
+    .seg-tpl-card.disabled { opacity:.5; cursor:not-allowed; }
+    .seg-tpl-card.eg-card { border-color:var(--fluxos); background:var(--fluxos-light); }
+    .seg-tpl-icon { width:30px; height:30px; border-radius:6px; background:var(--auto-light); color:var(--auto); display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+    .seg-tpl-icon.eg { background:var(--fluxos-light); color:var(--fluxos); }
+    .seg-tpl-name { font-size:13px; font-weight:700; margin-bottom:3px; }
+    .seg-tpl-desc { font-size:11px; color:var(--text-3); line-height:1.5; }
+    .seg-tpl-actions { margin-top:12px; display:flex; gap:6px; }
+    .seg-soon { position:absolute; top:10px; right:10px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-3); background:var(--border-light); border-radius:20px; padding:2px 7px; }
+
+    /* ── Import mapping table ── */
+    .map-table { width:100%; border-collapse:collapse; }
+    .map-table th { font-size:11px; color:var(--text-3); font-weight:600; padding:8px 10px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+    .map-table td { padding:7px 10px; font-size:12px; border-bottom:1px solid var(--border-light); }
+    .map-table .preview-val { color:var(--text-3); font-style:italic; }
+
+    /* ── Campaign wizard ── */
+    .template-pick-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .template-pick-card { border:2px solid var(--border-light); border-radius:8px; padding:14px; cursor:pointer; transition:border-color .15s; text-align:center; }
+    .template-pick-card:hover,.template-pick-card.selected { border-color:var(--auto); background:var(--auto-light); }
+    .template-pick-card img { width:100%; height:80px; object-fit:cover; border-radius:4px; background:var(--surface-2); display:block; margin-bottom:8px; }
+    .template-pick-name { font-size:12px; font-weight:700; }
+
+    /* ── Engajados estimate pill ── */
+    .estimate-pill { display:inline-flex; align-items:center; gap:8px; background:var(--fluxos-light); color:var(--fluxos); font-size:13px; font-weight:700; border-radius:20px; padding:6px 14px; margin-top:16px; }
+    .estimate-pill svg { flex-shrink:0; }
+
+    /* ── Sub-nav active util ── */
+    .sub-nav-item.active { color:var(--auto); border-bottom-color:var(--auto); }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-logo-text">Dinamize</div>
+        <div class="sidebar-logo-sub">Automation</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+        <span class="nav-item-label">Página inicial</span>
+      </a>
+      <button class="nav-item active open" data-sub="nav-contatos">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <span class="nav-item-label">Contatos</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub open" id="nav-contatos" style="display:flex">
+        <li><a class="nav-sub-item active" id="nav-listas"     href="#" onclick="event.preventDefault();goToLists()"><span class="nav-sub-dot"></span>Listas</a></li>
+        <li><a class="nav-sub-item"        id="nav-segs"       href="#" onclick="event.preventDefault();goToSegments()"><span class="nav-sub-dot"></span>Segmentações</a></li>
+        <li><a class="nav-sub-item"        id="nav-rfm"        href="#" onclick="event.preventDefault();goToRFM()"><span class="nav-sub-dot"></span>Matriz RFM</a></li>
+        <li><a class="nav-sub-item"        id="nav-score"      href="#" onclick="event.preventDefault();goToScore()"><span class="nav-sub-dot"></span>Configurar Score</a></li>
+        <li><a class="nav-sub-item"        id="nav-conversoes" href="#" onclick="event.preventDefault();goToConversoes()"><span class="nav-sub-dot"></span>Conversões</a></li>
+      </ul>
+      <button class="nav-item" data-sub="nav-canais">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        <span class="nav-item-label">Canais</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-canais">
+        <li><a class="nav-sub-item" href="canais.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>SMS</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>WhatsApp</a></li>
+      </ul>
+      <a class="nav-item" href="fluxos.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span>
+        <span class="nav-item-label">Fluxos</span>
+      </a>
+      <button class="nav-item" data-sub="nav-relatorios">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+        <span class="nav-item-label">Relatórios</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-relatorios">
+        <li><a class="nav-sub-item" href="relatorios.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consolidado"><span class="nav-sub-dot"></span>Consolidado</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consumo"><span class="nav-sub-dot"></span>Consumo</a></li>
+      </ul>
+      <a class="nav-item" href="ia.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span><span class="nav-item-label">IA</span><span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span></a>
+      <a class="nav-item" href="configuracoes.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span><span class="nav-item-label">Configurações</span></a>
+      <a class="nav-item" href="ajuda.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nav-item-label">Ajuda</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-widget">
+        <div class="avatar avatar-sm">RO</div>
+        <div class="user-info">
+          <div class="user-name">Ramon Oliveira</div>
+          <div class="user-role">Index Digital</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── App body ── -->
+  <div class="app-body" id="contacts-app">
+
+    <header class="topbar">
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Início</a>
+        <span class="sep">›</span>
+        <span id="topbar-section">Contatos</span>
+        <span class="sep" id="topbar-sep2" style="display:none">›</span>
+        <span class="current" id="topbar-current" style="display:none"></span>
+      </div>
+      <div class="topbar-search">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Buscar contatos, listas…">
+        <span class="topbar-search-shortcut">⌘K</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></button>
+        <div class="avatar avatar-sm" style="cursor:pointer">RO</div>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+         VIEW: LISTS GRID
+    ══════════════════════════════════════════ -->
+    <div id="view-lists" class="view active">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Contatos</h1>
+            <p class="page-subtitle">Gerencie suas listas, segmentações e configurações.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="openImportWizard(null)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Importar
+            </button>
+            <button class="btn btn-auto" onclick="openNewList()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nova lista
+            </button>
+          </div>
+        </div>
+
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card">
+            <div class="kpi-label">Total de contatos</div>
+            <div class="kpi-value" style="font-size:24px">151,1K</div>
+            <div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+2.4K este mês</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Listas ativas</div>
+            <div class="kpi-value" style="font-size:24px">6</div>
+            <div class="kpi-trend trend-neutral">Todas com envios recentes</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Taxa válidos</div>
+            <div class="kpi-value" style="font-size:24px">97,8%</div>
+            <div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+0.3% vs mês ant.</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Descadastros (30d)</div>
+            <div class="kpi-value" style="font-size:24px">312</div>
+            <div class="kpi-trend trend-down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 9 12 15 6 9"/></svg>0,2% da base</div>
+          </div>
+        </div>
+
+        <div class="filter-bar" style="margin-bottom:16px">
+          <div class="search-wrap" style="max-width:280px">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar lista…" oninput="filterListsGrid(this.value)">
+          </div>
+          <div class="filter-divider"></div>
+          <button class="filter-chip active" onclick="this.parentNode.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active');filterListsGrid('')">Todas</button>
+          <button class="filter-chip" onclick="this.parentNode.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Com envio recente</button>
+          <button class="filter-chip" onclick="this.parentNode.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Maior engajamento</button>
+        </div>
+
+        <div class="grid-3" id="lists-grid"></div>
+      </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         VIEW: LIST DETAIL
+    ══════════════════════════════════════════ -->
+    <div id="view-list-detail" class="view">
+      <div class="sub-nav">
+        <button class="sub-nav-item" onclick="goBack()" style="gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Listas
+        </button>
+        <button class="sub-nav-item active" id="sub-detail-contatos"    onclick="switchDetailTab('contatos')">Contatos <span class="sub-nav-count" id="contacts-count">—</span></button>
+        <button class="sub-nav-item"         id="sub-detail-segmentacoes" onclick="switchDetailTab('segmentacoes')">Segmentações</button>
+        <button class="sub-nav-item"         id="sub-detail-importacoes"  onclick="switchDetailTab('importacoes')">Importações</button>
+        <button class="sub-nav-item"         onclick="showToast('Estatísticas disponíveis em breve.',{type:'info'})">Estatísticas</button>
+      </div>
+
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" id="detail-list-name">—</h1>
+            <p class="page-subtitle" id="detail-list-meta">—</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="showToast('Exportar em breve.',{type:'info'})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Exportar
+            </button>
+            <button class="btn btn-secondary" id="btn-list-import" onclick="openImportWizard(activeListId)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Importar
+            </button>
+            <button class="btn btn-auto" id="btn-list-add-contact" onclick="openNewContact()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Adicionar contato
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB: CONTATOS -->
+        <div id="detail-tab-contatos" class="tab-pane active">
+          <div id="contacts-bulk-bar" class="bulk-bar" style="display:none">
+            <span id="bulk-count" class="bulk-bar-count">0 selecionados</span>
+            <div class="bulk-bar-actions">
+              <button class="bulk-btn" onclick="openBulkTagModal('add')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                Adicionar marcador
+              </button>
+              <button class="bulk-btn" onclick="openBulkTagModal('remove')">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                Remover marcador
+              </button>
+              <button class="bulk-btn" onclick="showToast('Exportar selecionados em breve.',{type:'info'})">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Exportar
+              </button>
+              <button class="bulk-btn danger" onclick="showToast('Selecione contatos para excluir.',{type:'warning'})">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                Excluir
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <div class="search-wrap">
+              <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="contact-search" placeholder="Buscar por nome ou e-mail…">
+            </div>
+            <div class="filter-divider"></div>
+            <select class="form-select" style="height:36px;font-size:12px;padding:0 28px 0 10px" onchange="filterByTemp(this.value)">
+              <option value="">Temperatura</option>
+              <option value="Quente">Quente</option>
+              <option value="Morno">Morno</option>
+              <option value="Frio">Frio</option>
+            </select>
+            <select class="form-select" style="height:36px;font-size:12px;padding:0 28px 0 10px" onchange="filterByFunnel(this.value)">
+              <option value="">Estágio</option>
+              <option value="Visitantes">Visitantes</option>
+              <option value="Contatos">Contatos</option>
+              <option value="Oportunidades">Oportunidades</option>
+              <option value="Clientes">Clientes</option>
+            </select>
+          </div>
+
+          <div class="table-wrap" id="contacts-table">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="col-check"><input type="checkbox" id="contacts-master-cb" onchange="toggleAllContacts(this)"></th>
+                  <th class="sortable">Contato</th>
+                  <th>Marcadores</th>
+                  <th>Temperatura</th>
+                  <th>Score</th>
+                  <th>Estágio</th>
+                  <th>Status</th>
+                  <th class="col-actions">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="contacts-tbody">
+                <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text-3)">Carregando…</td></tr>
+              </tbody>
+            </table>
+            <div class="pagination">
+              <span class="pagination-info" id="pagination-info">—</span>
+              <div class="page-btns">
+                <button class="page-btn" disabled>‹</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn" disabled>›</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SEGMENTAÇÕES -->
+        <div id="detail-tab-segmentacoes" class="tab-pane">
+          <div id="detail-segs-content"></div>
+        </div>
+
+        <!-- TAB: IMPORTAÇÕES -->
+        <div id="detail-tab-importacoes" class="tab-pane">
+          <div class="flex justify-between items-center" style="margin-bottom:16px">
+            <div>
+              <div class="section-title">Histórico de importações</div>
+              <div class="c-3 t-sm">Todas as importações realizadas nesta lista</div>
+            </div>
+            <button class="btn btn-auto btn-sm" onclick="openImportWizard(activeListId)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nova importação
+            </button>
+          </div>
+          <div id="import-history-content"></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         VIEW: SEGMENTAÇÕES (global)
+    ══════════════════════════════════════════ -->
+    <div id="view-segments" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Segmentações</h1>
+            <p class="page-subtitle">Crie e gerencie segmentações baseadas em comportamento e dados.</p>
+          </div>
+        </div>
+        <div id="global-segs-content"></div>
+      </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         VIEW: MATRIZ RFM
+    ══════════════════════════════════════════ -->
+    <div id="view-rfm" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Matriz RFM</h1>
+            <p class="page-subtitle">Visualize seus contatos segmentados por Recência, Frequência e Valor Monetário.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="showToast('Exportar matriz em breve.',{type:'info'})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Exportar
+            </button>
+          </div>
+        </div>
+
+        <!-- RFM info banner -->
+        <div style="background:var(--auto-light);border:1px solid var(--auto);border-radius:10px;padding:14px 18px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--auto)" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div style="font-size:12px;color:var(--auto);line-height:1.6">
+            <strong>Como funciona:</strong> Recência = quando comprou pela última vez · Frequência = quantas vezes comprou · Monetário = quanto gastou. Cada dimensão recebe pontuação de 1 (menor) a 5 (maior).
+          </div>
+        </div>
+
+        <div class="rfm-layout">
+          <div>
+            <div style="margin-bottom:12px">
+              <div class="section-title">Matriz de segmentos</div>
+              <div class="c-3 t-sm">Eixo Y = Recência · Eixo X = Frequência + Valor</div>
+            </div>
+            <div class="rfm-grid-wrap">
+              <div class="rfm-grid" id="rfm-grid-container"></div>
+            </div>
+          </div>
+          <div>
+            <div class="section-title" style="margin-bottom:12px">Segmentos identificados</div>
+            <div class="rfm-legend" id="rfm-legend"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         VIEW: SCORE
+    ══════════════════════════════════════════ -->
+    <div id="view-score" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Configurar Score</h1>
+            <p class="page-subtitle">Defina quantos pontos cada interação adiciona ou remove do contato.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-auto" onclick="saveScoreConfig()">Salvar configurações</button>
+          </div>
+        </div>
+
+        <div style="max-width:720px">
+          <div class="section-title" style="margin-bottom:14px">Regras de pontuação</div>
+          <div id="score-rules-list"></div>
+
+          <div class="section-title" style="margin:28px 0 14px">Decaimento automático</div>
+          <div style="background:var(--surface);border:1px solid var(--border-light);border-radius:10px;padding:18px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div>
+                <div style="font-size:14px;font-weight:600">Reduzir score por inatividade</div>
+                <div style="font-size:12px;color:var(--text-3);margin-top:2px">Diminui pontos automaticamente quando o contato não interage</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="score-decay-toggle" checked onchange="toggleScoreDecay(this.checked)">
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div id="score-decay-config" style="display:flex;gap:12px;align-items:center">
+              <span style="font-size:13px;color:var(--text-2)">Reduzir</span>
+              <input type="number" class="form-input" id="decay-points" value="1" min="1" max="50" style="width:64px;text-align:center">
+              <span style="font-size:13px;color:var(--text-2)">ponto(s) a cada</span>
+              <input type="number" class="form-input" id="decay-days" value="30" min="1" max="365" style="width:72px;text-align:center">
+              <span style="font-size:13px;color:var(--text-2)">dias sem interação</span>
+            </div>
+          </div>
+
+          <div class="section-title" style="margin:28px 0 14px">Outras configurações</div>
+          <div style="background:var(--surface);border:1px solid var(--border-light);border-radius:10px;padding:18px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-size:14px;font-weight:600">Zerar score no descadastro</div>
+                <div style="font-size:12px;color:var(--text-3);margin-top:2px">Quando o contato se descadastrar, o score é zerado</div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="score-reset-toggle" checked>
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         VIEW: CONVERSÕES
+    ══════════════════════════════════════════ -->
+    <div id="view-conversoes" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Conversões</h1>
+            <p class="page-subtitle">Rastreie conversões no seu site e integre com plataformas externas.</p>
+          </div>
+        </div>
+
+        <div style="max-width:760px">
+          <div class="section-title" style="margin-bottom:14px">Integrações disponíveis</div>
+          <div style="display:flex;flex-direction:column;gap:12px" id="conversoes-list"></div>
+        </div>
+      </main>
+    </div>
+
+  </div><!-- /app-body -->
+</div><!-- /app -->
+
+<!-- ══════════════════════════════════════════════════
+     DRAWERS & MODALS
+══════════════════════════════════════════════════ -->
+
+<!-- ── Contact View ── -->
+<div id="drawer-contact-view" class="overlay" onclick="if(event.target===this)closeOverlay('drawer-contact-view')">
+  <div class="drawer drawer-720">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Perfil do Contato</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-secondary btn-sm" onclick="openContactEdit(currentContact?.id)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+        <button class="drawer-close" onclick="closeOverlay('drawer-contact-view')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div style="display:flex;gap:16px;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid var(--border-light);margin-bottom:20px">
+        <div class="avatar avatar-xl" id="cv-avatar">?</div>
+        <div style="flex:1">
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:800;letter-spacing:-.4px" id="cv-name">—</div>
+          <div style="font-size:13px;color:var(--auto);margin-top:2px" id="cv-email">—</div>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span id="cv-temp-badge"></span>
+            <div id="cv-tags-list"></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-4" style="margin-bottom:20px">
+        <div class="kpi-card" style="padding:12px 14px"><div class="kpi-label" style="font-size:10px">Score</div><div class="kpi-value" style="font-size:20px" id="cv-score">—</div></div>
+        <div class="kpi-card" style="padding:12px 14px"><div class="kpi-label" style="font-size:10px">Estágio</div><div style="font-size:13px;font-weight:700;margin-top:4px" id="cv-funnel">—</div></div>
+        <div class="kpi-card" style="padding:12px 14px"><div class="kpi-label" style="font-size:10px">Origem</div><div style="font-size:13px;font-weight:700;margin-top:4px" id="cv-origin">—</div></div>
+        <div class="kpi-card" style="padding:12px 14px"><div class="kpi-label" style="font-size:10px">Status</div><div style="font-size:13px;font-weight:700;margin-top:4px" id="cv-status">—</div></div>
+      </div>
+      <div class="section-title" style="margin-bottom:14px">Dados do contato</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div><div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Telefone</div><div style="font-size:13px" id="cv-phone">—</div></div>
+        <div><div style="font-size:11px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Atualizado em</div><div style="font-size:13px" id="cv-updated">—</div></div>
+      </div>
+      <div class="section-title" style="margin-bottom:14px">Eventos recentes</div>
+      <div id="cv-timeline"></div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-danger btn-sm" onclick="confirmDeleteContact(currentContact?.id);closeOverlay('drawer-contact-view')">Excluir contato</button>
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-contact-view')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Contact Edit ── -->
+<div id="drawer-contact-edit" class="overlay z2" onclick="if(event.target===this)closeOverlay('drawer-contact-edit')">
+  <div class="drawer drawer-480">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Editar Contato</div><div class="drawer-subtitle">Atualize os dados do contato</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-contact-edit')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group"><label class="form-label">E-mail <span class="req">*</span></label><input id="edit-email" type="email" class="form-input" placeholder="email@exemplo.com"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nome completo</label><input id="edit-name" type="text" class="form-input" placeholder="Nome do contato"></div>
+        <div class="form-group"><label class="form-label">Telefone</label><input id="edit-phone" type="tel" class="form-input" placeholder="(11) 99999-9999"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Situação do e-mail</label>
+          <select id="edit-status" class="form-select"><option>Válido</option><option>Inválido</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Estágio no funil</label>
+          <select id="edit-funnel" class="form-select"><option>Visitantes</option><option>Contatos</option><option>Oportunidades</option><option>Clientes</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Score atual</label><input id="edit-score" type="number" class="form-input" min="0" max="100" placeholder="0–100"></div>
+      <div class="form-group">
+        <label class="form-label">Marcadores</label>
+        <div id="edit-tags-list" style="display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:var(--surface-2);border-radius:var(--radius-md);min-height:42px"></div>
+        <span class="form-help">Clique em um marcador para remover. Adicione novos abaixo.</span>
+        <select class="form-select" style="margin-top:8px" onchange="addTagToEdit(this.value);this.value=''">
+          <option value="">+ Adicionar marcador…</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Data de descanso</label><input type="date" class="form-input" id="edit-rest-date"><span class="form-help">O contato não receberá envios até esta data.</span></div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-contact-edit')">Cancelar</button>
+      <button class="btn btn-auto" onclick="saveContactEdit()">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── New Contact ── -->
+<div id="drawer-new-contact" class="overlay z2" onclick="if(event.target===this)closeOverlay('drawer-new-contact')">
+  <div class="drawer drawer-480">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Novo Contato</div><div class="drawer-subtitle">Adicione um contato manualmente à lista</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-new-contact')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group"><label class="form-label">E-mail <span class="req">*</span></label><input id="nc-email" type="email" class="form-input" placeholder="email@exemplo.com" autofocus></div>
+      <div class="form-group"><label class="form-label">Nome completo</label><input id="nc-name" type="text" class="form-input" placeholder="Nome do contato"></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input id="nc-phone" type="tel" class="form-input" placeholder="(11) 99999-9999"></div>
+      <div class="form-group"><label class="form-label">Estágio inicial</label>
+        <select class="form-select" id="nc-funnel"><option>Contatos</option><option>Visitantes</option><option>Oportunidades</option><option>Clientes</option></select>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-new-contact')">Cancelar</button>
+      <button class="btn btn-auto" onclick="saveNewContact()">Adicionar contato</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Import Wizard ── -->
+<div id="drawer-import-wizard" class="overlay" onclick="if(event.target===this)iwClose()">
+  <div class="drawer" style="width:720px;max-width:90vw">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title">Importar Contatos</div>
+        <div class="drawer-subtitle" id="iw-subtitle">Escolha a origem dos dados</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="iwOpenFormats()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Formatos salvos
+        </button>
+        <button class="drawer-close" onclick="iwClose()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+
+    <!-- Stepper -->
+    <div style="padding:0 24px 0;border-bottom:1px solid var(--border-light)">
+      <div class="stepper">
+        <div class="step-item active" id="iw-step1-item">
+          <div class="step-circle">1</div>
+          <div class="step-label">Origem</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item" id="iw-step2-item">
+          <div class="step-circle">2</div>
+          <div class="step-label">Estrutura</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item" id="iw-step3-item">
+          <div class="step-circle">3</div>
+          <div class="step-label">Identificação</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-body">
+      <!-- Step 1: Origem -->
+      <div id="iw-step1">
+        <div class="form-group" style="margin-bottom:20px">
+          <label class="form-label">Selecione a origem dos dados</label>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px">
+            <label class="radio-card" onclick="iwSetOrigin('file')">
+              <input type="radio" name="iw-origin" value="file" checked>
+              <div class="radio-card-body">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <div class="radio-card-title">Arquivo</div>
+                <div class="radio-card-desc">.csv · .xlsx · .txt</div>
+              </div>
+            </label>
+            <label class="radio-card" onclick="iwSetOrigin('url')">
+              <input type="radio" name="iw-origin" value="url">
+              <div class="radio-card-body">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <div class="radio-card-title">Link remoto</div>
+                <div class="radio-card-desc">URL pública</div>
+              </div>
+            </label>
+            <label class="radio-card" onclick="iwSetOrigin('paste')">
+              <input type="radio" name="iw-origin" value="paste">
+              <div class="radio-card-body">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                <div class="radio-card-title">Colar dados</div>
+                <div class="radio-card-desc">Texto direto</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div id="iw-origin-file">
+          <div class="drop-zone" onclick="document.getElementById('iw-file-input').click()">
+            <div class="drop-zone-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+            <div class="drop-zone-text">Arraste um arquivo ou <span style="color:var(--auto);font-weight:600">clique para selecionar</span></div>
+            <div class="drop-zone-hint">Suporta .csv, .xlsx e .txt · Máximo 50 MB</div>
+          </div>
+          <input type="file" id="iw-file-input" accept=".csv,.xlsx,.txt" style="display:none" onchange="iwFileSelected(this)">
+          <div id="iw-file-selected" style="display:none;margin-top:10px;padding:12px 14px;background:var(--auto-light);border:1px solid var(--auto);border-radius:8px;display:none;align-items:center;gap:10px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--auto)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span id="iw-file-name" style="font-size:13px;font-weight:600;color:var(--auto)">arquivo.csv</span>
+            <button class="btn btn-ghost btn-icon-xs" onclick="iwClearFile()" style="margin-left:auto"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+        </div>
+
+        <div id="iw-origin-url" style="display:none">
+          <div class="form-group">
+            <label class="form-label">URL do arquivo</label>
+            <div style="display:flex;gap:8px">
+              <input type="url" class="form-input" id="iw-url-input" placeholder="https://exemplo.com/contatos.csv">
+              <button class="btn btn-auto" onclick="showToast('Buscando arquivo…',{type:'info'})">Buscar</button>
+            </div>
+            <span class="form-help">O arquivo deve ser acessível publicamente</span>
+          </div>
+        </div>
+
+        <div id="iw-origin-paste" style="display:none">
+          <div class="form-group">
+            <label class="form-label">Cole os dados aqui</label>
+            <textarea class="form-textarea" id="iw-paste-data" rows="8" placeholder="email,nome,telefone&#10;joao@email.com,João Silva,(11)99999-9999&#10;maria@email.com,Maria Santos,(21)88888-8888"></textarea>
+            <span class="form-help">Formato CSV: primeira linha como cabeçalho (recomendado)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Estrutura -->
+      <div id="iw-step2" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div class="section-title">Mapeamento de colunas</div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+            <input type="checkbox" checked> Primeira linha é cabeçalho
+          </label>
+        </div>
+        <div class="table-wrap" style="margin-bottom:16px">
+          <table class="map-table">
+            <thead>
+              <tr>
+                <th>Coluna no arquivo</th>
+                <th>Campo no sistema</th>
+                <th>Amostra de dados</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>email</strong></td>
+                <td><select class="form-select" style="height:32px;font-size:12px"><option>E-mail</option><option>— Ignorar —</option><option>Nome completo</option></select></td>
+                <td class="preview-val">joao@email.com</td>
+              </tr>
+              <tr>
+                <td><strong>nome</strong></td>
+                <td><select class="form-select" style="height:32px;font-size:12px"><option>Nome completo</option><option>— Ignorar —</option><option>E-mail</option></select></td>
+                <td class="preview-val">João Silva</td>
+              </tr>
+              <tr>
+                <td><strong>telefone</strong></td>
+                <td><select class="form-select" style="height:32px;font-size:12px"><option>Telefone</option><option>— Ignorar —</option></select></td>
+                <td class="preview-val">(11) 99999-9999</td>
+              </tr>
+              <tr>
+                <td><strong>cidade</strong></td>
+                <td><select class="form-select" style="height:32px;font-size:12px"><option value="">— Ignorar —</option><option>Cidade</option><option>Campo personalizado</option></select></td>
+                <td class="preview-val">São Paulo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openSaveFormatModal()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Salvar como formato
+        </button>
+      </div>
+
+      <!-- Step 3: Identificação -->
+      <div id="iw-step3" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Importar para a lista <span class="req">*</span></label>
+          <select class="form-select" id="iw-target-list">
+            <option value="">Selecione uma lista…</option>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;margin:20px 0">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:8px">
+            <div>
+              <div style="font-size:13px;font-weight:600">Atualizar contatos duplicados</div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:2px">Se um e-mail já existir, atualiza os dados do contato</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--surface-2);border-radius:8px">
+            <div>
+              <div style="font-size:13px;font-weight:600">Remover e-mails inválidos</div>
+              <div style="font-size:11px;color:var(--text-3);margin-top:2px">Filtra automaticamente endereços com formato incorreto</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Adicionar marcadores (opcional)</label>
+          <select class="form-select" id="iw-tags-select">
+            <option value="">Selecione marcadores para adicionar…</option>
+          </select>
+          <div id="iw-selected-tags" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
+        </div>
+        <div style="background:var(--auto-light);border:1px solid var(--auto);border-radius:8px;padding:14px;margin-top:8px">
+          <div style="font-size:13px;color:var(--auto);font-weight:600">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Estimativa: <strong>1.840 contatos</strong> serão importados · <span style="font-weight:400">23 duplicados · 4 inválidos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" id="iw-back-btn" onclick="iwBack()" style="display:none">Voltar</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="iwClose()">Cancelar</button>
+      <button class="btn btn-auto" id="iw-next-btn" onclick="iwNext()">Próximo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Import Formats (z2) ── -->
+<div id="drawer-import-formats" class="overlay z2" onclick="if(event.target===this)closeOverlay('drawer-import-formats')">
+  <div class="drawer drawer-480">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Formatos salvos</div><div class="drawer-subtitle">Mapeamentos reutilizáveis de colunas</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-import-formats')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div style="display:flex;flex-direction:column;gap:10px" id="formats-list">
+        <div style="padding:14px;background:var(--surface-2);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13px;font-weight:600">Padrão CRM</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">email · nome · telefone · cidade</div></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-auto btn-sm" onclick="showToast('Formato aplicado!',{type:'success'});closeOverlay('drawer-import-formats')">Usar</button>
+            <button class="btn btn-ghost btn-icon-sm" onclick="showToast('Formato excluído.',{type:'success'})"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+          </div>
+        </div>
+        <div style="padding:14px;background:var(--surface-2);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:13px;font-weight:600">Export Shopify</div><div style="font-size:11px;color:var(--text-3);margin-top:2px">Email · First Name · Last Name · Phone</div></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-auto btn-sm" onclick="showToast('Formato aplicado!',{type:'success'});closeOverlay('drawer-import-formats')">Usar</button>
+            <button class="btn btn-ghost btn-icon-sm" onclick="showToast('Formato excluído.',{type:'success'})"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-import-formats')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Segment Builder ── -->
+<div id="drawer-segment-builder" class="overlay" onclick="if(event.target===this)closeOverlay('drawer-segment-builder')">
+  <div class="drawer" style="width:640px;max-width:90vw">
+    <div class="drawer-header">
+      <div><div class="drawer-title" id="sg-builder-title">Nova Segmentação</div><div class="drawer-subtitle">Defina as regras para filtrar seus contatos</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-segment-builder')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group" style="margin-bottom:20px">
+        <label class="form-label">Nome da segmentação <span class="req">*</span></label>
+        <input type="text" class="form-input" id="sg-name" placeholder="Ex: Clientes VIP São Paulo">
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="section-title">Regras</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:var(--text-3)">Operador global:</span>
+          <div style="display:flex;gap:4px">
+            <button id="sg-op-and" class="btn btn-auto btn-sm" onclick="sgSetOperator('and')">E</button>
+            <button id="sg-op-or"  class="btn btn-ghost btn-sm" onclick="sgSetOperator('or')">OU</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-wrap" id="sg-rules-wrap">
+        <div class="rule-row" data-rule="0">
+          <select class="form-select" style="font-size:12px;height:36px">
+            <option value="">Selecionar campo…</option>
+            <optgroup label="Dados do contato">
+              <option value="nome">Nome</option>
+              <option value="email">E-mail</option>
+              <option value="cidade">Cidade</option>
+              <option value="estado">Estado</option>
+              <option value="sexo">Sexo</option>
+            </optgroup>
+            <optgroup label="Lista">
+              <option value="data_cadastro">Data de cadastro</option>
+              <option value="origem">Origem</option>
+              <option value="marcadores">Marcadores</option>
+            </optgroup>
+            <optgroup label="Funil">
+              <option value="estagio">Estágio no funil</option>
+              <option value="score">Score</option>
+            </optgroup>
+          </select>
+          <select class="form-select" style="font-size:12px;height:36px">
+            <option>contém</option>
+            <option>não contém</option>
+            <option>é igual a</option>
+            <option>começa com</option>
+          </select>
+          <input type="text" class="form-input" placeholder="Valor…" style="font-size:12px">
+          <button class="btn btn-ghost btn-icon-sm" onclick="sgRemoveRule(this)" style="color:var(--error)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="sgAddRule()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar regra
+      </button>
+
+      <div style="margin-top:20px;padding:14px;background:var(--fluxos-light);border:1px solid var(--fluxos);border-radius:8px;display:flex;align-items:center;gap:10px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--fluxos)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <span style="font-size:13px;color:var(--fluxos);font-weight:600">Estimativa: <strong id="sg-estimate">~3.210 contatos</strong> correspondem a este filtro</span>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto;color:var(--fluxos)" onclick="sgPreviewContacts()">Ver contatos</button>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-segment-builder')">Cancelar</button>
+      <button class="btn btn-auto" onclick="sgSave()">Salvar segmentação</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Segment Contacts (z2) ── -->
+<div id="drawer-segment-contacts" class="overlay z2" onclick="if(event.target===this)closeOverlay('drawer-segment-contacts')">
+  <div class="drawer drawer-720">
+    <div class="drawer-header">
+      <div><div class="drawer-title" id="sg-contacts-title">Contatos da segmentação</div><div class="drawer-subtitle" id="sg-contacts-subtitle">—</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-secondary btn-sm" onclick="scOpen(currentSegId)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Enviar e-mail
+        </button>
+        <button class="drawer-close" onclick="closeOverlay('drawer-segment-contacts')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div class="table-wrap" id="sg-contacts-table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Contato</th><th>Temperatura</th><th>Score</th><th>Estágio</th><th>Status</th></tr>
+          </thead>
+          <tbody id="sg-contacts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-segment-contacts')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Engajados Config ── -->
+<div id="drawer-engajados-config" class="overlay" onclick="if(event.target===this)closeOverlay('drawer-engajados-config')">
+  <div class="drawer drawer-480">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title">Configurar Engajados</div>
+        <div class="drawer-subtitle">Defina o critério de engajamento para esta segmentação</div>
+      </div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-engajados-config')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group">
+        <label class="form-label">Critério de engajamento</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:var(--surface-2);border-radius:8px">
+            <input type="radio" name="eg-periodo" value="desde" checked onchange="egTogglePeriodo('desde')" style="margin-top:2px">
+            <div>
+              <div style="font-size:13px;font-weight:600">Desde hoje</div>
+              <div style="font-size:12px;color:var(--text-3);margin-top:2px">Contatos que interagiram nos últimos X dias</div>
+            </div>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:var(--surface-2);border-radius:8px">
+            <input type="radio" name="eg-periodo" value="intervalo" onchange="egTogglePeriodo('intervalo')" style="margin-top:2px">
+            <div>
+              <div style="font-size:13px;font-weight:600">Intervalo personalizado</div>
+              <div style="font-size:12px;color:var(--text-3);margin-top:2px">Defina um período específico com data de início e fim</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div id="eg-desde-config" class="form-group">
+        <label class="form-label">Contatos que interagiram nos últimos</label>
+        <select class="form-select" id="eg-dias">
+          <option value="15">15 dias</option>
+          <option value="30" selected>30 dias</option>
+          <option value="60">60 dias</option>
+          <option value="90">90 dias</option>
+          <option value="120">120 dias</option>
+        </select>
+      </div>
+
+      <div id="eg-intervalo-config" style="display:none" class="form-group">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Data início</label><input type="date" class="form-input" id="eg-data-inicio"></div>
+          <div class="form-group"><label class="form-label">Data fim</label><input type="date" class="form-input" id="eg-data-fim"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Aplicar a</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;background:var(--surface-2);border-radius:8px">
+            <input type="radio" name="eg-aplica" value="todos" checked onchange="egToggleAplicaA('todos')">
+            <div style="font-size:13px;font-weight:600">Todos os contatos da lista</div>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;background:var(--surface-2);border-radius:8px">
+            <input type="radio" name="eg-aplica" value="segmentar" onchange="egToggleAplicaA('segmentar')">
+            <div style="font-size:13px;font-weight:600">Segmentar por…</div>
+          </label>
+        </div>
+      </div>
+
+      <div id="eg-segmentar-config" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Tipo de segmentação</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="eg-tipo-marcadores" class="btn btn-auto btn-sm" onclick="egToggleSegmentar('marcadores')">Marcadores</button>
+            <button id="eg-tipo-estagio"    class="btn btn-ghost btn-sm" onclick="egToggleSegmentar('estagio')">Estágio no funil</button>
+          </div>
+        </div>
+        <div id="eg-marcadores-config" class="form-group">
+          <label class="form-label">Selecionar marcadores</label>
+          <div id="eg-tags-grid" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+        <div id="eg-estagio-config" style="display:none" class="form-group">
+          <label class="form-label">Estágio no funil</label>
+          <select class="form-select" id="eg-estagio-select">
+            <option value="">Todos os estágios</option>
+            <option>Visitantes</option><option>Contatos</option><option>Oportunidades</option><option>Clientes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="estimate-pill" id="eg-estimate">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Estimativa: <span id="eg-estimate-count">~62.357 contatos</span>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-engajados-config')">Cancelar</button>
+      <button class="btn btn-ghost btn-sm" onclick="egPreview()" style="margin-right:auto">Ver contatos</button>
+      <button class="btn btn-auto" onclick="egSave()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Engajados Preview (z2) ── -->
+<div id="drawer-engajados-preview" class="overlay z2" onclick="if(event.target===this)closeOverlay('drawer-engajados-preview')">
+  <div class="drawer drawer-720">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Pré-visualização — Engajados</div><div class="drawer-subtitle" id="eg-preview-subtitle">Contatos que correspondem ao critério atual</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-engajados-preview')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Contato</th><th>Temperatura</th><th>Score</th><th>Última interação</th></tr></thead>
+          <tbody id="eg-preview-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary btn-sm" onclick="scOpen('sg2')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Enviar e-mail para este segmento
+      </button>
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-engajados-preview')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Campaign Wizard ── -->
+<div id="drawer-campaign-wizard" class="overlay" onclick="if(event.target===this)closeOverlay('drawer-campaign-wizard')">
+  <div class="drawer drawer-720">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Novo Envio para Segmento</div><div class="drawer-subtitle" id="sc-subtitle">Configure a campanha</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-campaign-wizard')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="padding:0 24px;border-bottom:1px solid var(--border-light)">
+      <div class="stepper">
+        <div class="step-item active" id="sc-step1-item"><div class="step-circle">1</div><div class="step-label">Campanha</div></div>
+        <div class="step-connector"></div>
+        <div class="step-item" id="sc-step2-item"><div class="step-circle">2</div><div class="step-label">Conteúdo</div></div>
+        <div class="step-connector"></div>
+        <div class="step-item" id="sc-step3-item"><div class="step-circle">3</div><div class="step-label">Envio</div></div>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <!-- SC Step 1 -->
+      <div id="sc-step1">
+        <div class="form-group">
+          <label class="form-label">Nome da campanha <span class="req">*</span></label>
+          <input type="text" class="form-input" id="sc-name" placeholder="Ex: Oferta especial para engajados">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Assunto do e-mail <span class="req">*</span></label>
+          <input type="text" class="form-input" id="sc-subject" placeholder="Ex: Oferta exclusiva para você, {nome}!">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Destinatários</label>
+          <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;font-size:13px" id="sc-recipients-info">—</div>
+        </div>
+      </div>
+      <!-- SC Step 2 -->
+      <div id="sc-step2" style="display:none">
+        <div class="section-title" style="margin-bottom:12px">Selecionar template</div>
+        <div class="template-pick-grid">
+          <div class="template-pick-card selected" onclick="document.querySelectorAll('.template-pick-card').forEach(c=>c.classList.remove('selected'));this.classList.add('selected')">
+            <div style="height:80px;background:linear-gradient(135deg,var(--auto-light),var(--auto));border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+              <span style="font-size:11px;color:var(--auto);font-weight:700">Sem imagem</span>
+            </div>
+            <div class="template-pick-name">Texto simples</div>
+          </div>
+          <div class="template-pick-card" onclick="showToast('Editor de templates em breve.',{type:'info'})">
+            <div style="height:80px;background:var(--surface-2);border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <div class="template-pick-name">Editor visual <span style="font-size:10px;color:var(--text-3)">(em breve)</span></div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:16px">
+          <label class="form-label">Conteúdo do e-mail</label>
+          <textarea class="form-textarea" rows="6" placeholder="Digite o conteúdo do e-mail aqui. Você pode usar {nome} para personalizar."></textarea>
+        </div>
+      </div>
+      <!-- SC Step 3 -->
+      <div id="sc-step3" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Quando enviar</label>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;background:var(--surface-2);border-radius:8px">
+              <input type="radio" name="sc-when" value="now" checked>
+              <div><div style="font-size:13px;font-weight:600">Enviar agora</div><div style="font-size:11px;color:var(--text-3);margin-top:1px">O envio será iniciado imediatamente após confirmação</div></div>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;background:var(--surface-2);border-radius:8px">
+              <input type="radio" name="sc-when" value="sched">
+              <div><div style="font-size:13px;font-weight:600">Agendar</div><div style="font-size:11px;color:var(--text-3);margin-top:1px">Escolha uma data e horário específicos</div></div>
+            </label>
+          </div>
+        </div>
+        <div class="form-group" id="sc-sched-fields" style="display:none">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input"></div>
+            <div class="form-group"><label class="form-label">Horário</label><input type="time" class="form-input" value="09:00"></div>
+          </div>
+        </div>
+        <div style="background:var(--auto-light);border:1px solid var(--auto);border-radius:8px;padding:14px;margin-top:8px">
+          <div style="font-size:13px;color:var(--auto);font-weight:600">Revisão do envio</div>
+          <div style="font-size:12px;color:var(--auto);margin-top:6px;line-height:1.8" id="sc-review">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" id="sc-back-btn" style="display:none" onclick="scBack()">Voltar</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-campaign-wizard')">Cancelar</button>
+      <button class="btn btn-auto" id="sc-next-btn" onclick="scNext()">Próximo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Delete Contact -->
+<div id="modal-delete-contact" class="modal-overlay" onclick="if(event.target===this)closeOverlay('modal-delete-contact')">
+  <div class="modal-box">
+    <div class="drawer-header" style="padding:20px 22px 16px">
+      <div><div class="drawer-title" style="color:var(--error)">Excluir contato</div><div class="drawer-subtitle">Esta ação não poderá ser desfeita.</div></div>
+      <button class="drawer-close" onclick="closeOverlay('modal-delete-contact')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div style="display:flex;gap:14px;align-items:center;padding:14px;background:var(--error-light);border-radius:8px;border:1px solid var(--error-mid)">
+        <div class="avatar" style="background:var(--error-mid);color:var(--error)" id="del-contact-avatar">?</div>
+        <div><div style="font-weight:600" id="del-contact-name">—</div><div style="font-size:12px;color:var(--error)" id="del-contact-email">—</div></div>
+      </div>
+      <p style="font-size:13px;color:var(--text-2);margin-top:12px;line-height:1.6">O contato será permanentemente removido da lista, incluindo todo o histórico de eventos e interações.</p>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('modal-delete-contact')">Cancelar</button>
+      <button class="btn btn-danger" onclick="doDeleteContact()">Excluir definitivamente</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Segment -->
+<div id="modal-delete-segment" class="modal-overlay" onclick="if(event.target===this)closeOverlay('modal-delete-segment')">
+  <div class="modal-box">
+    <div class="drawer-header" style="padding:20px 22px 16px">
+      <div><div class="drawer-title" style="color:var(--error)">Excluir segmentação</div><div class="drawer-subtitle">Esta ação não poderá ser desfeita.</div></div>
+      <button class="drawer-close" onclick="closeOverlay('modal-delete-segment')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <p style="font-size:13px;color:var(--text-2);line-height:1.6">A segmentação <strong id="del-seg-name">—</strong> será excluída permanentemente. Os contatos <strong>não</strong> serão afetados.</p>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('modal-delete-segment')">Cancelar</button>
+      <button class="btn btn-danger" onclick="sgDoDelete()">Excluir segmentação</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Tag -->
+<div id="modal-bulk-tag" class="modal-overlay" onclick="if(event.target===this)closeOverlay('modal-bulk-tag')">
+  <div class="modal-box">
+    <div class="drawer-header" style="padding:20px 22px 16px">
+      <div><div class="drawer-title" id="bulk-tag-title">Adicionar marcador</div><div class="drawer-subtitle" id="bulk-tag-subtitle">—</div></div>
+      <button class="drawer-close" onclick="closeOverlay('modal-bulk-tag')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group">
+        <label class="form-label">Selecione o marcador</label>
+        <div id="bulk-tags-grid" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('modal-bulk-tag')">Cancelar</button>
+      <button class="btn btn-auto" id="bulk-tag-confirm-btn" onclick="saveBulkTag()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Save Format -->
+<div id="modal-save-format" class="modal-overlay" onclick="if(event.target===this)closeOverlay('modal-save-format')">
+  <div class="modal-box" style="max-width:400px">
+    <div class="drawer-header" style="padding:20px 22px 16px">
+      <div><div class="drawer-title">Salvar formato</div><div class="drawer-subtitle">Dê um nome para este mapeamento de colunas</div></div>
+      <button class="drawer-close" onclick="closeOverlay('modal-save-format')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group">
+        <label class="form-label">Nome do formato</label>
+        <input type="text" class="form-input" id="fmt-name" placeholder="Ex: Padrão CRM">
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" onclick="closeOverlay('modal-save-format')">Cancelar</button>
+      <button class="btn btn-auto" onclick="iwSaveFormat()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script src="js/contacts.js?v=2"></script>
+</body>
+</html>

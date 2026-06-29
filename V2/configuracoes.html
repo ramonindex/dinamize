@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Configurações</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    .cfg-layout { max-width:740px; }
+    .cfg-section { margin-bottom:28px; }
+    .cfg-section-title { font-size:13px; font-weight:700; color:var(--text-1); margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .cfg-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .cfg-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+    /* Domain cards */
+    .domain-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
+    .domain-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .domain-icon.ok   { background:rgba(14,166,121,.1); color:var(--fluxos); }
+    .domain-icon.warn { background:rgba(245,158,11,.12); color:#d97706; }
+    .domain-icon.err  { background:rgba(234,84,86,.1); color:var(--brand); }
+    .domain-name { font-weight:600; font-size:13px; color:var(--text-1); }
+    .domain-checks { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+    .dns-chip { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
+    .dns-chip.ok   { background:rgba(14,166,121,.1); color:var(--fluxos); }
+    .dns-chip.warn { background:rgba(245,158,11,.1); color:#d97706; }
+    .dns-chip.err  { background:rgba(234,84,86,.1); color:var(--brand); }
+    /* Toggle row */
+    .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+    .toggle-row:last-child { border-bottom:none; }
+    .toggle-label { font-size:13px; font-weight:500; color:var(--text-1); }
+    .toggle-sub { font-size:12px; color:var(--text-3); margin-top:2px; }
+    /* Toggle switch */
+    .toggle-switch { position:relative; width:40px; height:22px; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-track { position:absolute; inset:0; background:var(--border); border-radius:11px; cursor:pointer; transition:.2s; }
+    .toggle-track:before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.2s; }
+    .toggle-switch input:checked + .toggle-track { background:var(--brand); }
+    .toggle-switch input:checked + .toggle-track:before { transform:translateX(18px); }
+    /* Integrations */
+    .integration-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .integration-logo { width:36px; height:36px; border-radius:8px; background:var(--bg-subtle); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+    .integration-name { font-weight:600; font-size:13px; color:var(--text-1); }
+    .integration-desc { font-size:12px; color:var(--text-3); }
+    /* Code block */
+    .code-block { background:#1a1a2e; color:#a8dadc; font-family:monospace; font-size:12px; line-height:1.6; border-radius:var(--radius-md); padding:14px 16px; overflow-x:auto; position:relative; }
+    .code-copy-btn { position:absolute; top:8px; right:8px; background:rgba(255,255,255,.1); border:none; color:#a8dadc; font-size:11px; padding:3px 8px; border-radius:4px; cursor:pointer; }
+    .code-copy-btn:hover { background:rgba(255,255,255,.2); }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><div class="sidebar-logo-text">Dinamize</div><div class="sidebar-logo-sub">Automation</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="nav-item-label">Página inicial</span></a>
+      <button class="nav-item" data-sub="nav-contatos"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span class="nav-item-label">Contatos</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-contatos"><li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Listas</a></li></ul>
+      <button class="nav-item" data-sub="nav-canais"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><span class="nav-item-label">Canais</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-canais"><li><a class="nav-sub-item" href="canais.html"><span class="nav-sub-dot"></span>E-mail</a></li></ul>
+      <a class="nav-item" href="fluxos.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span><span class="nav-item-label">Fluxos</span></a>
+      <button class="nav-item" data-sub="nav-relatorios"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-item-label">Relatórios</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-relatorios"><li><a class="nav-sub-item" href="relatorios.html"><span class="nav-sub-dot"></span>E-mail</a></li><li><a class="nav-sub-item" href="relatorios.html?r=consolidado"><span class="nav-sub-dot"></span>Consolidado</a></li></ul>
+      <a class="nav-item" href="ia.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span><span class="nav-item-label">IA</span><span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span></a>
+      <a class="nav-item active" href="configuracoes.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span><span class="nav-item-label">Configurações</span></a>
+      <a class="nav-item" href="ajuda.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nav-item-label">Ajuda</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-widget"><div class="avatar avatar-sm">RO</div><div class="user-info"><div class="user-name">Ramon Oliveira</div><div class="user-role">Index Digital</div></div></div>
+    </div>
+  </aside>
+
+  <!-- ══ APP BODY ══ -->
+  <div class="app-body" id="cfg-app">
+    <header class="topbar">
+      <div class="topbar-breadcrumb"><a href="index.html">Início</a><span class="sep">›</span><span class="current">Configurações</span></div>
+      <div class="topbar-search"><svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Buscar…"><span class="topbar-search-shortcut">⌘K</span></div>
+      <div class="topbar-actions"><button class="topbar-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button><div class="avatar avatar-sm">RO</div></div>
+    </header>
+
+    <div class="sub-nav" id="cfg-tabs" style="overflow-x:auto">
+      <a class="sub-nav-item active" data-tab="dominios" href="#" onclick="switchCfg('dominios');return false;">Domínios</a>
+      <a class="sub-nav-item" data-tab="conteudo" href="#" onclick="switchCfg('conteudo');return false;">Conteúdo</a>
+      <a class="sub-nav-item" data-tab="envio" href="#" onclick="switchCfg('envio');return false;">Envio</a>
+      <a class="sub-nav-item" data-tab="formularios" href="#" onclick="switchCfg('formularios');return false;">Formulários</a>
+      <a class="sub-nav-item" data-tab="integracao" href="#" onclick="switchCfg('integracao');return false;">Integração</a>
+      <a class="sub-nav-item" data-tab="spf" href="#" onclick="switchCfg('spf');return false;">SPF/CNAME</a>
+      <a class="sub-nav-item" data-tab="dkim" href="#" onclick="switchCfg('dkim');return false;">DKIM</a>
+      <a class="sub-nav-item" data-tab="landingpage" href="#" onclick="switchCfg('landingpage');return false;">Landing Page</a>
+    </div>
+
+    <div id="tab-dominios" class="view active">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">Domínios de Envio</h1><p class="page-desc">Gerencie os domínios autenticados para envio de e-mails</p></div><button class="btn btn-primary btn-sm" onclick="showToast('Wizard de domínio em breve.',{type:'info'})">+ Adicionar domínio</button></div>
+        <div class="domain-card"><div class="domain-icon ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9"/></svg></div><div style="flex:1"><div class="domain-name">dinamize.com.br</div><div class="domain-checks"><span class="dns-chip ok">✓ SPF</span><span class="dns-chip ok">✓ DKIM</span><span class="dns-chip ok">✓ CNAME</span><span class="dns-chip ok">✓ Verificado</span></div></div><div style="display:flex;gap:8px;align-items:center"><span class="badge badge-success">Ativo</span><button class="btn btn-ghost btn-sm">Detalhes</button></div></div>
+        <div class="domain-card"><div class="domain-icon warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9"/></svg></div><div style="flex:1"><div class="domain-name">email.indexdigital.com.br</div><div class="domain-checks"><span class="dns-chip ok">✓ SPF</span><span class="dns-chip warn">⚠ DKIM</span><span class="dns-chip ok">✓ CNAME</span></div></div><div style="display:flex;gap:8px;align-items:center"><span class="badge badge-warning">Pendente</span><button class="btn btn-primary btn-sm">Corrigir</button></div></div>
+        <div class="domain-card"><div class="domain-icon err"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9"/></svg></div><div style="flex:1"><div class="domain-name">mailing.exemplo.com</div><div class="domain-checks"><span class="dns-chip err">✗ SPF</span><span class="dns-chip err">✗ DKIM</span><span class="dns-chip err">✗ CNAME</span></div></div><div style="display:flex;gap:8px;align-items:center"><span class="badge badge-error">Inativo</span><button class="btn btn-ghost btn-sm">Configurar</button><button class="btn btn-ghost btn-sm" style="color:var(--error)" onclick="showToast('Domínio removido.',{type:'success'})">Remover</button></div></div>
+      </div></div>
+    </div>
+    <div id="tab-conteudo" class="view">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">Conteúdo</h1><p class="page-desc">Informações padrão usadas em todos os e-mails enviados</p></div></div>
+        <div class="cfg-section"><div class="cfg-section-title">Endereço físico (obrigatório por lei CAN-SPAM)</div>
+          <div class="cfg-row"><div class="form-group"><label class="form-label">Rua / Logradouro</label><input type="text" class="form-input" value="Rua das Oliveiras, 400 — Sala 12"></div><div class="form-group"><label class="form-label">Cidade</label><input type="text" class="form-input" value="São Paulo"></div></div>
+          <div class="cfg-row-3"><div class="form-group"><label class="form-label">Estado</label><select class="form-select"><option>SP</option><option>RJ</option><option>MG</option><option>RS</option></select></div><div class="form-group"><label class="form-label">CEP</label><input type="text" class="form-input" value="01310-200"></div><div class="form-group"><label class="form-label">País</label><input type="text" class="form-input" value="Brasil"></div></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Rodapé padrão</div>
+          <div class="form-group"><label class="form-label">Texto do rodapé</label><textarea class="form-input" rows="4">Você está recebendo este e-mail porque se cadastrou em {{lista}}. Para cancelar o recebimento, clique em {{link_descadastro}}.</textarea></div>
+          <div class="form-group"><label class="form-label">Nome do remetente padrão</label><input type="text" class="form-input" value="Ramon Oliveira · Index Digital"></div>
+          <div class="form-group"><label class="form-label">E-mail de resposta padrão (Reply-To)</label><input type="email" class="form-input" value="contato@indexdigital.com.br"></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Link de descadastro</div>
+          <div class="form-group"><label class="form-label">Texto do link</label><input type="text" class="form-input" value="Cancelar recebimento"></div>
+          <div class="form-group"><label class="form-label">Página de confirmação após descadastro</label><input type="url" class="form-input" value="https://seudominio.com.br/descadastro"></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary" onclick="showToast('Configurações salvas!',{type:'success'})">Salvar alterações</button></div>
+      </div></div>
+    </div>
+    <div id="tab-envio" class="view">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">Configurações de Envio</h1><p class="page-desc">Controle velocidade, horários e comportamento dos envios</p></div></div>
+        <div class="cfg-section"><div class="cfg-section-title">Velocidade de envio</div>
+          <div class="form-group"><label class="form-label">Limite de envios por hora</label><select class="form-select" style="max-width:280px"><option>Sem limite (máximo possível)</option><option>5.000 e-mails/hora</option><option selected>10.000 e-mails/hora</option><option>20.000 e-mails/hora</option><option>50.000 e-mails/hora</option></select><p class="form-hint">Envios mais lentos reduzem a chance de spam em provedores sensíveis</p></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Janelas de silêncio</div>
+          <p class="t-sm c-3" style="margin-bottom:14px">Nenhum envio será disparado fora do horário permitido. Envios agendados em horários bloqueados serão postergados automaticamente.</p>
+          <div class="toggle-row"><div><div class="toggle-label">Bloquear envios à noite</div><div class="toggle-sub">Suspender envios entre 22:00 e 07:00</div></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-track"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Bloquear aos finais de semana</div><div class="toggle-sub">Não disparar envios aos sábados e domingos</div></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-track"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Respeitar feriados nacionais</div><div class="toggle-sub">Pausar envios em feriados do calendário BR</div></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-track"></span></label></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Reputação</div>
+          <div class="toggle-row"><div><div class="toggle-label">Remoção automática de hard bounces</div><div class="toggle-sub">Descadastra automaticamente e-mails com bounce duro</div></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-track"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Proteção contra spam traps</div><div class="toggle-sub">Remove endereços suspeitos detectados automaticamente</div></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-track"></span></label></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary" onclick="showToast('Configurações salvas!',{type:'success'})">Salvar alterações</button></div>
+      </div></div>
+    </div>
+    <div id="tab-formularios" class="view">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">Formulários</h1><p class="page-desc">Aparência e campos padrão dos formulários de captura</p></div></div>
+        <div class="cfg-section"><div class="cfg-section-title">Campos padrão</div>
+          <div class="toggle-row"><div><div class="toggle-label">Nome</div><div class="toggle-sub">Campo obrigatório por padrão</div></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-track"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Sobrenome</div></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-track"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Telefone / WhatsApp</div></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-track"></span></label></div>
+          <div class="toggle-row"><div><div class="toggle-label">Data de nascimento</div></div><label class="toggle-switch"><input type="checkbox"><span class="toggle-track"></span></label></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Aparência</div>
+          <div class="cfg-row">
+            <div class="form-group"><label class="form-label">Cor do botão</label><div style="display:flex;gap:8px;align-items:center"><input type="color" class="form-input" style="width:50px;height:36px;padding:2px" value="#EA5456"><input type="text" class="form-input" value="#EA5456"></div></div>
+            <div class="form-group"><label class="form-label">Texto do botão</label><input type="text" class="form-input" value="Quero me cadastrar"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Mensagem de sucesso</label><input type="text" class="form-input" value="Obrigado! Verifique sua caixa de entrada para confirmar o cadastro."></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Double opt-in</div>
+          <div class="toggle-row"><div><div class="toggle-label">Exigir confirmação por e-mail</div><div class="toggle-sub">Envia e-mail de confirmação antes de adicionar o contato</div></div><label class="toggle-switch"><input type="checkbox" checked><span class="toggle-track"></span></label></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary" onclick="showToast('Configurações salvas!',{type:'success'})">Salvar alterações</button></div>
+      </div></div>
+    </div>
+    <div id="tab-integracao" class="view">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">Integração</h1><p class="page-desc">Tokens de API e sistemas integrados</p></div></div>
+        <div class="cfg-section"><div class="cfg-section-title">Token de API</div>
+          <div class="form-group"><label class="form-label">Sua chave de API</label><div style="display:flex;gap:8px"><input type="text" class="form-input" value="dz_live_a8f3c92e1b4d7f06e5a2c8b9d1e3f7a2" readonly style="font-family:monospace;font-size:12px"><button class="btn btn-ghost btn-sm" onclick="showToast('Token copiado!',{type:'success'})">Copiar</button><button class="btn btn-ghost btn-sm" style="color:var(--error)" onclick="showToast('Novo token gerado. O anterior foi revogado.',{type:'warning'})">Revogar</button></div><p class="form-hint">Use este token para autenticar requisições à API REST do Dinamize</p></div>
+          <a href="#" class="t-sm" style="color:var(--brand)" onclick="showToast('Documentação disponível em docs.dinamize.com',{type:'info'});return false;">Ver documentação da API →</a>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Integrações ativas</div>
+          <div class="integration-card"><div class="integration-logo">🛒</div><div style="flex:1"><div class="integration-name">WooCommerce</div><div class="integration-desc">Sincronização de clientes e pedidos</div></div><span class="badge badge-success">Conectado</span><button class="btn btn-ghost btn-sm">Configurar</button></div>
+          <div class="integration-card"><div class="integration-logo">📊</div><div style="flex:1"><div class="integration-name">Google Analytics 4</div><div class="integration-desc">Rastreamento de conversões em landing pages</div></div><span class="badge badge-success">Conectado</span><button class="btn btn-ghost btn-sm">Configurar</button></div>
+          <div class="integration-card"><div class="integration-logo">💬</div><div style="flex:1"><div class="integration-name">WhatsApp Business API</div><div class="integration-desc">Envio de mensagens via número oficial</div></div><span class="badge badge-success">Conectado</span><button class="btn btn-ghost btn-sm">Configurar</button></div>
+          <div class="integration-card"><div class="integration-logo">🔗</div><div style="flex:1"><div class="integration-name">Zapier</div><div class="integration-desc">Conecte o Dinamize com 5000+ aplicativos</div></div><span class="badge badge-neutral">Desconectado</span><button class="btn btn-primary btn-sm">Conectar</button></div>
+        </div>
+      </div></div>
+    </div>
+    <div id="tab-spf" class="view">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">SPF / CNAME</h1><p class="page-desc">Configure os registros DNS para autenticar seus envios</p></div></div>
+        <div class="cfg-section"><div class="cfg-section-title">Registro SPF</div>
+          <p class="t-sm c-3" style="margin-bottom:12px">Adicione o registro TXT abaixo no DNS do seu domínio para autorizar o Dinamize a enviar e-mails em seu nome.</p>
+          <div class="form-group"><label class="form-label">Tipo</label><input type="text" class="form-input" value="TXT" readonly style="max-width:80px"></div>
+          <div class="form-group"><label class="form-label">Nome / Host</label><input type="text" class="form-input" value="@" readonly></div>
+          <div class="form-group"><label class="form-label">Valor</label><div class="code-block">v=spf1 include:sendgrid.net include:spf.dinamize.com ~all<button class="code-copy-btn" onclick="showToast('Copiado!',{type:'success'})">Copiar</button></div></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Registro CNAME (tracking)</div>
+          <p class="t-sm c-3" style="margin-bottom:12px">Necessário para rastreamento de cliques e aberturas com o seu domínio personalizado.</p>
+          <table class="data-table"><thead><tr><th>Tipo</th><th>Nome</th><th>Valor</th></tr></thead><tbody>
+            <tr><td>CNAME</td><td>email.dinamize.com.br</td><td>sendgrid.net</td></tr>
+            <tr><td>CNAME</td><td>links.dinamize.com.br</td><td>sendgrid.net</td></tr>
+          </tbody></table>
+        </div>
+        <div><button class="btn btn-primary" onclick="showToast('Verificando DNS… Pode levar até 48h.',{type:'info'})">Verificar configuração</button></div>
+      </div></div>
+    </div>
+    <div id="tab-dkim" class="view">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">DKIM</h1><p class="page-desc">Chave de assinatura digital para autenticação de e-mails</p></div></div>
+        <div class="cfg-section"><div class="cfg-section-title">Chave DKIM — dinamize.com.br</div>
+          <p class="t-sm c-3" style="margin-bottom:12px">Adicione o registro TXT abaixo no DNS para assinar digitalmente os e-mails enviados pelo Dinamize.</p>
+          <div class="form-group"><label class="form-label">Tipo</label><input type="text" class="form-input" value="TXT" readonly style="max-width:80px"></div>
+          <div class="form-group"><label class="form-label">Nome / Host</label><div class="code-block">dkim._domainkey.dinamize.com.br<button class="code-copy-btn" onclick="showToast('Copiado!',{type:'success'})">Copiar</button></div></div>
+          <div class="form-group"><label class="form-label">Valor (chave pública)</label><div class="code-block" style="word-break:break-all;line-height:1.5">v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3dz8p2v7NfJxKmLqT9vH2Yw4R1uB5eNsXoP3kVmCaF8qJdT2Yg6hPnOiWrEbZ0sMxQlKtAu9vY3cH7FkJN4w8L5mRdPxBqOs1ZnUe6TAzE7yG2NmVkHsJpBwFqC4xKdR0TlM3Q9YhIaEv5WnPrGjK2LdBzX1oCuT8VsMwIDAQAB<button class="code-copy-btn" onclick="showToast('Copiado!',{type:'success'})">Copiar</button></div></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Status da verificação</div>
+          <div class="domain-card" style="background:rgba(14,166,121,.04)"><div class="domain-icon ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="domain-name">DKIM verificado com sucesso</div><div class="t-sm c-3" style="margin-top:4px">Última verificação: 15/06/2026 às 14:22</div></div></div>
+        </div>
+        <div><button class="btn btn-ghost" onclick="showToast('Verificando DKIM…',{type:'info'})">Re-verificar</button></div>
+      </div></div>
+    </div>
+    <div id="tab-landingpage" class="view">
+      <div class="page-content"><div class="cfg-layout">
+        <div class="page-header"><div><h1 class="page-title">Landing Page — Domínio Personalizado</h1><p class="page-desc">Configure um domínio próprio para suas landing pages</p></div></div>
+        <div class="cfg-section"><div class="cfg-section-title">Domínio atual</div>
+          <div class="domain-card" style="background:rgba(14,166,121,.04)"><div class="domain-icon ok"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="domain-name">lp.indexdigital.com.br</div><div class="t-sm c-3" style="margin-top:4px">SSL ativo · Certificado válido até 01/06/2027</div></div><button class="btn btn-ghost btn-sm">Alterar</button></div>
+        </div>
+        <div class="cfg-section"><div class="cfg-section-title">Adicionar novo domínio</div>
+          <p class="t-sm c-3" style="margin-bottom:12px">Aponte um CNAME do seu domínio para o endereço abaixo e clique em verificar.</p>
+          <div class="form-group"><label class="form-label">Seu subdomínio personalizado</label><input type="text" class="form-input" placeholder="lp.seudominio.com.br"></div>
+          <div class="form-group"><label class="form-label">Aponte para (CNAME)</label><div class="code-block">pages.dinamize.com<button class="code-copy-btn" onclick="showToast('Copiado!',{type:'success'})">Copiar</button></div></div>
+          <button class="btn btn-primary" onclick="showToast('Verificando domínio… Pode levar até 48h.',{type:'info'})">Verificar e ativar</button>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script>
+function switchCfg(id) {
+  document.querySelectorAll('[id^="tab-"]').forEach(v => v.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('[data-tab]').forEach(a => a.classList.toggle('active', a.dataset.tab === id));
+}
+document.addEventListener('DOMContentLoaded', () => { initSidebarNav(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-logo-text">Dinamize</div>
+        <div class="sidebar-logo-sub">Automation</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" href="index.html">
+        <span class="nav-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </span>
+        <span class="nav-item-label">Página inicial</span>
+      </a>
+
+      <button class="nav-item" data-sub="nav-contatos">
+        <span class="nav-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span class="nav-item-label">Contatos</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-contatos">
+        <li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Listas</a></li>
+        <li><a class="nav-sub-item" href="contatos.html#segmentacoes"><span class="nav-sub-dot"></span>Segmentações</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>Matriz RFM</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>Score</a></li>
+      </ul>
+
+      <button class="nav-item" data-sub="nav-canais">
+        <span class="nav-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </span>
+        <span class="nav-item-label">Canais</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-canais">
+        <li><a class="nav-sub-item" href="canais.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>SMS</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>WhatsApp</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>Landing Pages</a></li>
+        <li><a class="nav-sub-item" href="#"><span class="nav-sub-dot"></span>Pop-ups</a></li>
+      </ul>
+
+      <a class="nav-item" href="fluxos.html">
+        <span class="nav-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </span>
+        <span class="nav-item-label">Fluxos</span>
+      </a>
+
+      <button class="nav-item" data-sub="nav-relatorios">
+        <span class="nav-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </span>
+        <span class="nav-item-label">Relatórios</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-relatorios">
+        <li><a class="nav-sub-item" href="relatorios.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consolidado"><span class="nav-sub-dot"></span>Consolidado</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consumo"><span class="nav-sub-dot"></span>Consumo</a></li>
+      </ul>
+
+      <a class="nav-item" href="ia.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span>
+        <span class="nav-item-label">IA</span>
+        <span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span>
+      </a>
+      <a class="nav-item" href="configuracoes.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span>
+        <span class="nav-item-label">Configurações</span>
+      </a>
+      <a class="nav-item" href="ajuda.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+        <span class="nav-item-label">Ajuda</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-widget" onclick="toggleDropdown(this)">
+        <div class="avatar avatar-sm">RO</div>
+        <div class="user-info">
+          <div class="user-name">Ramon Oliveira</div>
+          <div class="user-role">Index Digital</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-4)" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── App body ── -->
+  <div class="app-body">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-breadcrumb">
+        <span class="current">Página inicial</span>
+      </div>
+
+      <div class="topbar-search">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Buscar contatos, envios, fluxos…">
+        <span class="topbar-search-shortcut">⌘K</span>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="topbar-icon-btn" data-tip="Notificações">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <button class="topbar-icon-btn" data-tip="Ajuda">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
+        <div class="avatar avatar-sm" style="cursor:pointer">RO</div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Bom dia, Ramon 👋</h1>
+          <p class="page-subtitle">Aqui está o resumo de performance dos últimos 30 dias.</p>
+        </div>
+        <div class="page-actions">
+          <a href="canais.html" class="btn btn-auto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Envio
+          </a>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="content-grid-4" style="margin-bottom:20px">
+        <div class="kpi-card">
+          <div class="kpi-label">Envios no período</div>
+          <div class="kpi-value" id="kpi-sends">—</div>
+          <div class="kpi-trend trend-neutral">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            Últimos 30 dias
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Entregues</div>
+          <div class="kpi-value" id="kpi-delivered">—</div>
+          <div class="kpi-trend trend-up">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+            Taxa 98,3%
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Taxa de Abertura</div>
+          <div class="kpi-value" id="kpi-open-rate">—</div>
+          <div id="kpi-open-trend" class="kpi-trend">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Taxa de Clique</div>
+          <div class="kpi-value" id="kpi-click-rate">—</div>
+          <div id="kpi-click-trend" class="kpi-trend">—</div>
+        </div>
+      </div>
+
+      <!-- Charts + right column -->
+      <div class="content-grid-2-1" style="margin-bottom:20px; align-items:stretch">
+
+        <!-- Performance chart card -->
+        <div class="card" style="display:flex;flex-direction:column">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Performance — Aberturas &amp; Cliques</div>
+              <div class="card-subtitle">Últimos 18 dias</div>
+            </div>
+            <div class="flex gap-2">
+              <span class="flex items-center gap-2 t-xs c-3">
+                <span style="width:10px;height:3px;background:var(--auto);border-radius:2px;display:inline-block"></span>Abertura
+              </span>
+              <span class="flex items-center gap-2 t-xs c-3">
+                <span style="width:10px;height:3px;background:var(--brand);border-radius:2px;display:inline-block"></span>Clique
+              </span>
+            </div>
+          </div>
+          <div class="card-body" style="flex:1;padding-bottom:8px;min-height:180px">
+            <canvas id="perf-chart" style="width:100%;height:100%"></canvas>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="flex flex-col gap-4">
+          <!-- Saúde das listas -->
+          <div class="card card-padded">
+            <div class="section-header" style="margin-bottom:12px">
+              <span class="card-title">Suas listas</span>
+              <a href="contatos.html" class="btn btn-ghost btn-sm">Ver todas</a>
+            </div>
+            <div id="list-health-rows"></div>
+          </div>
+
+          <!-- Descadastros -->
+          <div class="card card-padded">
+            <div class="kpi-label">Descadastros</div>
+            <div class="kpi-value" id="kpi-unsubs" style="font-size:22px">—</div>
+            <div class="progress-bar mt-2">
+              <div class="progress-fill success" style="width:0.2%"></div>
+            </div>
+            <div class="t-xs c-3 mt-2">0,2% da base — dentro do esperado</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent sends -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Envios recentes</div>
+            <div class="card-subtitle">Últimos 5 envios realizados</div>
+          </div>
+          <a href="canais.html" class="btn btn-secondary btn-sm">Ver todos</a>
+        </div>
+        <div class="table-wrap" style="border:none; border-radius:0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nome do envio</th>
+                <th>Status</th>
+                <th>Enviados</th>
+                <th>Abertura</th>
+                <th>Cliques</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="recent-sends-tbody">
+              <tr><td colspan="6" class="t-sm c-3" style="text-align:center;padding:24px">Carregando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bottom row: Upcoming + Quick actions -->
+      <div class="content-grid-2" style="align-items:start">
+
+        <!-- Agendados -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Próximos agendamentos</div>
+          </div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:12px">
+            <div class="flex items-center gap-3">
+              <div style="width:38px;height:38px;border-radius:var(--radius);background:var(--auto-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--auto)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="cell-primary truncate">Campanha Julho — Prévia Exclusiva</div>
+                <div class="cell-secondary">85.420 contatos · 25/06 às 09:00</div>
+              </div>
+              <span class="badge badge-sched">Agendado</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div style="width:38px;height:38px;border-radius:var(--radius);background:var(--auto-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--auto)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="cell-primary truncate">Re-engajamento — Inativos 90 dias</div>
+                <div class="cell-secondary">9.210 contatos · 20/06 às 10:00</div>
+              </div>
+              <span class="badge badge-sched">Agendado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ações rápidas -->
+        <div class="card card-padded">
+          <div class="card-title" style="margin-bottom:14px">Ações rápidas</div>
+          <div class="flex flex-col gap-2">
+            <a href="canais.html" class="flex items-center gap-12 btn btn-secondary" style="justify-content:flex-start;height:auto;padding:12px 14px">
+              <span style="color:var(--auto)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+              <span>Criar novo envio de e-mail</span>
+            </a>
+            <a href="contatos.html" class="flex items-center gap-12 btn btn-secondary" style="justify-content:flex-start;height:auto;padding:12px 14px">
+              <span style="color:var(--auto)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></span>
+              <span>Importar contatos</span>
+            </a>
+            <a href="fluxos.html" class="flex items-center gap-12 btn btn-secondary" style="justify-content:flex-start;height:auto;padding:12px 14px">
+              <span style="color:var(--fluxos)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span>
+              <span>Criar fluxo de automação</span>
+            </a>
+            <a href="#" class="flex items-center gap-12 btn btn-secondary" style="justify-content:flex-start;height:auto;padding:12px 14px">
+              <span style="color:var(--ia)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span>
+              <span>Gerar calendário com IA</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

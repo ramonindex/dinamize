@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Selecionar Produto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+
+<div id="screen-select" class="screen active">
+  <div style="display:flex;flex-direction:column;width:100%">
+    <!-- Topbar -->
+    <div class="select-top" style="background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;flex-shrink:0;height:60px">
+      <div style="display:flex;align-items:center">
+        <!-- Dinamize Logo -->
+        <img src="../images/mp5krbgm-Dinamize-Logo.svg" alt="Dinamize Logo" style="width:120px;height:31px;cursor:pointer" onclick="window.location.href='login.html'">
+      </div>
+      
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="text-align:right">
+          <div id="user-name-display" style="font-size:13px;font-weight:600;color:var(--text-1)">João Mendes</div>
+          <div id="user-email-display" style="font-size:11px;color:var(--text-3)">joao.mendes@empresa.com.br</div>
+        </div>
+        <div id="user-avatar-display" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#EA5456,#F47779);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff">JM</div>
+        <button onclick="logout()" style="width:32px;height:32px;border-radius:7px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-3)" title="Sair">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="select-body" style="overflow-y:auto">
+      <div class="select-inner">
+        <div class="product-select-stage">
+          <div class="product-select-kicker">→ Produtos disponíveis</div>
+          <h1 class="product-select-title">Qual produto você vai usar hoje?</h1>
+          <p class="product-select-copy">Você tem acesso a múltiplos produtos da Suite Dinamize. Selecione o ambiente que deseja acessar.</p>
+
+          <div class="product-choice-grid">
+            <div class="product-choice atendimento" onclick="window.location.href='dashboard-canal.html'">
+              <div class="product-choice-logo"><img src="../images/CRM_ATENDIMENTO.svg" alt="CRM Atendimento"></div>
+              <div class="n">CRM Atendimento</div>
+              <div class="d">Gestão de atendimento e relacionamento com o cliente.</div>
+              <button class="btn btn-primary btn-full" type="button" style="pointer-events:none">Acessar →</button>
+              <div class="last-access">Último acesso: hoje, 09:14</div>
+            </div>
+
+            <div class="product-choice auto" onclick="window.location.href='dashboard-auto.html'">
+              <div class="product-choice-logo"><img src="../images/CRM_AUTOMACAO.svg" alt="CRM Automação"></div>
+              <div class="n">CRM Automação</div>
+              <div class="d">Funis automatizados e jornadas multicanal inteligentes.</div>
+              <button class="btn btn-primary btn-full" type="button" style="pointer-events:none">Acessar →</button>
+              <div class="last-access">Último acesso: hoje, 09:14</div>
+            </div>
+
+            <div class="product-choice vendas" onclick="window.location.href='dashboard-auto.html'">
+              <div class="product-choice-logo"><img src="../images/CRM_VENDAS.svg" alt="CRM Vendas"></div>
+              <div class="n">CRM Vendas</div>
+              <div class="d">Gestão de pipeline, oportunidades e funil de vendas.</div>
+              <button class="btn btn-primary btn-full" type="button" style="pointer-events:none">Acessar →</button>
+              <div class="last-access">Último acesso: hoje, 09:14</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Session display updates
+  const email = localStorage.getItem("userEmail") || "joao.mendes@empresa.com.br";
+  const name = localStorage.getItem("userName") || "João Mendes";
+  
+  document.getElementById("user-name-display").innerText = name;
+  document.getElementById("user-email-display").innerText = email;
+  
+  // Calculate Initials
+  const initials = name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+  document.getElementById("user-avatar-display").innerText = initials;
+
+  function logout() {
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    window.location.href = "login.html";
+  }
+</script>
+
+</body>
+</html>

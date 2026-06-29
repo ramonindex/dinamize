@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Relatórios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    .sub-nav { overflow-x:auto; }
+    .sub-nav::-webkit-scrollbar { height:2px; }
+    .sub-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    /* Report KPI grid */
+    .report-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
+    /* Send selector */
+    .send-selector { display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:20px; }
+    /* Chart */
+    .chart-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; }
+    .chart-title { font-weight:600; font-size:13px; color:var(--text-1); margin-bottom:4px; }
+    .chart-sub { font-size:12px; color:var(--text-3); margin-bottom:16px; }
+    /* Device bars */
+    .device-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .device-label { width:65px; font-size:12px; color:var(--text-2); }
+    .device-track { flex:1; height:6px; background:var(--bg-subtle); border-radius:3px; overflow:hidden; }
+    .device-fill { height:100%; border-radius:3px; }
+    .device-pct { width:38px; font-size:12px; font-weight:600; color:var(--text-1); text-align:right; }
+    /* Period filter */
+    .period-filter { display:flex; align-items:center; gap:10px; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:20px; }
+    /* Badge canal */
+    .badge-email { background:#FEF1F1; color:#EA5456; }
+    .badge-sms   { background:#E8F8F2; color:#0EA679; }
+    .badge-wa    { background:#E8F5E9; color:#25D366; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><div class="sidebar-logo-text">Dinamize</div><div class="sidebar-logo-sub">Automation</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="nav-item-label">Página inicial</span></a>
+      <button class="nav-item" data-sub="nav-contatos"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="nav-item-label">Contatos</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-contatos"><li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Listas</a></li></ul>
+      <button class="nav-item" data-sub="nav-canais"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><span class="nav-item-label">Canais</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub" id="nav-canais"><li><a class="nav-sub-item" href="canais.html"><span class="nav-sub-dot"></span>E-mail</a></li></ul>
+      <a class="nav-item" href="fluxos.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span><span class="nav-item-label">Fluxos</span></a>
+      <button class="nav-item active open" data-sub="nav-relatorios"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nav-item-label">Relatórios</span><svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+      <ul class="nav-sub open" id="nav-relatorios" style="display:flex">
+        <li><a class="nav-sub-item active" id="snav-email" href="#" onclick="switchReport('email');return false;"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" id="snav-sms" href="#" onclick="switchReport('sms');return false;"><span class="nav-sub-dot"></span>SMS</a></li>
+        <li><a class="nav-sub-item" id="snav-whatsapp" href="#" onclick="switchReport('whatsapp');return false;"><span class="nav-sub-dot"></span>WhatsApp</a></li>
+        <li><a class="nav-sub-item" id="snav-consolidado" href="#" onclick="switchReport('consolidado');return false;"><span class="nav-sub-dot"></span>Consolidado</a></li>
+        <li><a class="nav-sub-item" id="snav-consumo" href="#" onclick="switchReport('consumo');return false;"><span class="nav-sub-dot"></span>Consumo</a></li>
+        <li><a class="nav-sub-item" id="snav-landing-pages" href="#" onclick="switchReport('landing-pages');return false;"><span class="nav-sub-dot"></span>Landing Pages</a></li>
+        <li><a class="nav-sub-item" id="snav-sites" href="#" onclick="switchReport('sites');return false;"><span class="nav-sub-dot"></span>Sites</a></li>
+        <li><a class="nav-sub-item" id="snav-seo" href="#" onclick="switchReport('seo');return false;"><span class="nav-sub-dot"></span>SEO</a></li>
+      </ul>
+      <a class="nav-item" href="ia.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span><span class="nav-item-label">IA</span><span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span></a>
+      <a class="nav-item" href="configuracoes.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span><span class="nav-item-label">Configurações</span></a>
+      <a class="nav-item" href="ajuda.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nav-item-label">Ajuda</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-widget"><div class="avatar avatar-sm">RO</div><div class="user-info"><div class="user-name">Ramon Oliveira</div><div class="user-role">Index Digital</div></div></div>
+    </div>
+  </aside>
+
+  <!-- ══ APP BODY ══ -->
+  <div class="app-body" id="relatorios-app">
+    <header class="topbar">
+      <div class="topbar-breadcrumb"><a href="index.html">Início</a><span class="sep">›</span><span class="current" id="topbar-report-label">Relatórios · E-mail</span></div>
+      <div class="topbar-search"><svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Buscar…"><span class="topbar-search-shortcut">⌘K</span></div>
+      <div class="topbar-actions"><button class="topbar-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></button><div class="avatar avatar-sm">RO</div></div>
+    </header>
+
+    <div class="sub-nav" id="relatorios-subnav">
+      <a class="sub-nav-item active" data-rpt="email" href="#" onclick="switchReport('email');return false;">E-mail</a>
+      <a class="sub-nav-item" data-rpt="sms" href="#" onclick="switchReport('sms');return false;">SMS</a>
+      <a class="sub-nav-item" data-rpt="whatsapp" href="#" onclick="switchReport('whatsapp');return false;">WhatsApp</a>
+      <a class="sub-nav-item" data-rpt="consolidado" href="#" onclick="switchReport('consolidado');return false;">Consolidado</a>
+      <a class="sub-nav-item" data-rpt="consumo" href="#" onclick="switchReport('consumo');return false;">Consumo</a>
+      <a class="sub-nav-item" data-rpt="landing-pages" href="#" onclick="switchReport('landing-pages');return false;">Landing Pages</a>
+      <a class="sub-nav-item" data-rpt="sites" href="#" onclick="switchReport('sites');return false;">Sites</a>
+      <a class="sub-nav-item" data-rpt="seo" href="#" onclick="switchReport('seo');return false;">SEO</a>
+    </div>
+
+    <div id="view-email" class="view active">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Relatório de E-mail</h1><p class="page-subtitle">Métricas detalhadas por envio</p></div>
+        </div>
+        <div class="send-selector" id="email-send-selector"></div>
+        <div class="report-kpi-grid" id="email-kpis"></div>
+        <div style="display:grid;grid-template-columns:1fr 280px;gap:16px;margin-bottom:20px">
+          <div class="chart-wrap">
+            <div class="chart-title">Aberturas por hora</div>
+            <div class="chart-sub">Distribuição ao longo do dia do envio</div>
+            <div id="email-chart"></div>
+          </div>
+          <div class="chart-wrap">
+            <div class="chart-title">Dispositivos</div>
+            <div class="chart-sub">Como os destinatários abriram</div>
+            <div id="email-devices" style="padding-top:8px"></div>
+          </div>
+        </div>
+        <div class="section-header"><h3 class="section-title">Links clicados</h3></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th style="width:36px">#</th><th>URL</th><th>Cliques</th><th>Únicos</th><th>Share</th></tr></thead>
+            <tbody id="email-links-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <div id="view-sms" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Relatório de SMS</h1><p class="page-subtitle">Métricas de entrega por envio SMS</p></div>
+        </div>
+        <div class="section-header"><h3 class="section-title">Histórico de envios</h3></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Envio</th><th>Lista</th><th>Enviados</th><th>Entregues</th><th>Taxa de entrega</th><th>Data</th></tr></thead>
+            <tbody id="sms-report-body"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <div id="view-whatsapp" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Relatório de WhatsApp</h1><p class="page-subtitle">Métricas de leitura por envio WhatsApp</p></div>
+        </div>
+        <div class="section-header"><h3 class="section-title">Histórico de envios</h3></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Envio</th><th>Lista</th><th>Enviados</th><th>Entregues</th><th>Lidos</th><th>Taxa de leitura</th><th>Data</th></tr></thead>
+            <tbody id="wa-report-body"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <div id="view-consolidado" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Relatório Consolidado</h1><p class="page-subtitle">Visão geral de todos os canais</p></div>
+          <div class="page-actions">
+            <input type="date" class="form-input" style="width:150px" value="2026-06-01">
+            <span class="c-3 t-sm">até</span>
+            <input type="date" class="form-input" style="width:150px" value="2026-06-30">
+            <button class="btn btn-primary btn-sm">Aplicar</button>
+          </div>
+        </div>
+        <div class="report-kpi-grid" id="cons-kpis" style="grid-template-columns:repeat(5,1fr)"></div>
+        <div class="chart-wrap" id="cons-chart-area" style="margin-bottom:20px">
+          <div class="chart-title">Performance por Envio</div>
+          <div class="chart-sub">Taxas de abertura e clique dos top 5 envios</div>
+          <div style="position:relative;height:200px">
+            <canvas id="cons-chart"></canvas>
+          </div>
+        </div>
+        <div class="section-header"><h3 class="section-title">Top 5 envios do período</h3></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th style="width:36px">#</th><th>Envio</th><th>Taxa abertura</th><th>Taxa clique</th><th>Engajamento</th></tr></thead>
+            <tbody id="cons-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <div id="view-consumo" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Consumo de Créditos</h1><p class="page-subtitle">Créditos utilizados por canal e período</p></div>
+        </div>
+        <div class="section-header">
+          <h3 class="section-title">Histórico de consumo</h3>
+          <p class="t-sm c-3" id="consumo-summary"></p>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Canal</th><th>Período</th><th>Envios</th><th>Créditos usados</th></tr></thead>
+            <tbody id="consumo-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <div id="view-landing-pages" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div><h1 class="page-title">Relatório de Landing Pages</h1><p class="page-subtitle">Visitas, unicidades e conversões</p></div>
+        </div>
+        <div class="section-header"><h3 class="section-title">Performance por página</h3></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Página</th><th>Visitas</th><th>Únicas</th><th>Conversões</th><th>Taxa de conversão</th><th></th></tr></thead>
+            <tbody id="lp-report-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <div id="view-sites" class="view">
+      <main class="main-content">
+        <div class="empty-state" style="padding:80px 0">
+          <div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div class="empty-title">Relatório de Sites</div>
+          <div class="empty-desc">Em breve: acompanhe visitas e comportamento em sites integrados ao Dinamize.</div>
+        </div>
+      </main>
+    </div>
+    <div id="view-seo" class="view">
+      <main class="main-content">
+        <div class="empty-state" style="padding:80px 0">
+          <div class="empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-4)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div class="empty-title">Relatório de SEO</div>
+          <div class="empty-desc">Em breve: métricas de visibilidade orgânica e posicionamento das suas páginas.</div>
+        </div>
+      </main>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script>
+const REPORT_META = {
+  'email':         { label:'E-mail' },
+  'sms':           { label:'SMS' },
+  'whatsapp':      { label:'WhatsApp' },
+  'consolidado':   { label:'Consolidado' },
+  'consumo':       { label:'Consumo' },
+  'landing-pages': { label:'Landing Pages' },
+  'sites':         { label:'Sites' },
+  'seo':           { label:'SEO' },
+};
+let currentReport = 'email';
+
+function switchReport(id) {
+  currentReport = id;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('[data-rpt]').forEach(a => a.classList.toggle('active', a.dataset.rpt === id));
+  document.querySelectorAll('[id^="snav-"]').forEach(a => a.classList.remove('active'));
+  const s = document.getElementById('snav-' + id); if (s) s.classList.add('active');
+  document.getElementById('topbar-report-label').textContent = 'Relatórios · ' + REPORT_META[id].label;
+  ({ email:renderEmailReport, sms:renderSmsReport, whatsapp:renderWaReport,
+     consolidado:renderConsolidado, consumo:renderConsumo,
+     'landing-pages':renderLPReport, sites:renderSites, seo:renderSEO })[id]?.();
+}
+
+function fmtNum(n) { return (n||0).toLocaleString('pt-BR'); }
+function fmtPct(n) { return n ? (n*100).toFixed(1)+'%' : '—'; }
+
+/* ── E-MAIL REPORT ── */
+let selectedSendId = null;
+function renderEmailReport() {
+  selectedSendId = selectedSendId || DB.reportEmail.sends[0]?.id;
+  const send = DB.reportEmail.sends.find(s => s.id === selectedSendId) || DB.reportEmail.sends[0];
+  if (!send) return;
+  renderSendSelector(send);
+  renderEmailKpis(send);
+  renderHourlyChart(send);
+  renderDevices(send);
+  renderLinksTable(send);
+}
+function renderSendSelector(send) {
+  const el = document.getElementById('email-send-selector');
+  if (!el) return;
+  el.innerHTML = `<select class="form-select" style="max-width:360px" onchange="selectedSendId=this.value;renderEmailReport()">${DB.reportEmail.sends.map(s=>`<option value="${s.id}"${s.id===send.id?' selected':''}>${s.name} — ${s.sentAt}</option>`).join('')}</select><span class="t-sm c-3">Exportar:</span><button class="btn btn-ghost btn-sm" onclick="showToast('Exportando PDF…',{type:'info'})">PDF</button><button class="btn btn-ghost btn-sm" onclick="showToast('Exportando CSV…',{type:'info'})">CSV</button>`;
+}
+function renderEmailKpis(send) {
+  const el = document.getElementById('email-kpis');
+  if (!el) return;
+  const kpis = [
+    { label:'Enviados',    val:fmtNum(send.enviados),    sub:send.list },
+    { label:'Entregues',   val:fmtNum(send.entregues),   sub:'Taxa '+fmtPct(send.entreguesTaxa), color:'var(--success)' },
+    { label:'Abertos',     val:fmtNum(send.abertos),     sub:'Taxa '+fmtPct(send.abertosTaxa),   color:'var(--brand)' },
+    { label:'Cliques',     val:fmtNum(send.cliques),     sub:'Taxa '+fmtPct(send.cliquesTaxa),   color:'var(--info)' },
+    { label:'Descadastros',val:fmtNum(send.descadastros),sub:fmtPct(send.descadastros/send.enviados), color:'var(--warning)' },
+    { label:'Bounce Suave',val:fmtNum(send.bounceSuave), sub:'e-mails temporários' },
+    { label:'Bounce Duro', val:fmtNum(send.bounceDuro),  sub:'e-mails inválidos', color:'var(--error)' },
+  ];
+  el.innerHTML = kpis.map(k=>`<div class="kpi-card"><div class="kpi-label">${k.label}</div><div class="kpi-value" style="font-size:22px${k.color?';color:'+k.color:''}">${k.val}</div><div class="kpi-trend trend-neutral">${k.sub}</div></div>`).join('');
+}
+let hourlyChart = null;
+function renderHourlyChart(send) {
+  const el = document.getElementById('email-chart');
+  if (!el) return;
+  el.innerHTML = '<div style="position:relative;height:140px"><canvas id="hourly-canvas"></canvas></div>';
+  if (hourlyChart) { hourlyChart.destroy(); hourlyChart = null; }
+  const canvas = document.getElementById('hourly-canvas');
+  if (!canvas) return;
+  hourlyChart = new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: send.hourly.map((_, i) => i + 'h'),
+      datasets: [{
+        data: send.hourly.map(v => +(v * 100).toFixed(1)),
+        backgroundColor: 'rgba(234,84,86,0.18)',
+        borderColor: '#EA5456',
+        borderWidth: 1.5,
+        borderRadius: 3,
+        hoverBackgroundColor: 'rgba(234,84,86,0.35)',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' Aberturas: ' + ctx.parsed.y + '%' } }
+      },
+      scales: {
+        x: {
+          grid: { display: false }, border: { display: false },
+          ticks: { font: { size: 9 }, color: '#8891A8', maxTicksLimit: 12,
+            callback: (_, i) => i % 3 === 0 ? i + 'h' : '' }
+        },
+        y: {
+          grid: { color: '#ECEEF3', drawTicks: false }, border: { display: false },
+          ticks: { font: { size: 9 }, color: '#8891A8', callback: v => v + '%' }
+        }
+      }
+    }
+  });
+}
+let devicesChart = null;
+function renderDevices(send) {
+  const el = document.getElementById('email-devices');
+  if (!el) return;
+  const d = send.devices;
+  el.innerHTML = '<div style="position:relative;height:170px"><canvas id="devices-canvas"></canvas></div>';
+  if (devicesChart) { devicesChart.destroy(); devicesChart = null; }
+  const canvas = document.getElementById('devices-canvas');
+  if (!canvas) return;
+  devicesChart = new Chart(canvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Desktop', 'Mobile', 'Tablet'],
+      datasets: [{
+        data: [+(d.desktop*100).toFixed(0), +(d.mobile*100).toFixed(0), +(d.tablet*100).toFixed(0)],
+        backgroundColor: ['#EA5456', '#0EA679', '#F59E0B'],
+        borderWidth: 0,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11, family: 'DM Sans' }, boxWidth: 10, padding: 10 } },
+        tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%' } }
+      }
+    }
+  });
+}
+function renderLinksTable(send) {
+  const el = document.getElementById('email-links-tbody');
+  if (!el) return;
+  el.innerHTML = send.links.map((l,i)=>`<tr>
+    <td class="c-3 t-sm">${i+1}</td>
+    <td style="font-size:12px;font-family:monospace;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.url}</td>
+    <td class="fw-5">${fmtNum(l.cliques)}</td>
+    <td class="fw-5">${fmtNum(l.unicos)}</td>
+    <td><div class="device-track" style="width:80px;display:inline-flex"><div class="device-fill" style="width:${((l.unicos/send.cliques)*100).toFixed(0)}%;background:var(--brand)"></div></div></td>
+  </tr>`).join('');
+}
+
+/* ── SMS REPORT ── */
+function renderSmsReport() {
+  const el = document.getElementById('sms-report-body');
+  if (!el) return;
+  el.innerHTML = DB.smsSends.filter(s=>s.status==='sent').map(s=>`<tr>
+    <td><div class="cell-primary">${s.name}</div></td>
+    <td class="c-2 t-sm">${s.list}</td>
+    <td class="fw-5">${fmtNum(s.recipients)}</td>
+    <td class="fw-5">${fmtNum(s.delivered)}</td>
+    <td><span class="fw-6">${s.delivered&&s.recipients?fmtPct(s.delivered/s.recipients):'—'}</span></td>
+    <td class="c-3 t-sm">${s.sentAt}</td>
+  </tr>`).join('');
+}
+
+/* ── WA REPORT ── */
+function renderWaReport() {
+  const el = document.getElementById('wa-report-body');
+  if (!el) return;
+  el.innerHTML = DB.waSends.filter(s=>s.status==='sent').map(s=>`<tr>
+    <td><div class="cell-primary">${s.name}</div></td>
+    <td class="c-2 t-sm">${s.list}</td>
+    <td class="fw-5">${fmtNum(s.recipients)}</td>
+    <td class="fw-5">${fmtNum(s.delivered)}</td>
+    <td class="fw-5">${fmtNum(s.read)}</td>
+    <td><span class="fw-6">${s.read&&s.delivered?fmtPct(s.read/s.delivered):'—'}</span></td>
+    <td class="c-3 t-sm">${s.sentAt}</td>
+  </tr>`).join('');
+}
+
+/* ── CONSOLIDADO ── */
+let consChart = null;
+function renderConsolidado() {
+  const kpis = DB.reportConsolidado.kpis;
+  const el = document.getElementById('cons-kpis');
+  if (!el) return;
+  const items = [
+    { label:'Enviados',    val:fmtNum(kpis.enviados) },
+    { label:'Entregues',   val:fmtNum(kpis.entregues),  sub:'Taxa '+fmtPct(kpis.entreguesTaxa), color:'var(--success)' },
+    { label:'Abertos',     val:fmtNum(kpis.abertos),    sub:'Taxa '+fmtPct(kpis.abertosTaxa),   color:'var(--brand)' },
+    { label:'Cliques',     val:fmtNum(kpis.cliques),    sub:'Taxa '+fmtPct(kpis.cliquesTaxa),   color:'var(--info)' },
+    { label:'Descadastros',val:fmtNum(kpis.descadastros) },
+  ];
+  el.innerHTML = items.map(k=>`<div class="kpi-card"><div class="kpi-label">${k.label}</div><div class="kpi-value" style="font-size:22px${k.color?';color:'+k.color:''}">${k.val}</div>${k.sub?`<div class="kpi-trend trend-neutral">${k.sub}</div>`:''}</div>`).join('');
+
+  const canvas = document.getElementById('cons-chart');
+  if (canvas) {
+    if (consChart) { consChart.destroy(); consChart = null; }
+    const sends = DB.reportConsolidado.topSends;
+    consChart = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: sends.map(s => s.name.length > 28 ? s.name.slice(0,26)+'…' : s.name),
+        datasets: [
+          { label:'Abertura', data: sends.map(s => +(s.abertura*100).toFixed(1)), backgroundColor:'rgba(234,84,86,0.75)', borderRadius:4 },
+          { label:'Clique',   data: sends.map(s => +(s.cliques*100).toFixed(1)),  backgroundColor:'rgba(83,76,231,0.75)',  borderRadius:4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode:'index', intersect:false },
+        plugins: {
+          legend: { position:'top', labels:{ font:{size:11,family:'DM Sans'}, boxWidth:10, padding:12 } },
+          tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + ctx.parsed.y + '%' } }
+        },
+        scales: {
+          x: { grid:{display:false}, border:{display:false}, ticks:{font:{size:10},color:'#8891A8'} },
+          y: { grid:{color:'#ECEEF3',drawTicks:false}, border:{display:false},
+               ticks:{font:{size:10},color:'#8891A8', callback: v => v+'%'} }
+        }
+      }
+    });
+  }
+
+  const tb = document.getElementById('cons-tbody');
+  if (!tb) return;
+  tb.innerHTML = DB.reportConsolidado.topSends.map((s,i)=>`<tr>
+    <td class="c-3 t-sm">${i+1}</td>
+    <td><div class="cell-primary">${s.name}</div><div class="cell-secondary">${s.lista}</div></td>
+    <td><span class="fw-6">${fmtPct(s.abertura)}</span></td>
+    <td><span class="fw-6">${fmtPct(s.cliques)}</span></td>
+    <td><div class="device-track" style="width:100px;display:inline-flex"><div class="device-fill" style="width:${(s.abertura*100).toFixed(0)}%;background:var(--brand)"></div></div></td>
+  </tr>`).join('');
+}
+
+/* ── CONSUMO ── */
+function renderConsumo() {
+  const el = document.getElementById('consumo-tbody');
+  if (!el) return;
+  const totals = DB.reportConsumo.reduce((acc,r)=>{ acc.qty=(acc.qty||0)+r.quantidade; acc.cred=(acc.cred||0)+r.creditos; return acc; }, {});
+  el.innerHTML = DB.reportConsumo.map(r=>{
+    const badge = r.tipo==='E-mail'?'badge-email':r.tipo==='SMS'?'badge-sms':'badge-wa';
+    return `<tr><td><span class="badge ${badge}">${r.tipo}</span></td><td class="c-2">${r.periodo}</td><td class="fw-5">${r.quantidade}</td><td class="fw-5">${fmtNum(r.creditos)}</td></tr>`;
+  }).join('');
+  const sf = document.getElementById('consumo-summary');
+  if (sf) sf.innerHTML = `<strong>${fmtNum(totals.cred)}</strong> créditos usados em <strong>${totals.qty}</strong> envios no período`;
+}
+
+/* ── LP REPORT ── */
+function renderLPReport() {
+  const el = document.getElementById('lp-report-tbody');
+  if (!el) return;
+  el.innerHTML = DB.reportLP.map(l=>`<tr>
+    <td><div class="cell-primary">${l.name}</div><div class="cell-secondary">${l.period}</div></td>
+    <td class="fw-5">${fmtNum(l.visits)}</td>
+    <td class="fw-5">${fmtNum(l.unique)}</td>
+    <td class="fw-5">${fmtNum(l.conversions)}</td>
+    <td><span class="fw-6">${fmtPct(l.convRate)}</span></td>
+    <td class="col-actions"><div class="row-actions"><button class="btn btn-ghost btn-sm" onclick="showToast('Relatório detalhado em breve.',{type:'info'})">Detalhes</button></div></td>
+  </tr>`).join('');
+}
+
+/* ── STUBS ── */
+function renderSites() {}
+function renderSEO() {}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initSidebarNav();
+  const urlReport = new URLSearchParams(location.search).get('r');
+  switchReport(REPORT_META[urlReport] ? urlReport : 'email');
+});
+</script>
+</body>
+</html>

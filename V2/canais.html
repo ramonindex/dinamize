@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dinamize · Canais</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/layout.css">
+  <style>
+    .sub-nav { overflow-x:auto; flex-shrink:0; }
+    .sub-nav::-webkit-scrollbar { height:2px; }
+    .sub-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    /* LP cards */
+    .lp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .lp-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .lp-thumb { height:130px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--bg-subtle),var(--border-light)); font-size:32px; }
+    .lp-card-body { padding:14px 16px; }
+    .lp-card-name { font-weight:600; font-size:13px; color:var(--text-1); margin-bottom:4px; }
+    .lp-card-url { font-size:11px; color:var(--text-3); font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:10px; }
+    .lp-card-stats { display:flex; gap:20px; margin-bottom:12px; }
+    .lp-stat-label { font-size:11px; color:var(--text-3); }
+    .lp-stat-val { font-weight:600; font-size:14px; color:var(--text-1); }
+    .lp-card-footer { display:flex; gap:6px; border-top:1px solid var(--border-light); padding-top:10px; }
+    /* Form cards */
+    .fm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+    .fm-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
+    .fm-icon { width:38px; height:38px; border-radius:var(--radius-md); background:var(--brand-light); display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+    .fm-card-name { font-weight:600; font-size:13px; color:var(--text-1); margin-bottom:4px; }
+    .fm-card-meta { font-size:12px; color:var(--text-3); margin-bottom:12px; }
+    .fm-card-footer { display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-light); padding-top:12px; }
+    /* Social */
+    .social-accounts { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:24px; }
+    .social-acc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; display:flex; align-items:center; gap:14px; }
+    .social-net-icon { width:40px; height:40px; border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; flex-shrink:0; color:#fff; }
+    .sni-fb { background:#1877F2; } .sni-ig { background:linear-gradient(135deg,#E1306C,#F77737); }
+    .social-acc-info { flex:1; min-width:0; }
+    .social-acc-name { font-weight:600; font-size:13px; color:var(--text-1); }
+    .social-acc-sub { font-size:12px; color:var(--text-3); margin-top:2px; }
+    .social-post-list { display:flex; flex-direction:column; gap:10px; }
+    .social-post-item { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 16px; display:flex; gap:12px; }
+    .social-post-net { width:28px; height:28px; border-radius:var(--radius-sm); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; color:#fff; }
+    .social-post-body { flex:1; min-width:0; }
+    .social-post-text { font-size:13px; color:var(--text-2); line-height:1.5; margin-bottom:4px; }
+    .social-post-meta { font-size:11px; color:var(--text-3); }
+    /* WA templates */
+    .wa-tpl-grid { display:flex; flex-direction:column; gap:8px; }
+    .wa-tpl-card { border:1.5px solid var(--border); border-radius:var(--radius-md); padding:12px 14px; cursor:pointer; transition:border-color .15s; }
+    .wa-tpl-card:hover { border-color:var(--brand-mid); }
+    .wa-tpl-card.selected { border-color:var(--brand); background:var(--brand-light); }
+    .wa-tpl-name { font-weight:600; font-size:13px; color:var(--text-1); margin-bottom:2px; }
+    .wa-tpl-vars { font-size:11px; color:var(--text-3); }
+    /* Char counter */
+    .char-counter { font-size:11px; color:var(--text-3); text-align:right; margin-top:4px; }
+    .char-warn { color:var(--warning); }
+    .char-err  { color:var(--error); }
+    /* Field builder */
+    .field-row { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--border-light); }
+    .field-row:last-child { border-bottom:none; }
+    /* toggle on/off */
+    .toggle.on { background:var(--brand); }
+    /* LP Editor full-screen */
+    .lp-editor-overlay { position:fixed;inset:0;z-index:9000;display:none;flex-direction:column; }
+    .lp-editor-overlay.open { display:flex; }
+    /* titlebar (dark) */
+    .lp-editor-titlebar { height:44px;background:#3D4754;display:flex;align-items:center;gap:12px;padding:0 16px;flex-shrink:0; }
+    .lp-editor-titlebar-icon { width:28px;height:28px;background:#EA5456;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .lp-editor-titlebar-title { flex:1;font-size:13px;font-weight:600;color:#fff; }
+    .lp-editor-titlebar-close { display:flex;align-items:center;gap:6px;color:#fff;background:none;border:none;cursor:pointer;font-size:13px;opacity:.8;padding:4px 10px;border-radius:4px; }
+    .lp-editor-titlebar-close:hover { opacity:1;background:rgba(255,255,255,.1); }
+    /* actionbar (white) */
+    .lp-editor-actionbar { height:44px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 16px;flex-shrink:0; }
+    .lp-editor-actionbar-hint { font-size:11px;color:var(--text-3);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .lp-editor-preview-toggle { display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden; }
+    .lp-editor-preview-btn { width:30px;height:26px;display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;color:var(--text-3); }
+    .lp-editor-preview-btn.active { background:var(--bg-subtle);color:var(--text-1); }
+    /* layout */
+    .lp-editor-layout { display:flex;flex:1;overflow:hidden; }
+    /* left panel */
+    .lp-editor-sidebar { width:260px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden; }
+    /* panel tabs */
+    .lp-panel-tabs { display:flex;border-bottom:1px solid var(--border);flex-shrink:0; }
+    .lp-panel-tab { flex:1;padding:10px 4px;font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.07em;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .15s; }
+    .lp-panel-tab.active { color:var(--brand);border-bottom-color:var(--brand); }
+    /* component tiles */
+    .lp-comp-scroll { flex:1;overflow-y:auto; }
+    .lp-comp-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px; }
+    .lp-comp-tile { background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);padding:10px 6px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:border-color .15s,background .15s; }
+    .lp-comp-tile:hover { border-color:var(--brand);background:var(--brand-light); }
+    .lp-comp-tile:hover .lp-comp-tile-icon { background:#c7d2fe; }
+    .lp-comp-tile-icon { width:100%;height:36px;background:var(--bg-subtle);border-radius:4px;display:flex;align-items:center;justify-content:center; }
+    .lp-comp-tile-label { font-size:10px;color:var(--text-2);text-align:center;font-weight:500;line-height:1.2; }
+    /* sections outline */
+    .lp-sections-outline { border-top:1px solid var(--border);flex-shrink:0; }
+    .lp-sections-outline-hd { font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:.08em;padding:8px 12px 4px;text-transform:uppercase; }
+    .lp-section-item { display:flex;align-items:center;gap:7px;padding:5px 8px;margin:2px 6px;border-radius:var(--radius-md);cursor:pointer;font-size:12px;color:var(--text-2); }
+    .lp-section-item:hover { background:var(--bg-subtle); }
+    .lp-section-item.active { background:var(--brand-light);color:var(--brand); }
+    /* panel back (properties screen) */
+    .lp-panel-back { display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0; }
+    .lp-panel-back-btn { background:none;border:none;cursor:pointer;color:var(--text-3);font-size:12px;display:flex;align-items:center;gap:4px;padding:0; }
+    .lp-panel-back-btn:hover { color:var(--text-1); }
+    .lp-panel-back-label { font-size:12px;font-weight:600;color:var(--text-1);flex:1; }
+    .lp-panel-props-body { flex:1;overflow-y:auto;padding:14px; }
+    /* style/doc tab content */
+    .lp-tab-content { padding:14px;display:flex;flex-direction:column;gap:12px; }
+    /* canvas */
+    .lp-editor-canvas-wrap { flex:1;overflow:auto;background:#e5e7eb;padding:20px; }
+    .lp-editor-canvas-inner { min-width:460px;max-width:720px;margin:0 auto;background:#fff;border-radius:10px;box-shadow:0 4px 24px rgba(0,0,0,.12);overflow:hidden; }
+    .lp-canvas-section { position:relative;cursor:pointer; }
+    .lp-canvas-section:hover { outline:2px dashed #c7d2fe; }
+    .lp-canvas-section.selected { outline:2px solid var(--brand); }
+    .lp-canvas-section-badge { position:absolute;top:8px;left:8px;background:var(--brand);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .12s; }
+    .lp-canvas-section:hover .lp-canvas-section-badge,
+    .lp-canvas-section.selected .lp-canvas-section-badge { opacity:1; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-logo-text">Dinamize</div>
+        <div class="sidebar-logo-sub">Automation</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="index.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+        <span class="nav-item-label">Página inicial</span>
+      </a>
+      <button class="nav-item" data-sub="nav-contatos">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <span class="nav-item-label">Contatos</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-contatos">
+        <li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Listas</a></li>
+        <li><a class="nav-sub-item" href="contatos.html"><span class="nav-sub-dot"></span>Segmentações</a></li>
+      </ul>
+      <button class="nav-item active open" data-sub="nav-canais">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        <span class="nav-item-label">Canais</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub open" id="nav-canais" style="display:flex">
+        <li><a class="nav-sub-item active" id="snav-email" href="#" onclick="switchChannel('email');return false;"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" id="snav-sms" href="#" onclick="switchChannel('sms');return false;"><span class="nav-sub-dot"></span>SMS</a></li>
+        <li><a class="nav-sub-item" id="snav-whatsapp" href="#" onclick="switchChannel('whatsapp');return false;"><span class="nav-sub-dot"></span>WhatsApp</a></li>
+        <li><a class="nav-sub-item" id="snav-landing-pages" href="#" onclick="switchChannel('landing-pages');return false;"><span class="nav-sub-dot"></span>Landing Pages</a></li>
+        <li><a class="nav-sub-item" id="snav-popups" href="#" onclick="switchChannel('popups');return false;"><span class="nav-sub-dot"></span>Pop-ups</a></li>
+        <li><a class="nav-sub-item" id="snav-campanhas" href="#" onclick="switchChannel('campanhas');return false;"><span class="nav-sub-dot"></span>Campanhas</a></li>
+        <li><a class="nav-sub-item" id="snav-formularios" href="#" onclick="switchChannel('formularios');return false;"><span class="nav-sub-dot"></span>Formulários</a></li>
+        <li><a class="nav-sub-item" id="snav-webhooks" href="#" onclick="switchChannel('webhooks');return false;"><span class="nav-sub-dot"></span>Webhooks</a></li>
+        <li><a class="nav-sub-item" id="snav-social" href="#" onclick="switchChannel('social');return false;"><span class="nav-sub-dot"></span>Mídias Sociais</a></li>
+      </ul>
+      <a class="nav-item" href="fluxos.html">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg></span>
+        <span class="nav-item-label">Fluxos</span>
+      </a>
+      <button class="nav-item" data-sub="nav-relatorios">
+        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+        <span class="nav-item-label">Relatórios</span>
+        <svg class="nav-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <ul class="nav-sub" id="nav-relatorios">
+        <li><a class="nav-sub-item" href="relatorios.html"><span class="nav-sub-dot"></span>E-mail</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=sms"><span class="nav-sub-dot"></span>SMS</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consolidado"><span class="nav-sub-dot"></span>Consolidado</a></li>
+        <li><a class="nav-sub-item" href="relatorios.html?r=consumo"><span class="nav-sub-dot"></span>Consumo</a></li>
+      </ul>
+      <a class="nav-item" href="ia.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5 5 4 4 0 0 1-2-7.4"/><circle cx="12" cy="12" r="1"/></svg></span><span class="nav-item-label">IA</span><span class="nav-item-badge" style="background:rgba(245,158,11,.15);color:#d97706">Novo</span></a>
+      <a class="nav-item" href="configuracoes.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span><span class="nav-item-label">Configurações</span></a>
+      <a class="nav-item" href="ajuda.html"><span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="nav-item-label">Ajuda</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-widget">
+        <div class="avatar avatar-sm">RO</div>
+        <div class="user-info"><div class="user-name">Ramon Oliveira</div><div class="user-role">Index Digital</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ APP BODY ══ -->
+  <div class="app-body" id="canais-app">
+
+    <header class="topbar">
+      <div class="topbar-breadcrumb">
+        <a href="index.html">Início</a>
+        <span class="sep">›</span>
+        <span class="current" id="topbar-channel-label">Canais · E-mail</span>
+      </div>
+      <div class="topbar-search">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="topbar-search-input" placeholder="Buscar envios…">
+        <span class="topbar-search-shortcut">⌘K</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-icon-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-dot"></span></button>
+        <div class="avatar avatar-sm">RO</div>
+      </div>
+    </header>
+
+    <!-- Sub-nav -->
+    <div class="sub-nav" id="canais-subnav">
+      <a class="sub-nav-item active" data-ch="email" href="#" onclick="switchChannel('email');return false;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        E-mail
+      </a>
+      <a class="sub-nav-item" data-ch="sms" href="#" onclick="switchChannel('sms');return false;">SMS</a>
+      <a class="sub-nav-item" data-ch="whatsapp" href="#" onclick="switchChannel('whatsapp');return false;">WhatsApp</a>
+      <a class="sub-nav-item" data-ch="landing-pages" href="#" onclick="switchChannel('landing-pages');return false;">Landing Pages</a>
+      <a class="sub-nav-item" data-ch="popups" href="#" onclick="switchChannel('popups');return false;">Pop-ups</a>
+      <a class="sub-nav-item" data-ch="campanhas" href="#" onclick="switchChannel('campanhas');return false;">Campanhas</a>
+      <a class="sub-nav-item" data-ch="formularios" href="#" onclick="switchChannel('formularios');return false;">Formulários</a>
+      <a class="sub-nav-item" data-ch="webhooks" href="#" onclick="switchChannel('webhooks');return false;">Webhooks</a>
+      <a class="sub-nav-item" data-ch="social" href="#" onclick="switchChannel('social');return false;">Mídias Sociais</a>
+    </div>
+
+    <!-- ══ VIEW: E-MAIL ══ -->
+    <div id="view-email" class="view active">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">E-mail</h1>
+            <p class="page-subtitle">Gerencie e acompanhe todos os envios de e-mail.</p>
+          </div>
+          <div class="page-actions">
+            <button class="btn btn-secondary" onclick="showToast('Biblioteca de modelos em breve.',{type:'info'})">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              Modelos
+            </button>
+            <button class="btn btn-auto" onclick="openSendWizard()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novo Envio
+            </button>
+          </div>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Total de envios</div><div class="kpi-value" style="font-size:24px">9</div><div class="kpi-trend trend-neutral">6 enviados · 2 agendados · 1 rascunho</div></div>
+          <div class="kpi-card"><div class="kpi-label">Entregues (mês)</div><div class="kpi-value" style="font-size:24px">141,1K</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>Taxa 98,3%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Abertura média</div><div class="kpi-value" style="font-size:24px">33,9%</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+2,1% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Clique médio</div><div class="kpi-value" style="font-size:24px">30,7%</div><div class="kpi-trend trend-down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 9 12 15 6 9"/></svg>-0,8% vs mês ant.</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="segmented" id="email-tab-seg">
+            <button class="seg-btn active" onclick="filterEmail('all',this)">Todos</button>
+            <button class="seg-btn" onclick="filterEmail('sent',this)">Enviados</button>
+            <button class="seg-btn" onclick="filterEmail('sched',this)">Agendados</button>
+            <button class="seg-btn" onclick="filterEmail('draft',this)">Rascunhos</button>
+          </div>
+          <div class="search-wrap" style="max-width:280px;margin-left:auto">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar envio…" oninput="renderEmailTable(sendsFilter,this.value)">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th class="sortable">Nome do envio</th><th>Tipo</th><th>Status</th>
+              <th>Lista</th><th class="sortable">Enviados</th>
+              <th class="sortable">Abertura</th><th class="sortable">Cliques</th>
+              <th>Data</th><th class="col-actions">Ações</th>
+            </tr></thead>
+            <tbody id="email-tbody"></tbody>
+          </table>
+          <div class="pagination"><span class="pagination-info" id="email-count">—</span></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: SMS ══ -->
+    <div id="view-sms" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">SMS</h1>
+            <p class="page-subtitle">Envie mensagens de texto direto para o celular dos seus contatos.</p>
+          </div>
+          <button class="btn btn-auto" onclick="openSmsWizard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Envio SMS
+          </button>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Total de envios</div><div class="kpi-value" style="font-size:24px">4</div><div class="kpi-trend trend-neutral">2 enviados · 1 agendado · 1 rascunho</div></div>
+          <div class="kpi-card"><div class="kpi-label">Entregues (mês)</div><div class="kpi-value" style="font-size:24px">7.475</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>Taxa 99,4%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Taxa de entrega</div><div class="kpi-value" style="font-size:24px">99,4%</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+0,3% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Créditos usados</div><div class="kpi-value" style="font-size:24px">7.475</div><div class="kpi-trend trend-neutral">Saldo restante: 42.525</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="segmented" id="sms-tab-seg">
+            <button class="seg-btn active" onclick="filterSms('all',this)">Todos</button>
+            <button class="seg-btn" onclick="filterSms('sent',this)">Enviados</button>
+            <button class="seg-btn" onclick="filterSms('sched',this)">Agendados</button>
+            <button class="seg-btn" onclick="filterSms('draft',this)">Rascunhos</button>
+          </div>
+          <div class="search-wrap" style="max-width:280px;margin-left:auto">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar envio SMS…" oninput="renderSmsTable(smsFilter,this.value)">
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th class="sortable">Nome do envio</th><th>Status</th><th>Lista</th>
+              <th class="sortable">Enviados</th><th class="sortable">Entregues</th>
+              <th class="sortable">Taxa</th><th>Data</th><th class="col-actions">Ações</th>
+            </tr></thead>
+            <tbody id="sms-tbody"></tbody>
+          </table>
+          <div class="pagination"><span class="pagination-info" id="sms-count">—</span></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: WHATSAPP ══ -->
+    <div id="view-whatsapp" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">WhatsApp</h1>
+            <p class="page-subtitle">Envie mensagens via templates aprovados pelo Meta para seus contatos.</p>
+          </div>
+          <button class="btn btn-auto" onclick="openWaWizard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Envio WhatsApp
+          </button>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Total de envios</div><div class="kpi-value" style="font-size:24px">4</div><div class="kpi-trend trend-neutral">2 enviados · 1 agendado · 1 rascunho</div></div>
+          <div class="kpi-card"><div class="kpi-label">Entregues (mês)</div><div class="kpi-value" style="font-size:24px">2.702</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>Taxa 99,1%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Taxa de leitura</div><div class="kpi-value" style="font-size:24px">86,2%</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+4,1% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Templates ativos</div><div class="kpi-value" style="font-size:24px">4</div><div class="kpi-trend trend-neutral">Aprovados pelo Meta</div></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th class="sortable">Nome do envio</th><th>Template</th><th>Status</th>
+              <th>Lista</th><th class="sortable">Enviados</th>
+              <th class="sortable">Entregues</th><th class="sortable">Leitura</th>
+              <th>Data</th><th class="col-actions">Ações</th>
+            </tr></thead>
+            <tbody id="wa-tbody"></tbody>
+          </table>
+          <div class="pagination"><span class="pagination-info" id="wa-count">—</span></div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: LANDING PAGES ══ -->
+    <div id="view-landing-pages" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Landing Pages</h1>
+            <p class="page-subtitle">Crie páginas de captura para converter visitantes em contatos.</p>
+          </div>
+          <button class="btn btn-auto" onclick="openLpWizard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Landing Page
+          </button>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Total de páginas</div><div class="kpi-value" style="font-size:24px">5</div><div class="kpi-trend trend-neutral">3 publicadas · 1 rascunho · 1 arquivada</div></div>
+          <div class="kpi-card"><div class="kpi-label">Visitas (mês)</div><div class="kpi-value" style="font-size:24px">26.890</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+12% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Conversões (mês)</div><div class="kpi-value" style="font-size:24px">5.840</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>Taxa 21,7%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Melhor taxa</div><div class="kpi-value" style="font-size:24px">42,1%</div><div class="kpi-trend trend-neutral">Abandono de Carrinho</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div class="segmented" id="lp-tab-seg">
+            <button class="seg-btn active" onclick="filterLp('all',this)">Todas</button>
+            <button class="seg-btn" onclick="filterLp('published',this)">Publicadas</button>
+            <button class="seg-btn" onclick="filterLp('draft',this)">Rascunhos</button>
+            <button class="seg-btn" onclick="filterLp('archived',this)">Arquivadas</button>
+          </div>
+        </div>
+        <div class="lp-grid" id="lp-grid"></div>
+        <div class="pagination" style="margin-top:16px"><span class="pagination-info" id="lp-count">—</span></div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: POP-UPS ══ -->
+    <div id="view-popups" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Pop-ups</h1>
+            <p class="page-subtitle">Configure pop-ups inteligentes para capturar leads no seu site.</p>
+          </div>
+          <button class="btn btn-auto" onclick="showToast('Editor de pop-up em breve.',{type:'info'})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Pop-up
+          </button>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Pop-ups ativos</div><div class="kpi-value" style="font-size:24px">2</div><div class="kpi-trend trend-neutral">de 3 configurados</div></div>
+          <div class="kpi-card"><div class="kpi-label">Visualizações (mês)</div><div class="kpi-value" style="font-size:24px">21.480</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+8% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Conversões (mês)</div><div class="kpi-value" style="font-size:24px">2.441</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>Taxa 11,4%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Melhor taxa</div><div class="kpi-value" style="font-size:24px">16,0%</div><div class="kpi-trend trend-neutral">Promoção Flash</div></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>Nome</th><th>Site</th><th>Gatilho</th><th>Audiência</th>
+              <th>Ativo</th><th>Visualizações</th><th>Conversões</th><th>Taxa</th>
+              <th class="col-actions">Ações</th>
+            </tr></thead>
+            <tbody id="pp-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: CAMPANHAS ══ -->
+    <div id="view-campanhas" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Campanhas</h1>
+            <p class="page-subtitle">Agrupe envios por objetivo para analisar performance comparativa.</p>
+          </div>
+          <button class="btn btn-auto" onclick="openCampanhaForm()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Campanha
+          </button>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Campanhas ativas</div><div class="kpi-value" style="font-size:24px">4</div><div class="kpi-trend trend-neutral">18 envios vinculados</div></div>
+          <div class="kpi-card"><div class="kpi-label">Receita atribuída</div><div class="kpi-value" style="font-size:24px">R$ 61,2K</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+18% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Abertura média</div><div class="kpi-value" style="font-size:24px">39,3%</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+3,2% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Melhor campanha</div><div class="kpi-value" style="font-size:24px">42,1%</div><div class="kpi-trend trend-neutral">Recuperação</div></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th class="sortable">Nome</th><th>Objetivo</th><th>Período</th>
+              <th>Envios</th><th>Abertura</th><th>Cliques</th><th>Receita</th>
+              <th class="col-actions">Ações</th>
+            </tr></thead>
+            <tbody id="ca-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: FORMULÁRIOS ══ -->
+    <div id="view-formularios" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Formulários</h1>
+            <p class="page-subtitle">Crie formulários de captura e incorpore no seu site ou landing page.</p>
+          </div>
+          <button class="btn btn-auto" onclick="showToast('Criação de formulário em breve.',{type:'info'})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Formulário
+          </button>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Formulários ativos</div><div class="kpi-value" style="font-size:24px">3</div><div class="kpi-trend trend-neutral">de 4 criados</div></div>
+          <div class="kpi-card"><div class="kpi-label">Submissões (mês)</div><div class="kpi-value" style="font-size:24px">14.881</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+21% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Taxa de conclusão</div><div class="kpi-value" style="font-size:24px">78,4%</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+2,1% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Mais acessado</div><div class="kpi-value" style="font-size:17px;margin-top:4px">Newsletter</div><div class="kpi-trend trend-neutral">12.640 submissões</div></div>
+        </div>
+        <div class="fm-grid" id="fm-grid"></div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: WEBHOOKS ══ -->
+    <div id="view-webhooks" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Webhooks</h1>
+            <p class="page-subtitle">Dispare notificações HTTP em tempo real para sistemas externos.</p>
+          </div>
+          <button class="btn btn-auto" onclick="openWebhookForm()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Webhook
+          </button>
+        </div>
+        <div class="content-grid-4" style="margin-bottom:20px">
+          <div class="kpi-card"><div class="kpi-label">Webhooks ativos</div><div class="kpi-value" style="font-size:24px">2</div><div class="kpi-trend trend-neutral">de 3 configurados</div></div>
+          <div class="kpi-card"><div class="kpi-label">Disparos (mês)</div><div class="kpi-value" style="font-size:24px">15.290</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>+34% vs mês ant.</div></div>
+          <div class="kpi-card"><div class="kpi-label">Taxa de sucesso</div><div class="kpi-value" style="font-size:24px">99,7%</div><div class="kpi-trend trend-up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>46 erros no mês</div></div>
+          <div class="kpi-card"><div class="kpi-label">Último disparo</div><div class="kpi-value" style="font-size:17px;margin-top:4px">Hoje 14:32</div><div class="kpi-trend trend-neutral">Contato adicionado</div></div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th>URL de destino</th><th>Evento</th><th>Método</th>
+              <th>Ativo</th><th>Último disparo</th><th>Total</th>
+              <th class="col-actions">Ações</th>
+            </tr></thead>
+            <tbody id="wh-tbody"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- ══ VIEW: MÍDIAS SOCIAIS ══ -->
+    <div id="view-social" class="view">
+      <main class="main-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Mídias Sociais</h1>
+            <p class="page-subtitle">Gerencie publicações e conecte suas contas de redes sociais.</p>
+          </div>
+          <button class="btn btn-auto" onclick="showToast('Agendador de publicações em breve.',{type:'info'})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Publicação
+          </button>
+        </div>
+        <h2 class="section-title" style="margin-bottom:12px">Contas conectadas</h2>
+        <div class="social-accounts" id="social-accounts"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <h2 class="section-title">Publicações</h2>
+          <div class="segmented" id="social-tab-seg">
+            <button class="seg-btn active">Todas</button>
+            <button class="seg-btn">Agendadas</button>
+            <button class="seg-btn">Publicadas</button>
+          </div>
+        </div>
+        <div class="social-post-list" id="social-posts"></div>
+      </main>
+    </div>
+
+  </div><!-- /app-body -->
+</div><!-- /app -->
+
+<!-- ══ DRAWER: E-MAIL WIZARD ══ -->
+<div id="drawer-send-wizard" class="overlay" onclick="if(event.target===this)closeSendWizard()">
+  <div class="drawer" style="width:60vw;min-width:680px">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title">Novo Envio de E-mail</div>
+        <div class="drawer-subtitle" id="wiz-step-label">Passo 1 de 5 — Configuração</div>
+      </div>
+      <button class="drawer-close" onclick="closeSendWizard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="padding:18px 28px 0;border-bottom:1px solid var(--border-light)">
+      <div class="stepper" id="send-stepper">
+        <div class="step-item"><div class="step-circle active" id="wcirc-1">1</div><div class="step-line" id="wline-1"></div></div>
+        <div class="step-item"><div class="step-circle future" id="wcirc-2">2</div><div class="step-line" id="wline-2"></div></div>
+        <div class="step-item"><div class="step-circle future" id="wcirc-3">3</div><div class="step-line" id="wline-3"></div></div>
+        <div class="step-item"><div class="step-circle future" id="wcirc-4">4</div><div class="step-line" id="wline-4"></div></div>
+        <div class="step-item"><div class="step-circle future" id="wcirc-5">5</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;padding-bottom:14px">
+        <span class="t-xs fw-6 c-auto">Configuração</span><span class="t-xs c-3">Conteúdo</span>
+        <span class="t-xs c-3">Validações</span><span class="t-xs c-3">Interações</span><span class="t-xs c-3">Agendamento</span>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div id="wstep-1" class="tab-pane active">
+        <div class="form-group"><label class="form-label">Nome do envio <span class="req">*</span></label><input id="w-send-name" type="text" class="form-input" placeholder="Ex: Campanha Julho — Oferta Especial"></div>
+        <div class="form-group"><label class="form-label">Tipo de envio</label>
+          <div style="display:flex;gap:10px">
+            <label class="radio-card selected" style="flex:1" id="type-pontual" onclick="selectSendType('pontual')"><input type="radio" name="send-type" checked><div><div style="font-weight:600;font-size:13px">Pontual</div><div style="font-size:12px;color:var(--text-3)">Envio único para toda a lista</div></div></label>
+            <label class="radio-card" style="flex:1" id="type-ab" onclick="selectSendType('ab')"><input type="radio" name="send-type"><div><div style="font-weight:600;font-size:13px">Teste A/B</div><div style="font-size:12px;color:var(--text-3)">Compare duas versões</div></div></label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Lista / Público <span class="req">*</span></label>
+            <select id="w-list" class="form-select"><option value="">Selecione uma lista…</option><option value="l1">Meus Contatos (85.420)</option><option value="l2">Leads Captados (12.840)</option><option value="l3">Clientes Ativos (5.630)</option><option value="l4">Re-engajamento (9.210)</option><option value="l5">Newsletter (34.100)</option><option value="l6">Abandono de Carrinho (3.890)</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Campanha</label>
+            <select class="form-select"><option value="">Nenhuma</option><option>Junho 2026</option><option>Julho 2026</option><option>Onboarding</option><option>Recuperação</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Assunto <span class="req">*</span></label><input id="w-subject" type="text" class="form-input" placeholder="Assunto do e-mail"><span class="form-help">Dica: use emojis e {{nome}} para melhorar a abertura.</span></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Nome do remetente</label><input type="text" class="form-input" value="Dinamize Automation"></div>
+          <div class="form-group"><label class="form-label">E-mail de resposta</label><input type="email" class="form-input" value="contato@seudominio.com.br"></div>
+        </div>
+      </div>
+      <div id="wstep-2" class="tab-pane">
+        <div style="text-align:center;padding:40px 0">
+          <div class="empty-state-icon" style="margin:0 auto 16px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
+          <div class="empty-state-title">Editor de conteúdo</div>
+          <div class="empty-state-text">Selecione um modelo ou comece do zero.</div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:20px">
+            <button class="btn btn-secondary" onclick="showToast('Biblioteca de modelos em breve.',{type:'info'})">Usar um modelo</button>
+            <button class="btn btn-auto" onclick="showToast('Editor visual em breve.',{type:'info'})">Criar do zero</button>
+          </div>
+        </div>
+      </div>
+      <div id="wstep-3" class="tab-pane">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--success-light);border:1px solid var(--success-mid);border-radius:var(--radius-md)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><div><div style="font-weight:600;font-size:13px;color:var(--success)">Remetente verificado</div><div style="font-size:12px;color:var(--text-3)">SPF e DKIM configurados</div></div></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--success-light);border:1px solid var(--success-mid);border-radius:var(--radius-md)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><div><div style="font-weight:600;font-size:13px;color:var(--success)">Link de descadastro presente</div><div style="font-size:12px;color:var(--text-3)">Rodapé com opção de descadastro</div></div></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--warning-light);border:1px solid var(--warning-mid);border-radius:var(--radius-md)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div><div style="font-weight:600;font-size:13px;color:var(--warning)">Conteúdo não preenchido</div><div style="font-size:12px;color:var(--text-3)">Volte ao passo 2 para adicionar o conteúdo</div></div></div>
+        </div>
+      </div>
+      <div id="wstep-4" class="tab-pane">
+        <div class="form-group"><label class="form-label">Rastrear cliques</label><div style="display:flex;align-items:center;gap:10px"><button class="toggle on" onclick="this.classList.toggle('on')"></button><span class="t-sm c-2">Reescrever links para rastreamento</span></div></div>
+        <div class="form-group"><label class="form-label">Automação após abertura</label><select class="form-select"><option>Nenhuma</option><option>Adicionar marcador "Engajado"</option><option>Atualizar estágio para Oportunidades</option></select></div>
+        <div class="form-group"><label class="form-label">Automação após clique</label><select class="form-select"><option>Nenhuma</option><option>Atualizar score +5 pontos</option><option>Adicionar marcador "Interessado"</option></select></div>
+        <div class="form-group"><label class="form-label">Google Analytics UTM</label><div style="display:flex;align-items:center;gap:10px"><button class="toggle" onclick="this.classList.toggle('on')"></button><span class="t-sm c-2">Incluir parâmetros UTM nos links</span></div></div>
+      </div>
+      <div id="wstep-5" class="tab-pane">
+        <div class="form-group"><label class="form-label">Quando enviar?</label>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label class="radio-card selected" onclick="document.querySelectorAll('[name=sched]').forEach(r=>r.closest('.radio-card').classList.remove('selected'));this.classList.add('selected');document.getElementById('sched-date-row').style.display='none'"><input type="radio" name="sched" checked><div><div style="font-weight:600;font-size:13px">Enviar agora</div><div style="font-size:12px;color:var(--text-3)">O envio começará imediatamente</div></div></label>
+            <label class="radio-card" onclick="document.querySelectorAll('[name=sched]').forEach(r=>r.closest('.radio-card').classList.remove('selected'));this.classList.add('selected');document.getElementById('sched-date-row').style.display='grid'"><input type="radio" name="sched"><div><div style="font-weight:600;font-size:13px">Agendar para depois</div><div style="font-size:12px;color:var(--text-3)">Escolha data e hora específicas</div></div></label>
+          </div>
+        </div>
+        <div class="form-row" id="sched-date-row" style="display:none">
+          <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Hora</label><input type="time" class="form-input" value="09:00"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Restrição de horário</label><div style="display:flex;align-items:center;gap:10px"><button class="toggle" onclick="this.classList.toggle('on')"></button><span class="t-sm c-2">Não enviar em fins de semana</span></div></div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" id="wiz-back" onclick="wizardBack()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Voltar</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeSendWizard()">Cancelar</button>
+      <button class="btn btn-auto" id="wiz-next" onclick="wizardNext()">Próximo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRAWER: SMS WIZARD ══ -->
+<div id="drawer-sms-wizard" class="overlay" onclick="if(event.target===this)closeSmsWizard()">
+  <div class="drawer" style="width:560px">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Novo Envio SMS</div><div class="drawer-subtitle" id="sms-step-label">Passo 1 de 3 — Configuração</div></div>
+      <button class="drawer-close" onclick="closeSmsWizard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="padding:16px 24px 0;border-bottom:1px solid var(--border-light)">
+      <div class="stepper">
+        <div class="step-item"><div class="step-circle active" id="sms-circ-1">1</div><div class="step-line" id="sms-line-1"></div></div>
+        <div class="step-item"><div class="step-circle future" id="sms-circ-2">2</div><div class="step-line" id="sms-line-2"></div></div>
+        <div class="step-item"><div class="step-circle future" id="sms-circ-3">3</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;padding-bottom:12px">
+        <span class="t-xs fw-6 c-auto">Configuração</span><span class="t-xs c-3">Mensagem</span><span class="t-xs c-3">Agendamento</span>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div id="sms-step-1" class="tab-pane active">
+        <div class="form-group"><label class="form-label">Nome do envio <span class="req">*</span></label><input id="sms-w-name" type="text" class="form-input" placeholder="Ex: Promoção Julho SMS"></div>
+        <div class="form-group"><label class="form-label">Lista / Público <span class="req">*</span></label>
+          <select class="form-select"><option value="">Selecione uma lista…</option><option value="l1">Meus Contatos (85.420)</option><option value="l2">Leads Captados (12.840)</option><option value="l3">Clientes Ativos (5.630)</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Campanha</label><select class="form-select"><option>Nenhuma</option><option>Julho 2026</option><option>Onboarding</option></select></div>
+      </div>
+      <div id="sms-step-2" class="tab-pane">
+        <div class="form-group">
+          <label class="form-label">Mensagem <span class="req">*</span></label>
+          <textarea id="sms-w-msg" class="form-input" rows="5" placeholder="Digite sua mensagem (máx. 160 caracteres por SMS)…" oninput="smsUpdateCounter()" style="resize:vertical"></textarea>
+          <div class="char-counter" id="sms-char-counter">0/160 caracteres · 1 SMS</div>
+        </div>
+        <div class="form-group"><label class="form-label">Variáveis de personalização</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="insertSmsVar('{{nome}}')">{{nome}}</button>
+            <button class="btn btn-ghost btn-sm" onclick="insertSmsVar('{{email}}')">{{email}}</button>
+            <button class="btn btn-ghost btn-sm" onclick="insertSmsVar('{{link}}')">{{link}}</button>
+          </div>
+        </div>
+        <div class="alert alert-info"><svg class="alert-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><div>Mensagens acima de 160 caracteres são cobradas como múltiplos SMS.</div></div>
+      </div>
+      <div id="sms-step-3" class="tab-pane">
+        <div class="form-group"><label class="form-label">Quando enviar?</label>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label class="radio-card selected" onclick="document.querySelectorAll('[name=sms-sched]').forEach(r=>r.closest('.radio-card').classList.remove('selected'));this.classList.add('selected');document.getElementById('sms-date-row').style.display='none'"><input type="radio" name="sms-sched" checked><div><div style="font-weight:600;font-size:13px">Enviar agora</div><div style="font-size:12px;color:var(--text-3)">O envio começará imediatamente</div></div></label>
+            <label class="radio-card" onclick="document.querySelectorAll('[name=sms-sched]').forEach(r=>r.closest('.radio-card').classList.remove('selected'));this.classList.add('selected');document.getElementById('sms-date-row').style.display='grid'"><input type="radio" name="sms-sched"><div><div style="font-weight:600;font-size:13px">Agendar para depois</div><div style="font-size:12px;color:var(--text-3)">Escolha data e hora</div></div></label>
+          </div>
+        </div>
+        <div class="form-row" id="sms-date-row" style="display:none">
+          <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Hora</label><input type="time" class="form-input" value="09:00"></div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" id="sms-back" onclick="smsWizBack()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Voltar</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeSmsWizard()">Cancelar</button>
+      <button class="btn btn-auto" id="sms-next" onclick="smsWizNext()">Próximo</button>
+    </div>
+  </div>
+</div>
+<!-- ══ DRAWER: WHATSAPP WIZARD ══ -->
+<div id="drawer-wa-wizard" class="overlay" onclick="if(event.target===this)closeWaWizard()">
+  <div class="drawer" style="width:560px">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Novo Envio WhatsApp</div><div class="drawer-subtitle" id="wa-step-label">Passo 1 de 3 — Template</div></div>
+      <button class="drawer-close" onclick="closeWaWizard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="padding:16px 24px 0;border-bottom:1px solid var(--border-light)">
+      <div class="stepper">
+        <div class="step-item"><div class="step-circle active" id="wa-circ-1">1</div><div class="step-line" id="wa-line-1"></div></div>
+        <div class="step-item"><div class="step-circle future" id="wa-circ-2">2</div><div class="step-line" id="wa-line-2"></div></div>
+        <div class="step-item"><div class="step-circle future" id="wa-circ-3">3</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;padding-bottom:12px">
+        <span class="t-xs fw-6 c-auto">Template</span><span class="t-xs c-3">Configuração</span><span class="t-xs c-3">Agendamento</span>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <div id="wa-step-1" class="tab-pane active">
+        <p class="t-sm c-2" style="margin-bottom:14px">Selecione um template aprovado pelo Meta para este envio.</p>
+        <div class="wa-tpl-grid">
+          <div class="wa-tpl-card" data-tpl="wt1" onclick="waSelectTpl('wt1')"><div class="wa-tpl-name">Boas-vindas v2</div><div class="wa-tpl-vars">Variáveis: {{nome}}, {{empresa}}</div></div>
+          <div class="wa-tpl-card" data-tpl="wt2" onclick="waSelectTpl('wt2')"><div class="wa-tpl-name">Carrinho Abandonado</div><div class="wa-tpl-vars">Variáveis: {{nome}}, {{produto}}, {{link}}</div></div>
+          <div class="wa-tpl-card" data-tpl="wt3" onclick="waSelectTpl('wt3')"><div class="wa-tpl-name">Promoção Exclusiva Junho</div><div class="wa-tpl-vars">Variáveis: {{nome}}, {{desconto}}</div></div>
+          <div class="wa-tpl-card" data-tpl="wt4" onclick="waSelectTpl('wt4')"><div class="wa-tpl-name">Confirmação de Pedido v1</div><div class="wa-tpl-vars">Variáveis: {{nome}}, {{pedido}}, {{valor}}</div></div>
+        </div>
+      </div>
+      <div id="wa-step-2" class="tab-pane">
+        <div class="form-group"><label class="form-label">Nome do envio <span class="req">*</span></label><input id="wa-w-name" type="text" class="form-input" placeholder="Ex: Carrinho Julho WA"></div>
+        <div class="form-group"><label class="form-label">Lista / Público <span class="req">*</span></label>
+          <select class="form-select"><option value="">Selecione…</option><option value="l1">Meus Contatos (85.420)</option><option value="l2">Leads Captados (12.840)</option><option value="l3">Clientes Ativos (5.630)</option><option value="l6">Abandono de Carrinho (3.890)</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Preencher variáveis do template</label>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px"><span class="badge badge-neutral" style="white-space:nowrap">{{nome}}</span><input type="text" class="form-input" placeholder="Campo: Nome do contato"></div>
+            <div style="display:flex;align-items:center;gap:10px"><span class="badge badge-neutral" style="white-space:nowrap">{{link}}</span><input type="text" class="form-input" placeholder="URL de destino"></div>
+          </div>
+        </div>
+      </div>
+      <div id="wa-step-3" class="tab-pane">
+        <div class="form-group"><label class="form-label">Quando enviar?</label>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label class="radio-card selected" onclick="document.querySelectorAll('[name=wa-sched]').forEach(r=>r.closest('.radio-card').classList.remove('selected'));this.classList.add('selected');document.getElementById('wa-date-row').style.display='none'"><input type="radio" name="wa-sched" checked><div><div style="font-weight:600;font-size:13px">Enviar agora</div></div></label>
+            <label class="radio-card" onclick="document.querySelectorAll('[name=wa-sched]').forEach(r=>r.closest('.radio-card').classList.remove('selected'));this.classList.add('selected');document.getElementById('wa-date-row').style.display='grid'"><input type="radio" name="wa-sched"><div><div style="font-weight:600;font-size:13px">Agendar para depois</div></div></label>
+          </div>
+        </div>
+        <div class="form-row" id="wa-date-row" style="display:none">
+          <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input"></div>
+          <div class="form-group"><label class="form-label">Hora</label><input type="time" class="form-input" value="09:00"></div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" id="wa-back" onclick="waWizBack()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Voltar</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeWaWizard()">Cancelar</button>
+      <button class="btn btn-auto" id="wa-next" onclick="waWizNext()">Próximo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRAWER: CAMPANHA FORM ══ -->
+<div id="drawer-campanha-form" class="overlay" onclick="if(event.target===this)closeOverlay('drawer-campanha-form')">
+  <div class="drawer" style="width:480px">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Nova Campanha</div><div class="drawer-subtitle">Agrupe envios por objetivo para análise comparativa</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-campanha-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group"><label class="form-label">Nome da campanha <span class="req">*</span></label><input id="ca-name" type="text" class="form-input" placeholder="Ex: Black Friday 2026"></div>
+      <div class="form-group"><label class="form-label">Objetivo</label>
+        <select id="ca-obj" class="form-select">
+          <option>Vendas</option><option>Lançamento</option><option>Retenção</option>
+          <option>Re-engajamento</option><option>Institucional</option><option>Outro</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Data de início</label><input id="ca-start" type="date" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Data de fim</label><input id="ca-end" type="date" class="form-input"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-input" rows="3" placeholder="Descreva o objetivo desta campanha…" style="resize:vertical"></textarea></div>
+    </div>
+    <div class="drawer-footer">
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-campanha-form')">Cancelar</button>
+      <button class="btn btn-auto" onclick="saveCampanha()">Criar campanha</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRAWER: WEBHOOK FORM ══ -->
+<div id="drawer-webhook-form" class="overlay" onclick="if(event.target===this)closeOverlay('drawer-webhook-form')">
+  <div class="drawer" style="width:480px">
+    <div class="drawer-header">
+      <div><div class="drawer-title">Novo Webhook</div><div class="drawer-subtitle">Configure uma notificação HTTP para sistema externo</div></div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-webhook-form')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body">
+      <div class="form-group">
+        <label class="form-label">URL de destino <span class="req">*</span></label>
+        <input id="wh-url" type="url" class="form-input" placeholder="https://api.seuservico.com/webhook">
+        <span class="form-help">A URL receberá uma requisição POST com os dados do evento.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Evento gatilho</label>
+        <select id="wh-event" class="form-select">
+          <option>Contato adicionado</option>
+          <option>Contato atualizado</option>
+          <option>Contato removido</option>
+          <option>Abertura de e-mail</option>
+          <option>Clique em link</option>
+          <option>Conversão</option>
+          <option>Descadastro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chave secreta (opcional)</label>
+        <input type="text" class="form-input" placeholder="Token para validar a autenticidade">
+        <span class="form-help">Enviada no header <code>X-Dinamize-Signature</code>.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ativo</label>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          <span class="t-sm c-2">Disparar eventos imediatamente após salvar</span>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeOverlay('drawer-webhook-form')">Cancelar</button>
+      <button class="btn btn-auto" onclick="saveWebhook()">Criar webhook</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRAWER: LP WIZARD ══ -->
+<div id="drawer-lp-wizard" class="overlay" onclick="if(event.target===this)closeLpWizard()">
+  <div class="drawer" style="width:520px">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title" id="lp-drawer-title">Nova Landing Page</div>
+        <div class="drawer-subtitle" id="lp-drawer-sub">Passo 1 de 2 — Escolha um template</div>
+      </div>
+      <button class="drawer-close" onclick="closeLpWizard()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body" id="lp-step-1">
+      <p class="t-sm c-2" style="margin-bottom:16px">Selecione o template que melhor se adapta ao objetivo da sua página.</p>
+      <div id="lp-templates-grid" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+    <div class="drawer-body" id="lp-step-2" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nome da página <span class="req">*</span></label>
+        <input id="lp-name" type="text" class="form-input" placeholder="Ex: Oferta Especial Julho 2026">
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL (slug)</label>
+        <div style="display:flex;align-items:stretch;border:1.5px solid var(--border);border-radius:var(--radius-md);overflow:hidden">
+          <span style="padding:0 10px;background:var(--bg-subtle);color:var(--text-3);font-size:12px;white-space:nowrap;border-right:1px solid var(--border);display:flex;align-items:center">seudominio.com/lp/</span>
+          <input id="lp-slug" type="text" class="form-input" style="border:none;border-radius:0;flex:1;box-shadow:none" placeholder="nome-da-pagina">
+        </div>
+        <span class="form-help">Letras minúsculas, números e hífens apenas.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Objetivo da página</label>
+        <select id="lp-objective" class="form-select">
+          <option value="leads">Captura de leads</option>
+          <option value="sales">Vendas / Conversão</option>
+          <option value="event">Evento / Webinar</option>
+          <option value="download">Download / Conteúdo rico</option>
+          <option value="survey">Pesquisa de satisfação</option>
+          <option value="other">Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Template selecionado</label>
+        <div id="lp-tpl-summary" style="padding:10px 12px;background:var(--bg-subtle);border-radius:var(--radius-md);font-size:13px;color:var(--text-2)">—</div>
+      </div>
+    </div>
+    <div class="drawer-footer">
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" id="lp-btn-back" onclick="lpWizardPrev()" style="display:none">Voltar</button>
+      <button class="btn btn-secondary" id="lp-btn-cancel" onclick="closeLpWizard()">Cancelar</button>
+      <button class="btn btn-auto" id="lp-btn-next" onclick="lpWizardNext()">Próximo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DRAWER: LP STATS ══ -->
+<div id="drawer-lp-stats" class="overlay" onclick="if(event.target===this)closeOverlay('drawer-lp-stats')">
+  <div class="drawer" style="width:440px">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-title" id="lp-stats-title">Relatório da Página</div>
+        <div class="drawer-subtitle" id="lp-stats-url" style="font-family:monospace;font-size:11px">—</div>
+      </div>
+      <button class="drawer-close" onclick="closeOverlay('drawer-lp-stats')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="drawer-body" id="lp-stats-body"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL: DELETE SEND ══ -->
+<div id="modal-delete-send" class="overlay" onclick="if(event.target===this)closeOverlay('modal-delete-send')">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header">
+      <h3 class="modal-title" id="delete-modal-title">Excluir envio</h3>
+      <button class="btn btn-ghost btn-icon-sm" onclick="closeOverlay('modal-delete-send')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="t-sm c-2" style="margin-bottom:6px">Você está prestes a excluir:</p>
+      <p class="fw-6" id="delete-send-name" style="margin-bottom:14px;font-size:14px">—</p>
+      <p class="t-sm c-3">Esta ação não pode ser desfeita. Dados de desempenho serão removidos permanentemente.</p>
+    </div>
+    <div class="modal-footer">
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeOverlay('modal-delete-send')">Cancelar</button>
+      <button class="btn btn-danger" id="delete-modal-btn" onclick="confirmDeleteSend()">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LP EDITOR (full-screen) ══ -->
+<div id="overlay-lp-editor" class="lp-editor-overlay">
+  <!-- Titlebar (dark) -->
+  <div class="lp-editor-titlebar">
+    <div class="lp-editor-titlebar-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    </div>
+    <div class="lp-editor-titlebar-title">Personalização de landing page</div>
+    <button class="lp-editor-titlebar-close" onclick="closeLpEditor()">
+      Fechar <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    </button>
+  </div>
+  <!-- Actionbar (white) -->
+  <div class="lp-editor-actionbar">
+    <span class="lp-editor-actionbar-hint">Selecione e personalize os componentes da sua landing page</span>
+    <button class="btn btn-ghost btn-sm" onclick="closeLpEditor();openLpWizard(_lpEditorId)" style="flex-shrink:0;font-size:12px">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Escolher outro modelo
+    </button>
+    <div class="lp-editor-preview-toggle">
+      <button class="lp-editor-preview-btn active" id="lp-prev-desk" onclick="_lpPrevMode('desktop',this)" title="Desktop">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </button>
+      <button class="lp-editor-preview-btn" id="lp-prev-mob" onclick="_lpPrevMode('mobile',this)" title="Mobile">
+        <svg width="11" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      </button>
+    </div>
+    <button class="btn btn-auto btn-sm" onclick="_saveLpEditor()" style="flex-shrink:0">Concluir →</button>
+  </div>
+  <!-- Body -->
+  <div class="lp-editor-layout">
+    <!-- Left: Component palette / Properties (two screens) -->
+    <div class="lp-editor-sidebar">
+      <!-- Screen 1: Component palette -->
+      <div id="lp-panel-main" style="display:flex;flex-direction:column;height:100%;overflow:hidden">
+        <div class="lp-panel-tabs">
+          <button class="lp-panel-tab active" onclick="_lpTab('conteudo',this)">CONTEÚDO</button>
+          <button class="lp-panel-tab" onclick="_lpTab('estilo',this)">ESTILO</button>
+          <button class="lp-panel-tab" onclick="_lpTab('documento',this)">DOCUMENTO</button>
+        </div>
+        <div class="lp-comp-scroll">
+          <div id="lp-tab-conteudo"><div class="lp-comp-grid" id="lp-comp-grid"></div></div>
+          <div id="lp-tab-estilo" style="display:none" class="lp-tab-content">
+            <div class="form-group"><label class="form-label">Cor de fundo</label><input type="color" value="#ffffff" class="form-input" style="height:36px;padding:2px 4px"></div>
+            <div class="form-group"><label class="form-label">Cor de destaque</label><input type="color" value="#EA5456" class="form-input" style="height:36px;padding:2px 4px"></div>
+            <div class="form-group"><label class="form-label">Fonte padrão</label>
+              <select class="form-select"><option>DM Sans</option><option>Nunito</option><option>Inter</option><option>Poppins</option></select>
+            </div>
+          </div>
+          <div id="lp-tab-documento" style="display:none" class="lp-tab-content">
+            <div class="form-group"><label class="form-label">Título da página (SEO)</label><input class="form-input" id="lp-doc-title" placeholder="Ex: Oferta Especial"></div>
+            <div class="form-group"><label class="form-label">Meta descrição</label><textarea class="form-input" rows="2" placeholder="Descrição para buscadores"></textarea></div>
+            <div class="form-group"><label class="form-label">Google Analytics ID</label><input class="form-input" placeholder="G-XXXXXXXXXX"></div>
+          </div>
+        </div>
+        <!-- Sections outline -->
+        <div class="lp-sections-outline">
+          <div class="lp-sections-outline-hd">Seções da página</div>
+          <div id="lp-sections-list" style="padding:4px 0 8px"></div>
+        </div>
+      </div>
+      <!-- Screen 2: Component properties -->
+      <div id="lp-panel-props" style="display:none;flex-direction:column;height:100%;overflow:hidden">
+        <div class="lp-panel-back">
+          <button class="lp-panel-back-btn" onclick="_lpBackToMain()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Componentes
+          </button>
+          <span class="lp-panel-back-label" id="lp-props-sec-label">—</span>
+        </div>
+        <div class="lp-panel-props-body" id="lp-props-body"></div>
+      </div>
+    </div>
+    <!-- Canvas -->
+    <div class="lp-editor-canvas-wrap" id="lp-canvas-wrap">
+      <div class="lp-editor-canvas-inner" id="lp-canvas"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/data.js?v=3"></script>
+<script src="js/ui.js?v=4"></script>
+<script>
+/* ── channel routing ── */
+const CHANNEL_META = {
+  'email':         { label:'E-mail',         search:'Buscar envios…',        render:()=>renderEmailTable(sendsFilter) },
+  'sms':           { label:'SMS',            search:'Buscar envios SMS…',     render:()=>renderSmsTable(smsFilter) },
+  'whatsapp':      { label:'WhatsApp',       search:'Buscar envios WA…',      render:()=>renderWaTable() },
+  'landing-pages': { label:'Landing Pages',  search:'Buscar landing pages…',  render:()=>renderLandingPages() },
+  'popups':        { label:'Pop-ups',        search:'Buscar pop-ups…',        render:()=>renderPopups() },
+  'campanhas':     { label:'Campanhas',      search:'Buscar campanhas…',      render:()=>renderCampanhas() },
+  'formularios':   { label:'Formulários',    search:'Buscar formulários…',    render:()=>renderFormularios() },
+  'webhooks':      { label:'Webhooks',       search:'Buscar webhooks…',       render:()=>renderWebhooks() },
+  'social':        { label:'Mídias Sociais', search:'Buscar publicações…',    render:()=>renderSocial() },
+};
+let currentChannel = 'email';
+
+function switchChannel(id) {
+  currentChannel = id;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  document.querySelectorAll('[data-ch]').forEach(a => a.classList.toggle('active', a.dataset.ch === id));
+  document.querySelectorAll('[id^="snav-"]').forEach(a => a.classList.remove('active'));
+  const snavId = 'snav-' + id;
+  if (document.getElementById(snavId)) document.getElementById(snavId).classList.add('active');
+  const meta = CHANNEL_META[id];
+  document.getElementById('topbar-channel-label').textContent = 'Canais · ' + meta.label;
+  document.getElementById('topbar-search-input').placeholder = meta.search;
+  meta.render();
+}
+
+/* ── shared helpers ── */
+function fmtNum(n) { return n ? n.toLocaleString('pt-BR') : '0'; }
+function fmtPct(n) { return n ? (n*100).toFixed(1)+'%' : '—'; }
+function statusBadge(s) {
+  const m = { sent:'Enviado', sched:'Agendado', draft:'Rascunho', processing:'Processando', active:'Ativo', paused:'Pausado', published:'Publicada', archived:'Arquivada' };
+  const c = { sent:'success', sched:'info', draft:'neutral', processing:'warning', active:'success', paused:'neutral', published:'success', archived:'neutral' };
+  return `<span class="badge badge-${c[s]||'neutral'}">${m[s]||s}</span>`;
+}
+
+/* ── E-MAIL ── */
+let sendsFilter = 'all';
+function renderEmailTable(filter, query='') {
+  let rows = DB.sends;
+  if (filter !== 'all') rows = rows.filter(s => s.status === filter);
+  if (query) rows = rows.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+  const tbody = document.getElementById('email-tbody');
+  if (!tbody) return;
+  document.getElementById('email-count').textContent = rows.length + ' envio' + (rows.length !== 1 ? 's' : '');
+  if (!rows.length) { tbody.innerHTML=`<tr><td colspan="9">${emptyState('E-mail','Nenhum envio encontrado','Crie seu primeiro envio clicando em "Novo Envio".')}</td></tr>`; return; }
+  tbody.innerHTML = rows.map(s => {
+    const or = s.opens ? fmtPct(s.opens/s.recipients) : '—';
+    const cr = s.clicks && s.opens ? fmtPct(s.clicks/s.opens) : '—';
+    return `<tr>
+      <td><div class="cell-primary truncate" style="max-width:240px">${s.name}</div>${s.campaign?`<div class="cell-secondary">${s.campaign}</div>`:''}</td>
+      <td><span class="badge badge-neutral">${s.type}</span></td>
+      <td>${statusBadge(s.status)}</td>
+      <td class="c-2 t-sm truncate" style="max-width:140px">${s.list}</td>
+      <td class="fw-5">${s.recipients?fmtNum(s.recipients):'—'}</td>
+      <td>${or!=='—'?`<span class="fw-6">${or}</span>`:or}</td>
+      <td>${cr}</td>
+      <td class="c-3 t-sm">${s.sentAt}</td>
+      <td class="col-actions"><div class="row-actions">
+        ${s.status==='sent'?`<a class="btn btn-ghost btn-icon-sm" href="relatorios.html" data-tip="Relatório"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></a>`:''}
+        <div class="dropdown"><button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" onclick="showToast('Envio duplicado.',{type:'success'})">Duplicar</div>
+            ${s.status==='sent'?`<div class="dropdown-item" onclick="window.location='relatorios.html'">Ver relatório</div>`:''}
+            ${s.status==='draft'?`<div class="dropdown-item" onclick="openSendWizard()">Continuar edição</div>`:''}
+            <div class="dropdown-separator"></div>
+            <div class="dropdown-item danger" onclick="openDeleteSend('${s.id}')">Excluir</div>
+          </div>
+        </div>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+function filterEmail(f, btn) { sendsFilter=f; document.querySelectorAll('#email-tab-seg .seg-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderEmailTable(f); }
+
+/* ── SMS ── */
+let smsFilter = 'all';
+function renderSmsTable(filter, query='') {
+  let rows = DB.smsSends;
+  if (filter !== 'all') rows = rows.filter(s => s.status === filter);
+  if (query) rows = rows.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+  const tbody = document.getElementById('sms-tbody');
+  if (!tbody) return;
+  document.getElementById('sms-count').textContent = rows.length + ' envio' + (rows.length !== 1 ? 's' : '');
+  if (!rows.length) { tbody.innerHTML=`<tr><td colspan="7">${emptyState('SMS','Nenhum envio SMS encontrado','Crie seu primeiro envio clicando em "Novo Envio SMS".')}</td></tr>`; return; }
+  tbody.innerHTML = rows.map(s => {
+    const taxa = s.delivered && s.recipients ? fmtPct(s.delivered/s.recipients) : '—';
+    return `<tr>
+      <td><div class="cell-primary truncate" style="max-width:260px">${s.name}</div></td>
+      <td>${statusBadge(s.status)}</td>
+      <td class="c-2 t-sm">${s.list}</td>
+      <td class="fw-5">${s.recipients?fmtNum(s.recipients):'—'}</td>
+      <td>${s.delivered?fmtNum(s.delivered):'—'}</td>
+      <td>${taxa!=='—'?`<span class="fw-6">${taxa}</span>`:taxa}</td>
+      <td class="c-3 t-sm">${s.sentAt}</td>
+      <td class="col-actions"><div class="row-actions">
+        <div class="dropdown"><button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" onclick="showToast('Duplicar em breve.',{type:'info'})">Duplicar</div>
+            <div class="dropdown-separator"></div>
+            <div class="dropdown-item danger" onclick="openDeleteSend('${s.id}','sms')">Excluir</div>
+          </div>
+        </div>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+function filterSms(f, btn) { smsFilter=f; document.querySelectorAll('#sms-tab-seg .seg-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderSmsTable(f); }
+
+/* ── WHATSAPP ── */
+function renderWaTable(query='') {
+  let rows = DB.waSends;
+  if (query) rows = rows.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+  const tbody = document.getElementById('wa-tbody');
+  if (!tbody) return;
+  document.getElementById('wa-count').textContent = rows.length + ' envio' + (rows.length !== 1 ? 's' : '');
+  if (!rows.length) { tbody.innerHTML=`<tr><td colspan="8">${emptyState('💬','Nenhum envio WhatsApp','Crie seu primeiro envio clicando em "Novo Envio WA".')}</td></tr>`; return; }
+  tbody.innerHTML = rows.map(s => {
+    const readRate = s.read && s.delivered ? fmtPct(s.read/s.delivered) : '—';
+    return `<tr>
+      <td><div class="cell-primary truncate" style="max-width:200px">${s.name}</div></td>
+      <td><span class="badge badge-neutral" style="font-family:monospace;font-size:10px">${s.template}</span></td>
+      <td>${statusBadge(s.status)}</td>
+      <td class="c-2 t-sm">${s.list}</td>
+      <td class="fw-5">${s.recipients?fmtNum(s.recipients):'—'}</td>
+      <td>${s.delivered?fmtNum(s.delivered):'—'}</td>
+      <td>${readRate!=='—'?`<span class="fw-6">${readRate}</span>`:readRate}</td>
+      <td class="c-3 t-sm">${s.sentAt}</td>
+      <td class="col-actions"><div class="row-actions">
+        <div class="dropdown"><button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" onclick="showToast('Duplicar em breve.',{type:'info'})">Duplicar</div>
+            <div class="dropdown-separator"></div>
+            <div class="dropdown-item danger" onclick="openDeleteSend('${s.id}','wa')">Excluir</div>
+          </div>
+        </div>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── LANDING PAGES ── */
+let lpFilter = 'all';
+function renderLandingPages(query='') {
+  let rows = DB.landingPages;
+  if (lpFilter !== 'all') rows = rows.filter(l => l.status === lpFilter);
+  if (query) rows = rows.filter(l => l.name.toLowerCase().includes(query.toLowerCase()));
+  const el = document.getElementById('lp-grid');
+  if (!el) return;
+  document.getElementById('lp-count').textContent = rows.length + ' página' + (rows.length !== 1 ? 's' : '');
+  if (!rows.length) { el.innerHTML=`<div style="grid-column:1/-1">${emptyState('🌐','Nenhuma landing page','Crie sua primeira landing page clicando em "Nova Landing Page".')}</div>`; return; }
+  const icons = { published:'🟢', draft:'⚪', archived:'🔘' };
+  el.innerHTML = rows.map(l => `
+    <div class="lp-card">
+      <div class="lp-thumb" style="font-size:36px">${l.status==='published'?'🌐':l.status==='draft'?'📝':'📦'}</div>
+      <div class="lp-card-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
+          <div class="lp-card-name">${l.name}</div>
+          ${statusBadge(l.status)}
+        </div>
+        <div class="lp-card-url">${l.url}</div>
+        <div class="lp-card-stats">
+          <div><div class="lp-stat-label">Visitas</div><div class="lp-stat-val">${fmtNum(l.visits)}</div></div>
+          <div><div class="lp-stat-label">Conversão</div><div class="lp-stat-val">${l.convRate?fmtPct(l.convRate):'—'}</div></div>
+        </div>
+        <div class="lp-card-footer">
+          <button class="btn btn-ghost btn-sm" onclick="openLpEditor('${l.id}')">Editar</button>
+          ${l.status==='published'?`<button class="btn btn-ghost btn-sm" onclick="openLpStats('${l.id}')">Relatório</button>`:''}
+          <div class="dropdown" style="margin-left:auto">
+            <button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            <div class="dropdown-menu">
+              <div class="dropdown-item" onclick="openLpWizard('${l.id}')">Configurações</div>
+              <div class="dropdown-item" onclick="showToast('Duplicar em breve.',{type:'info'})">Duplicar</div>
+              ${l.status==='published'?`<div class="dropdown-item" onclick="toggleLpPublish('${l.id}')">Despublicar</div>`:`<div class="dropdown-item" onclick="toggleLpPublish('${l.id}')">Publicar</div>`}
+              <div class="dropdown-separator"></div>
+              <div class="dropdown-item danger" onclick="openDeleteSend('${l.id}','lp')">Excluir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function filterLp(f, btn) { lpFilter=f; document.querySelectorAll('#lp-tab-seg .seg-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderLandingPages(); }
+
+/* ── POP-UPS ── */
+function renderPopups() {
+  const rows = DB.popups;
+  const tbody = document.getElementById('pp-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(p => `<tr>
+    <td><div class="cell-primary">${p.name}</div></td>
+    <td class="c-2 t-sm">${p.site}</td>
+    <td class="c-2 t-sm">${p.trigger}</td>
+    <td class="c-2 t-sm">${p.audience}</td>
+    <td><button class="toggle ${p.status==='active'?'on':''}" onclick="togglePopup('${p.id}',this)"></button></td>
+    <td class="fw-5">${fmtNum(p.views)}</td>
+    <td class="fw-5">${fmtNum(p.conversions)}</td>
+    <td><span class="fw-6">${fmtPct(p.convRate)}</span></td>
+    <td class="col-actions"><div class="row-actions">
+      <button class="btn btn-ghost btn-sm" onclick="showToast('Editor em breve.',{type:'info'})">Editar</button>
+      <div class="dropdown"><button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="dropdown-menu">
+          <div class="dropdown-item" onclick="showToast('Duplicar em breve.',{type:'info'})">Duplicar</div>
+          <div class="dropdown-separator"></div>
+          <div class="dropdown-item danger" onclick="openDeleteSend('${p.id}','popup')">Excluir</div>
+        </div>
+      </div>
+    </div></td>
+  </tr>`).join('');
+}
+function togglePopup(id, btn) {
+  const p = DB.popups.find(x=>x.id===id);
+  if (!p) return;
+  p.status = p.status==='active' ? 'paused' : 'active';
+  btn.classList.toggle('on', p.status==='active');
+  showToast(p.status==='active'?'Pop-up ativado.':'Pop-up pausado.', {type:'info'});
+}
+
+/* ── CAMPANHAS ── */
+function renderCampanhas() {
+  const rows = DB.campanhas;
+  const tbody = document.getElementById('ca-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(c => `<tr>
+    <td><div class="cell-primary">${c.name}</div></td>
+    <td class="c-2 t-sm">${c.objective}</td>
+    <td class="c-3 t-sm">${c.start} – ${c.end}</td>
+    <td class="fw-5">${c.sends}</td>
+    <td>${c.opens?`<span class="fw-6">${fmtPct(c.opens)}</span>`:'—'}</td>
+    <td>${c.clicks?`<span class="fw-6">${fmtPct(c.clicks)}</span>`:'—'}</td>
+    <td class="c-2 t-sm">${c.revenue}</td>
+    <td class="col-actions"><div class="row-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openDrawer('drawer-campanha-form')">Editar</button>
+      <div class="dropdown"><button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="dropdown-menu">
+          <div class="dropdown-item" onclick="showToast('Relatório em breve.',{type:'info'})">Ver relatório</div>
+          <div class="dropdown-separator"></div>
+          <div class="dropdown-item danger" onclick="openDeleteSend('${c.id}','campanha')">Excluir</div>
+        </div>
+      </div>
+    </div></td>
+  </tr>`).join('');
+}
+
+/* ── FORMULÁRIOS ── */
+function renderFormularios() {
+  const rows = DB.formularios;
+  const el = document.getElementById('fm-grid');
+  if (!el) return;
+  el.innerHTML = rows.map(f => `
+    <div class="fm-card">
+      <div class="fm-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
+      <div class="fm-card-name">${f.name}</div>
+      <div class="fm-card-meta">${f.fields} campos · ${fmtNum(f.submissions)} submissões</div>
+      <div class="fm-card-footer">
+        ${statusBadge(f.status)}
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="showToast('Editor em breve.',{type:'info'})">Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick="showToast('Código copiado!',{type:'success'})">Embed</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── WEBHOOKS ── */
+function renderWebhooks() {
+  const rows = DB.webhooks;
+  const tbody = document.getElementById('wh-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(w => `<tr>
+    <td><div class="cell-primary t-xs" style="font-family:monospace;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.url}</div></td>
+    <td><span class="badge badge-neutral t-xs">${w.event}</span></td>
+    <td><span class="badge badge-neutral">POST</span></td>
+    <td><button class="toggle ${w.status==='active'?'on':''}" onclick="toggleWebhook('${w.id}',this)"></button></td>
+    <td class="c-3 t-sm">${w.lastTriggered}</td>
+    <td class="fw-5">${fmtNum(w.calls)}</td>
+    <td class="col-actions"><div class="row-actions">
+      <button class="btn btn-ghost btn-sm" onclick="showToast('Testando webhook…',{type:'info'})">Testar</button>
+      <div class="dropdown"><button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="dropdown-menu">
+          <div class="dropdown-item" onclick="openDrawer('drawer-webhook-form')">Editar</div>
+          <div class="dropdown-item" onclick="showToast('Histórico em breve.',{type:'info'})">Ver histórico</div>
+          <div class="dropdown-separator"></div>
+          <div class="dropdown-item danger" onclick="openDeleteSend('${w.id}','webhook')">Excluir</div>
+        </div>
+      </div>
+    </div></td>
+  </tr>`).join('');
+}
+function toggleWebhook(id, btn) {
+  const w = DB.webhooks.find(x=>x.id===id);
+  if (!w) return;
+  w.status = w.status==='active' ? 'paused' : 'active';
+  btn.classList.toggle('on', w.status==='active');
+  showToast(w.status==='active'?'Webhook ativado.':'Webhook pausado.', {type:'info'});
+}
+
+/* ── MÍDIAS SOCIAIS ── */
+function renderSocial() {
+  const accEl = document.getElementById('social-accounts');
+  const postEl = document.getElementById('social-posts');
+  if (!accEl || !postEl) return;
+  accEl.innerHTML = DB.socialAccounts.map(a => `
+    <div class="social-acc-card">
+      <div class="social-net-icon ${a.network==='facebook'?'sni-fb':'sni-ig'}">${a.network==='facebook'?'f':'ig'}</div>
+      <div class="social-acc-info">
+        <div class="social-acc-name">${a.name}</div>
+        <div class="social-acc-sub">${fmtNum(parseInt(a.followers))} seguidores · Sincronizado ${a.lastSync}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="showToast('Desconectar em breve.',{type:'info'})">Conectado</button>
+    </div>`).join('');
+  postEl.innerHTML = DB.socialPosts.map(p => `
+    <div class="social-post-item">
+      <div class="social-post-net ${p.network==='facebook'?'sni-fb':'sni-ig'}">${p.network==='facebook'?'f':'ig'}</div>
+      <div class="social-post-body">
+        <div class="social-post-text">${p.content}</div>
+        <div class="social-post-meta">${p.scheduledAt} · ${p.status==='published'?`<span style="color:var(--success)">Publicado</span>· ${fmtNum(p.likes)} curtidas`:'<span style="color:var(--info)">Agendado</span>'}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+        ${p.status==='scheduled'?`<button class="btn btn-ghost btn-sm" onclick="showToast('Editor em breve.',{type:'info'})">Editar</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="openDeleteSend('${p.id}','social')">Excluir</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ── drawer helpers (light wrappers) ── */
+function openDrawer(id) { openOverlay(id); }
+
+/* ── Email wizard ── */
+let wizardStep = 1;
+const WIZARD_STEPS = 5;
+function openSendWizard() { wizardStep=1; updateWizardUI(); openOverlay('drawer-send-wizard'); }
+function closeSendWizard() { closeOverlay('drawer-send-wizard'); }
+function wizardNext() {
+  if (wizardStep===1) {
+    if (!document.getElementById('w-send-name').value.trim()) { showToast('Informe o nome do envio.',{type:'warning'}); return; }
+    if (!document.getElementById('w-list').value) { showToast('Selecione uma lista.',{type:'warning'}); return; }
+    if (!document.getElementById('w-subject').value.trim()) { showToast('Informe o assunto.',{type:'warning'}); return; }
+  }
+  if (wizardStep===WIZARD_STEPS) { finalizeSend(); return; }
+  wizardStep++; updateWizardUI();
+}
+function wizardBack() { if (wizardStep>1) { wizardStep--; updateWizardUI(); } }
+function updateWizardUI() {
+  const labels = ['Configuração','Conteúdo','Validações','Interações','Agendamento'];
+  for (let i=1;i<=WIZARD_STEPS;i++) {
+    const p=document.getElementById(`wstep-${i}`), c=document.getElementById(`wcirc-${i}`), l=document.getElementById(`wline-${i}`);
+    if (p) p.classList.toggle('active', i===wizardStep);
+    if (c) { c.className='step-circle '+(i<wizardStep?'done':i===wizardStep?'active':'future'); c.innerHTML=i<wizardStep?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`:i; }
+    if (l) l.className='step-line '+(i<wizardStep?'done':'');
+  }
+  document.getElementById('wiz-step-label').textContent=`Passo ${wizardStep} de ${WIZARD_STEPS} — ${labels[wizardStep-1]}`;
+  document.getElementById('wiz-back').style.display=wizardStep>1?'inline-flex':'none';
+  const nb=document.getElementById('wiz-next');
+  nb.innerHTML=wizardStep===WIZARD_STEPS?'Confirmar envio <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>':'Próximo <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+}
+function finalizeSend() {
+  const name=document.getElementById('w-send-name').value.trim();
+  const listVal=document.getElementById('w-list').value;
+  const list=DB.lists.find(l=>l.id===listVal);
+  DB.sends.unshift({ id:'s'+Date.now(), name, type:'Pontual', status:'sched', list:list?.name||'—', recipients:list?.contacts||0, opens:0, clicks:0, created:new Date().toLocaleDateString('pt-BR'), sentAt:'Agendado', campaign:'' });
+  closeSendWizard();
+  renderEmailTable('all');
+  showToast('Envio agendado com sucesso!',{type:'success'});
+}
+function selectSendType(t) { document.getElementById('type-pontual').classList.toggle('selected',t==='pontual'); document.getElementById('type-ab').classList.toggle('selected',t==='ab'); }
+
+/* ── SMS wizard ── */
+let smsWizStep=1;
+function openSmsWizard() { smsWizStep=1; updateSmsWizUI(); openOverlay('drawer-sms-wizard'); }
+function closeSmsWizard() { closeOverlay('drawer-sms-wizard'); }
+function smsWizNext() {
+  if (smsWizStep===1 && !document.getElementById('sms-w-name').value.trim()) { showToast('Informe o nome do envio.',{type:'warning'}); return; }
+  if (smsWizStep===2 && !document.getElementById('sms-w-msg').value.trim()) { showToast('Digite a mensagem.',{type:'warning'}); return; }
+  if (smsWizStep===3) { finalizeSms(); return; }
+  smsWizStep++; updateSmsWizUI();
+}
+function smsWizBack() { if (smsWizStep>1) { smsWizStep--; updateSmsWizUI(); } }
+function updateSmsWizUI() {
+  const labels=['Configuração','Mensagem','Agendamento'];
+  for (let i=1;i<=3;i++) {
+    const p=document.getElementById(`sms-step-${i}`), c=document.getElementById(`sms-circ-${i}`), l=document.getElementById(`sms-line-${i}`);
+    if (p) p.classList.toggle('active',i===smsWizStep);
+    if (c) { c.className='step-circle '+(i<smsWizStep?'done':i===smsWizStep?'active':'future'); c.innerHTML=i<smsWizStep?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`:i; }
+    if (l) l.className='step-line '+(i<smsWizStep?'done':'');
+  }
+  document.getElementById('sms-step-label').textContent=`Passo ${smsWizStep} de 3 — ${labels[smsWizStep-1]}`;
+  document.getElementById('sms-back').style.display=smsWizStep>1?'inline-flex':'none';
+  document.getElementById('sms-next').textContent=smsWizStep===3?'Confirmar envio':'Próximo';
+}
+function smsUpdateCounter() {
+  const v=document.getElementById('sms-w-msg')?.value||'';
+  const el=document.getElementById('sms-char-counter');
+  if (!el) return;
+  const n=v.length, msgs=Math.ceil(n/160)||1;
+  el.textContent=`${n}/160 caracteres · ${msgs} SMS`;
+  el.className='char-counter'+(n>160?' char-warn':'');
+}
+function finalizeSms() {
+  DB.smsSends.unshift({ id:'sms'+Date.now(), name:document.getElementById('sms-w-name').value.trim(), status:'sched', list:'Meus Contatos', recipients:85420, delivered:0, created:new Date().toLocaleDateString('pt-BR'), sentAt:'Agendado' });
+  closeSmsWizard(); renderSmsTable('all'); showToast('Envio SMS agendado!',{type:'success'});
+}
+
+/* ── WhatsApp wizard ── */
+let waWizStep=1, waSelectedTpl=null;
+function openWaWizard() { waWizStep=1; waSelectedTpl=null; updateWaWizUI(); openOverlay('drawer-wa-wizard'); }
+function closeWaWizard() { closeOverlay('drawer-wa-wizard'); }
+function waSelectTpl(id) {
+  waSelectedTpl=id;
+  document.querySelectorAll('.wa-tpl-card').forEach(c=>c.classList.toggle('selected',c.dataset.tpl===id));
+}
+function waWizNext() {
+  if (waWizStep===1 && !waSelectedTpl) { showToast('Selecione um template.',{type:'warning'}); return; }
+  if (waWizStep===3) { finalizeWa(); return; }
+  waWizStep++; updateWaWizUI();
+}
+function waWizBack() { if (waWizStep>1) { waWizStep--; updateWaWizUI(); } }
+function updateWaWizUI() {
+  const labels=['Template','Configuração','Agendamento'];
+  for (let i=1;i<=3;i++) {
+    const p=document.getElementById(`wa-step-${i}`), c=document.getElementById(`wa-circ-${i}`), l=document.getElementById(`wa-line-${i}`);
+    if (p) p.classList.toggle('active',i===waWizStep);
+    if (c) { c.className='step-circle '+(i<waWizStep?'done':i===waWizStep?'active':'future'); c.innerHTML=i<waWizStep?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`:i; }
+    if (l) l.className='step-line '+(i<waWizStep?'done':'');
+  }
+  document.getElementById('wa-step-label').textContent=`Passo ${waWizStep} de 3 — ${labels[waWizStep-1]}`;
+  document.getElementById('wa-back').style.display=waWizStep>1?'inline-flex':'none';
+  document.getElementById('wa-next').textContent=waWizStep===3?'Confirmar envio':'Próximo';
+}
+function finalizeWa() {
+  const tpl=DB.waTemplates.find(t=>t.id===waSelectedTpl);
+  DB.waSends.unshift({ id:'wa'+Date.now(), name:document.getElementById('wa-w-name').value.trim()||'Novo Envio WA', template:tpl?.name||'—', status:'sched', list:'Meus Contatos', recipients:85420, delivered:0, read:0, created:new Date().toLocaleDateString('pt-BR'), sentAt:'Agendado' });
+  closeWaWizard(); renderWaTable(); showToast('Envio WhatsApp agendado!',{type:'success'});
+}
+
+/* ── Campanha form ── */
+function openCampanhaForm() { openOverlay('drawer-campanha-form'); }
+function saveCampanha() {
+  const name=document.getElementById('ca-name').value.trim();
+  if (!name) { showToast('Informe o nome da campanha.',{type:'warning'}); return; }
+  DB.campanhas.unshift({ id:'ca'+Date.now(), name, objective:document.getElementById('ca-obj').value||'Vendas', start:document.getElementById('ca-start').value||'—', end:document.getElementById('ca-end').value||'—', sends:0, opens:0, clicks:0, revenue:'—' });
+  closeOverlay('drawer-campanha-form'); renderCampanhas(); showToast('Campanha criada!',{type:'success'});
+}
+
+/* ── Webhook form ── */
+function openWebhookForm() { openOverlay('drawer-webhook-form'); }
+function saveWebhook() {
+  const url=document.getElementById('wh-url').value.trim();
+  if (!url) { showToast('Informe a URL do webhook.',{type:'warning'}); return; }
+  DB.webhooks.unshift({ id:'wh'+Date.now(), url, event:document.getElementById('wh-event').value||'Contato adicionado', method:'POST', status:'active', lastTriggered:'—', calls:0 });
+  closeOverlay('drawer-webhook-form'); renderWebhooks(); showToast('Webhook criado!',{type:'success'});
+}
+
+/* ── helpers ── */
+function insertSmsVar(v) {
+  const el = document.getElementById('sms-w-msg');
+  if (!el) return;
+  const s = el.selectionStart, e = el.selectionEnd;
+  el.value = el.value.slice(0,s) + v + el.value.slice(e);
+  el.selectionStart = el.selectionEnd = s + v.length;
+  el.focus();
+  smsUpdateCounter();
+}
+
+/* ── Delete item modal (reused for all channel types) ── */
+const _DEL_META = {
+  email:    { arr:()=>DB.sends,        set:v=>{DB.sends=v;},        render:()=>renderEmailTable(sendsFilter), label:'Excluir envio',          btn:'Excluir envio',    key:'name',    toast:'Envio excluído com sucesso.' },
+  sms:      { arr:()=>DB.smsSends,     set:v=>{DB.smsSends=v;},     render:()=>renderSmsTable(smsFilter),    label:'Excluir envio SMS',      btn:'Excluir envio',    key:'name',    toast:'Envio SMS excluído com sucesso.' },
+  wa:       { arr:()=>DB.waSends,      set:v=>{DB.waSends=v;},      render:()=>renderWaTable(),              label:'Excluir envio WhatsApp', btn:'Excluir envio',    key:'name',    toast:'Envio WhatsApp excluído com sucesso.' },
+  lp:       { arr:()=>DB.landingPages, set:v=>{DB.landingPages=v;}, render:()=>renderLandingPages(),         label:'Excluir landing page',   btn:'Excluir página',   key:'name',    toast:'Landing page excluída com sucesso.' },
+  popup:    { arr:()=>DB.popups,       set:v=>{DB.popups=v;},       render:()=>renderPopups(),               label:'Excluir pop-up',         btn:'Excluir pop-up',   key:'name',    toast:'Pop-up excluído com sucesso.' },
+  campanha: { arr:()=>DB.campanhas,    set:v=>{DB.campanhas=v;},    render:()=>renderCampanhas(),            label:'Excluir campanha',       btn:'Excluir campanha', key:'name',    toast:'Campanha excluída com sucesso.' },
+  webhook:  { arr:()=>DB.webhooks,     set:v=>{DB.webhooks=v;},     render:()=>renderWebhooks(),             label:'Excluir webhook',        btn:'Excluir webhook',  key:'url',     toast:'Webhook excluído com sucesso.' },
+  social:   { arr:()=>DB.socialPosts,  set:v=>{DB.socialPosts=v;},  render:()=>renderSocial(),               label:'Excluir publicação',     btn:'Excluir',          key:'content', toast:'Publicação excluída com sucesso.' },
+};
+let _deleteId = null, _deleteCollection = 'email';
+function openDeleteSend(id, col) {
+  _deleteId = id; _deleteCollection = col || 'email';
+  const m = _DEL_META[_deleteCollection] || _DEL_META.email;
+  const s = m.arr().find(x => x.id === id);
+  document.getElementById('delete-modal-title').textContent = m.label;
+  document.getElementById('delete-modal-btn').textContent = m.btn;
+  document.getElementById('delete-send-name').textContent = s ? s[m.key] : id;
+  openOverlay('modal-delete-send');
+}
+function confirmDeleteSend() {
+  if (!_deleteId) return;
+  const m = _DEL_META[_deleteCollection] || _DEL_META.email;
+  m.set(m.arr().filter(x => x.id !== _deleteId));
+  closeOverlay('modal-delete-send');
+  m.render();
+  showToast(m.toast, {type:'success'});
+  _deleteId = null; _deleteCollection = 'email';
+}
+
+/* ── LP Wizard ── */
+const LP_TEMPLATES = [
+  { id:'tpl-leads',   icon:'🎯', name:'Captura de Leads',   desc:'Formulário simples para capturar contatos com oferta ou conteúdo gratuito.' },
+  { id:'tpl-webinar', icon:'🎤', name:'Webinar / Evento',   desc:'Página de inscrição com contador regressivo e agenda do evento.' },
+  { id:'tpl-offer',   icon:'🏷️', name:'Oferta Especial',    desc:'Destaque um produto ou promoção com urgência e prova social.' },
+  { id:'tpl-corp',    icon:'🏢', name:'Institucional',      desc:'Apresentação da empresa com missão, equipe e canais de contato.' },
+  { id:'tpl-blank',   icon:'📄', name:'Em branco',          desc:'Comece do zero com uma página totalmente personalizável.' },
+];
+let lpWizardStep = 1, lpEditId = null, lpSelectedTpl = null;
+
+function openLpWizard(editId) {
+  lpEditId = editId || null;
+  lpWizardStep = 1; lpSelectedTpl = null;
+  document.getElementById('lp-drawer-title').textContent = lpEditId ? 'Editar Landing Page' : 'Nova Landing Page';
+  if (lpEditId) {
+    const lp = DB.landingPages.find(x => x.id === lpEditId);
+    if (!lp) return;
+    document.getElementById('lp-name').value = lp.name;
+    const slug = lp.url !== '—' ? (lp.url.split('/lp/')[1] || '') : '';
+    document.getElementById('lp-slug').value = slug;
+    lpSelectedTpl = lp.template || 'tpl-blank';
+    const tpl = LP_TEMPLATES.find(t => t.id === lpSelectedTpl);
+    document.getElementById('lp-tpl-summary').textContent = tpl ? tpl.icon + ' ' + tpl.name : 'Personalizado';
+    _showLpStep(2);
+  } else {
+    document.getElementById('lp-name').value = '';
+    document.getElementById('lp-slug').value = '';
+    _renderLpTemplates();
+    _showLpStep(1);
+  }
+  openOverlay('drawer-lp-wizard');
+}
+function closeLpWizard() { closeOverlay('drawer-lp-wizard'); }
+
+function _renderLpTemplates() {
+  document.getElementById('lp-templates-grid').innerHTML = LP_TEMPLATES.map(t => `
+    <div class="wa-tpl-card${lpSelectedTpl===t.id?' selected':''}" onclick="selectLpTemplate('${t.id}',this)" style="display:flex;gap:14px;align-items:flex-start;cursor:pointer">
+      <div style="font-size:24px;flex-shrink:0;line-height:1">${t.icon}</div>
+      <div><div class="fw-6 t-sm" style="margin-bottom:3px">${t.name}</div><div class="t-sm c-3">${t.desc}</div></div>
+    </div>`).join('');
+}
+function selectLpTemplate(id, el) {
+  lpSelectedTpl = id;
+  document.querySelectorAll('#lp-templates-grid .wa-tpl-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function _showLpStep(step) {
+  lpWizardStep = step;
+  document.getElementById('lp-step-1').style.display = step === 1 ? '' : 'none';
+  document.getElementById('lp-step-2').style.display = step === 2 ? '' : 'none';
+  document.getElementById('lp-drawer-sub').textContent = 'Passo ' + step + ' de 2 — ' + (step === 1 ? 'Escolha um template' : 'Configurações básicas');
+  document.getElementById('lp-btn-back').style.display = step === 2 && !lpEditId ? '' : 'none';
+  document.getElementById('lp-btn-next').textContent = step === 2 ? (lpEditId ? 'Salvar alterações' : 'Criar rascunho') : 'Próximo';
+}
+function lpWizardPrev() { if (lpWizardStep > 1) _showLpStep(1); }
+function lpWizardNext() {
+  if (lpWizardStep === 1) {
+    if (!lpSelectedTpl) { showToast('Selecione um template para continuar.', {type:'warning'}); return; }
+    const tpl = LP_TEMPLATES.find(t => t.id === lpSelectedTpl);
+    document.getElementById('lp-tpl-summary').textContent = tpl ? tpl.icon + ' ' + tpl.name : '—';
+    _showLpStep(2);
+  } else { _saveLp(); }
+}
+function _saveLp() {
+  const name = document.getElementById('lp-name').value.trim();
+  if (!name) { showToast('Informe o nome da página.', {type:'warning'}); return; }
+  const rawSlug = document.getElementById('lp-slug').value.trim();
+  const slug = (rawSlug || name).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  if (lpEditId) {
+    const lp = DB.landingPages.find(x => x.id === lpEditId);
+    if (lp) { lp.name = name; if (lp.status !== 'archived') lp.url = lp.status === 'published' ? 'seudominio.com/lp/' + slug : '—'; }
+    closeLpWizard(); renderLandingPages();
+    showToast('Landing page atualizada com sucesso.', {type:'success'});
+  } else {
+    const newLpId = 'lp'+Date.now();
+    DB.landingPages.unshift({ id:newLpId, name, status:'draft', url:'—', visits:0, convRate:0, template:lpSelectedTpl, created:new Date().toLocaleDateString('pt-BR'), updated:new Date().toLocaleDateString('pt-BR') });
+    closeLpWizard(); renderLandingPages();
+    showToast('Rascunho criado! Edite o conteúdo da sua página.', {type:'success'});
+    setTimeout(() => openLpEditor(newLpId), 350);
+  }
+}
+
+function toggleLpPublish(id) {
+  const lp = DB.landingPages.find(x => x.id === id);
+  if (!lp) return;
+  if (lp.status === 'published') {
+    lp.status = 'draft';
+    showToast('Landing page despublicada.', {type:'info'});
+  } else {
+    lp.status = 'published';
+    if (lp.url === '—') lp.url = 'seudominio.com/lp/' + lp.name.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+    showToast('Landing page publicada com sucesso!', {type:'success'});
+  }
+  renderLandingPages();
+}
+
+function openLpStats(id) {
+  const lp = DB.landingPages.find(x => x.id === id);
+  if (!lp) return;
+  const conversions = lp.visits && lp.convRate ? Math.round(lp.visits * lp.convRate) : 0;
+  document.getElementById('lp-stats-title').textContent = lp.name;
+  document.getElementById('lp-stats-url').textContent = lp.url !== '—' ? lp.url : 'Não publicada';
+  document.getElementById('lp-stats-body').innerHTML = `
+    <div class="content-grid-2" style="margin-bottom:20px">
+      <div class="kpi-card" style="padding:14px 16px"><div class="kpi-label">Visitas totais</div><div class="kpi-value" style="font-size:22px">${fmtNum(lp.visits)}</div></div>
+      <div class="kpi-card" style="padding:14px 16px"><div class="kpi-label">Conversões</div><div class="kpi-value" style="font-size:22px">${fmtNum(conversions)}</div></div>
+      <div class="kpi-card" style="padding:14px 16px"><div class="kpi-label">Taxa de conversão</div><div class="kpi-value" style="font-size:22px">${lp.convRate?fmtPct(lp.convRate):'—'}</div></div>
+      <div class="kpi-card" style="padding:14px 16px"><div class="kpi-label">Status</div><div style="margin-top:6px">${statusBadge(lp.status)}</div></div>
+    </div>
+    <div class="section-title" style="margin-bottom:10px">Informações</div>
+    <div class="stat-row"><span class="stat-label">Criada em</span><span class="stat-value">${lp.created}</span></div>
+    <div class="stat-row"><span class="stat-label">Atualizada em</span><span class="stat-value">${lp.updated}</span></div>
+    <div class="stat-row"><span class="stat-label">URL</span><span class="stat-value t-xs" style="font-family:monospace">${lp.url}</span></div>
+    <div class="section-title" style="margin-top:20px;margin-bottom:10px">Ações rápidas</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btn-auto btn-sm" style="justify-content:flex-start" onclick="closeOverlay('drawer-lp-stats');openLpEditor('${lp.id}')">Editar conteúdo</button>
+      ${lp.status!=='published'
+        ? `<button class="btn btn-secondary btn-sm" style="justify-content:flex-start" onclick="closeOverlay('drawer-lp-stats');toggleLpPublish('${lp.id}')">Publicar</button>`
+        : `<button class="btn btn-secondary btn-sm" style="justify-content:flex-start" onclick="closeOverlay('drawer-lp-stats');toggleLpPublish('${lp.id}')">Despublicar</button>`}
+    </div>`;
+  openOverlay('drawer-lp-stats');
+}
+
+/* ── LP Editor ── */
+const _LP_SEC_DEFS = {
+  'tpl-blank': [
+    { id:'s1', type:'hero',      label:'Hero',            icon:'🎯', data:{ title:'Seu Título Principal Aqui', subtitle:'Descrição clara do que você oferece.', btnText:'Saiba mais' } },
+    { id:'s2', type:'text',      label:'Conteúdo',        icon:'📝', data:{ heading:'Sobre nós', body:'Adicione o conteúdo principal da sua página aqui.' } },
+    { id:'s3', type:'footer',    label:'Rodapé',          icon:'📌', data:{ company:'Sua Empresa', copy:'© 2026 Sua Empresa. Todos os direitos reservados.' } },
+  ],
+  'tpl-capture': [
+    { id:'s1', type:'hero-form', label:'Hero + Formulário', icon:'📋', data:{ title:'Baixe nosso material gratuito', subtitle:'Preencha o formulário e receba em seu e-mail', btnText:'Quero receber!' } },
+    { id:'s2', type:'benefits',  label:'Benefícios',      icon:'✅', data:{ heading:'O que você vai aprender:', items:['Benefício 1','Benefício 2','Benefício 3'] } },
+    { id:'s3', type:'cta',       label:'CTA',             icon:'🎯', data:{ heading:'Não perca essa oportunidade!', btnText:'Quero agora!' } },
+    { id:'s4', type:'footer',    label:'Rodapé',          icon:'📌', data:{ company:'Sua Empresa', copy:'© 2026.' } },
+  ],
+  'tpl-vendas': [
+    { id:'s1', type:'hero',      label:'Hero',            icon:'🎯', data:{ title:'Transforme seu negócio hoje', subtitle:'A solução que vai dobrar seus resultados', btnText:'Comprar agora' } },
+    { id:'s2', type:'text',      label:'Problema/Solução', icon:'📝', data:{ heading:'Você já passou por isso?', body:'Muitas empresas enfrentam o desafio de crescer sem as ferramentas certas.' } },
+    { id:'s3', type:'benefits',  label:'Benefícios',      icon:'✅', data:{ heading:'O que você vai receber:', items:['Acesso imediato','Suporte 24h','Garantia de 30 dias'] } },
+    { id:'s4', type:'testimonials', label:'Depoimentos',  icon:'💬', data:{ items:[{name:'João Silva',role:'CEO',text:'Excelente produto! Recomendo muito.'}] } },
+    { id:'s5', type:'cta',       label:'CTA',             icon:'🎯', data:{ heading:'Garanta já o seu!', btnText:'Comprar agora' } },
+    { id:'s6', type:'footer',    label:'Rodapé',          icon:'📌', data:{ company:'Sua Empresa', copy:'© 2026.' } },
+  ],
+  'tpl-evento': [
+    { id:'s1', type:'hero',      label:'Hero',            icon:'🎯', data:{ title:'Evento Incrível 2026', subtitle:'Não perca o maior evento do ano!', btnText:'Garantir vaga' } },
+    { id:'s2', type:'text',      label:'Sobre o evento',  icon:'📝', data:{ heading:'O que é o evento?', body:'Um encontro exclusivo para profissionais da área.' } },
+    { id:'s3', type:'benefits',  label:'Programação',     icon:'📋', data:{ heading:'Programação:', items:['09h – Abertura','10h – Palestra 1','14h – Workshop','17h – Encerramento'] } },
+    { id:'s4', type:'cta',       label:'Inscrição',       icon:'🎯', data:{ heading:'Vagas limitadas!', btnText:'Inscrever-se agora' } },
+    { id:'s5', type:'footer',    label:'Rodapé',          icon:'📌', data:{ company:'Sua Empresa', copy:'© 2026.' } },
+  ],
+  'tpl-webinar': [
+    { id:'s1', type:'hero-form', label:'Hero + Formulário', icon:'📋', data:{ title:'Webinar Gratuito: Seu Tema', subtitle:'Aprenda com especialistas em 1 hora', btnText:'Inscrever-se grátis' } },
+    { id:'s2', type:'benefits',  label:'O que você vai aprender', icon:'✅', data:{ heading:'Conteúdo do webinar:', items:['Tópico 1','Tópico 2','Tópico 3','Tópico 4'] } },
+    { id:'s3', type:'text',      label:'Quem ministra',   icon:'👤', data:{ heading:'Sobre o palestrante', body:'Nome do Especialista – descrição com experiência e credenciais.' } },
+    { id:'s4', type:'footer',    label:'Rodapé',          icon:'📌', data:{ company:'Sua Empresa', copy:'© 2026.' } },
+  ],
+};
+
+let _lpEditorId = null;
+let _lpEditorSecs = [];
+let _lpEditorSel = null;
+
+function openLpEditor(id) {
+  const lp = DB.landingPages.find(x => x.id === id);
+  if (!lp) return;
+  _lpEditorId = id;
+  const base = _LP_SEC_DEFS[lp.template || 'tpl-blank'] || _LP_SEC_DEFS['tpl-blank'];
+  _lpEditorSecs = JSON.parse(JSON.stringify(lp.sections || base));
+  _lpEditorSel = null;
+  // Update document title field
+  const docTitle = document.getElementById('lp-doc-title');
+  if (docTitle) docTitle.value = lp.name;
+  // Reset to main panel (component palette)
+  document.getElementById('lp-panel-main').style.display = 'flex';
+  document.getElementById('lp-panel-props').style.display = 'none';
+  // Reset tabs to CONTEÚDO
+  document.querySelectorAll('.lp-panel-tab').forEach((b,i) => b.classList.toggle('active', i===0));
+  ['conteudo','estilo','documento'].forEach((t,i) => {
+    document.getElementById('lp-tab-'+t).style.display = i===0 ? '' : 'none';
+  });
+  _lpRenderCompTiles();
+  _lpRenderSidebar();
+  _lpRenderCanvas();
+  document.getElementById('overlay-lp-editor').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLpEditor() {
+  document.getElementById('overlay-lp-editor').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function _saveLpEditor() {
+  const lp = DB.landingPages.find(x => x.id === _lpEditorId);
+  if (!lp) return;
+  lp.sections = JSON.parse(JSON.stringify(_lpEditorSecs));
+  lp.updated = new Date().toLocaleDateString('pt-BR');
+  showToast('Alterações salvas com sucesso.', {type:'success'});
+}
+
+function _lpEditorTogglePublish() {
+  toggleLpPublish(_lpEditorId);
+  const lp = DB.landingPages.find(x => x.id === _lpEditorId);
+  const pub = document.getElementById('lp-editor-pub-btn');
+  if (pub && lp) pub.textContent = lp.status === 'published' ? 'Despublicar' : 'Publicar';
+}
+
+function _lpEditorPreview() {
+  showToast('Preview abrindo em nova aba…', {type:'info'});
+}
+
+/* ── Component tiles ── */
+const _LP_TILES = [
+  { type:'text',         label:'Texto',            html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="0" y="0" width="28" height="3" rx="1.5" fill="#9CA3AF"/><rect x="0" y="6" width="21" height="3" rx="1.5" fill="#9CA3AF"/><rect x="0" y="12" width="25" height="3" rx="1.5" fill="#9CA3AF"/><rect x="0" y="18" width="16" height="3" rx="1.5" fill="#9CA3AF"/></svg>' },
+  { type:'image',        label:'Imagem(ns)',        html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="1" y="1" width="26" height="20" rx="2" stroke="#9CA3AF" stroke-width="2" fill="none"/><circle cx="8" cy="8" r="2.5" fill="#D1D5DB"/><path d="M1 16l7-6 5 5 4-4 10 9" stroke="#D1D5DB" stroke-width="1.5" fill="none"/></svg>' },
+  { type:'hero-form',    label:'Formulário',        html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="1" y="1" width="26" height="6" rx="2" stroke="#9CA3AF" stroke-width="1.5" fill="none"/><rect x="1" y="10" width="26" height="6" rx="2" stroke="#9CA3AF" stroke-width="1.5" fill="none"/><rect x="5" y="19" width="18" height="2" rx="1" fill="#9CA3AF"/></svg>' },
+  { type:'divider',      label:'Divisor',           html:'<svg width="28" height="22" viewBox="0 0 28 22"><line x1="0" y1="11" x2="28" y2="11" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4 2"/></svg>' },
+  { type:'cta',          label:'Botão',             html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="4" y="7" width="20" height="8" rx="4" fill="#9CA3AF"/><rect x="7" y="10" width="14" height="2" rx="1" fill="#fff"/></svg>' },
+  { type:'benefits',     label:'Lista',             html:'<svg width="28" height="22" viewBox="0 0 28 22"><circle cx="3" cy="4" r="2" fill="#9CA3AF"/><rect x="8" y="2" width="18" height="3" rx="1.5" fill="#D1D5DB"/><circle cx="3" cy="11" r="2" fill="#9CA3AF"/><rect x="8" y="9" width="14" height="3" rx="1.5" fill="#D1D5DB"/><circle cx="3" cy="18" r="2" fill="#9CA3AF"/><rect x="8" y="16" width="16" height="3" rx="1.5" fill="#D1D5DB"/></svg>' },
+  { type:'testimonials', label:'Depoimento',        html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="1" y="1" width="26" height="15" rx="3" stroke="#9CA3AF" stroke-width="1.5" fill="none"/><rect x="5" y="5" width="18" height="2" rx="1" fill="#D1D5DB"/><rect x="5" y="9" width="12" height="2" rx="1" fill="#D1D5DB"/><path d="M8 17l4 4 8 0" stroke="#9CA3AF" stroke-width="1.5" fill="none"/></svg>' },
+  { type:'hero',         label:'Hero',              html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="0" y="0" width="28" height="22" rx="2" fill="#E5E7EB"/><rect x="4" y="6" width="20" height="3" rx="1.5" fill="#9CA3AF"/><rect x="7" y="11" width="14" height="2" rx="1" fill="#D1D5DB"/><rect x="9" y="15" width="10" height="4" rx="2" fill="#9CA3AF"/></svg>' },
+  { type:'footer',       label:'Rodapé',            html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="0" y="0" width="28" height="15" rx="0" fill="#F3F4F6"/><rect x="0" y="15" width="28" height="7" rx="0" fill="#9CA3AF"/><rect x="3" y="17" width="10" height="2" rx="1" fill="#fff"/><rect x="18" y="17" width="7" height="2" rx="1" fill="#D1D5DB"/></svg>' },
+  { type:'image-text',   label:'Img + Texto ➡',   html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="1" y="1" width="11" height="20" rx="2" fill="#E5E7EB"/><rect x="15" y="4" width="11" height="2" rx="1" fill="#D1D5DB"/><rect x="15" y="9" width="9" height="2" rx="1" fill="#E5E7EB"/><rect x="15" y="14" width="10" height="2" rx="1" fill="#E5E7EB"/></svg>' },
+  { type:'image-text-l', label:'Img + Texto ⬅',   html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="16" y="1" width="11" height="20" rx="2" fill="#E5E7EB"/><rect x="2" y="4" width="11" height="2" rx="1" fill="#D1D5DB"/><rect x="2" y="9" width="9" height="2" rx="1" fill="#E5E7EB"/><rect x="2" y="14" width="10" height="2" rx="1" fill="#E5E7EB"/></svg>' },
+  { type:'map',          label:'Mapa',              html:'<svg width="28" height="22" viewBox="0 0 28 22"><rect x="1" y="1" width="26" height="18" rx="2" stroke="#9CA3AF" stroke-width="1.5" fill="#F3F4F6"/><path d="M14 5c-2.5 0-4.5 2-4.5 4.5C9.5 13 14 18 14 18s4.5-5 4.5-8.5C18.5 7 16.5 5 14 5z" fill="#9CA3AF"/><circle cx="14" cy="9.5" r="1.5" fill="#fff"/></svg>' },
+];
+
+function _lpRenderCompTiles() {
+  document.getElementById('lp-comp-grid').innerHTML = _LP_TILES.map(t => `
+    <div class="lp-comp-tile" onclick="_lpAddSection('${t.type}')" title="${t.label}">
+      <div class="lp-comp-tile-icon">${t.html}</div>
+      <div class="lp-comp-tile-label">${t.label}</div>
+    </div>`).join('');
+}
+
+function _lpTab(tab, el) {
+  document.querySelectorAll('.lp-panel-tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  ['conteudo','estilo','documento'].forEach(t => {
+    document.getElementById('lp-tab-'+t).style.display = t===tab ? '' : 'none';
+  });
+}
+
+function _lpRenderSidebar() {
+  document.getElementById('lp-sections-list').innerHTML = _lpEditorSecs.map(s => `
+    <div class="lp-section-item${_lpEditorSel===s.id?' active':''}" onclick="_lpSelectSec('${s.id}')">
+      <span style="font-size:13px">${s.icon}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.label}</span>
+    </div>`).join('');
+}
+
+function _lpBackToMain() {
+  _lpEditorSel = null;
+  document.getElementById('lp-panel-main').style.display = 'flex';
+  document.getElementById('lp-panel-props').style.display = 'none';
+  _lpRenderSidebar();
+  _lpRenderCanvas();
+}
+
+function _lpPrevMode(mode, el) {
+  document.querySelectorAll('.lp-editor-preview-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const inner = document.getElementById('lp-canvas-wrap');
+  inner.style.justifyContent = 'flex-start';
+  if (mode === 'mobile') {
+    document.getElementById('lp-canvas').style.maxWidth = '390px';
+    document.getElementById('lp-canvas').style.minWidth = '320px';
+  } else {
+    document.getElementById('lp-canvas').style.maxWidth = '720px';
+    document.getElementById('lp-canvas').style.minWidth = '460px';
+  }
+}
+
+function _lpRenderCanvas() {
+  document.getElementById('lp-canvas').innerHTML = _lpEditorSecs.map(s => _lpSecHTML(s)).join('');
+}
+
+function _lpSecHTML(sec) {
+  const sel = _lpEditorSel === sec.id;
+  const badge = `<div class="lp-canvas-section-badge">${sec.label}</div>`;
+  const wrap = (inner) => `<div class="lp-canvas-section${sel?' selected':''}" onclick="_lpSelectSec('${sec.id}')">${inner}${badge}</div>`;
+  const d = sec.data;
+  switch (sec.type) {
+    case 'hero':
+      return wrap(`
+        <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:56px 40px;text-align:center">
+          <h1 style="font-size:24px;font-weight:800;margin:0 0 10px;line-height:1.25">${d.title}</h1>
+          <p style="font-size:13px;opacity:.75;margin:0 0 22px;max-width:460px;margin-left:auto;margin-right:auto">${d.subtitle}</p>
+          <div style="display:inline-block;background:#EA5456;color:#fff;padding:11px 26px;border-radius:7px;font-weight:700;font-size:13px">${d.btnText}</div>
+        </div>`);
+    case 'hero-form':
+      return wrap(`
+        <div style="background:linear-gradient(135deg,#534CE7,#7C3AED);color:#fff;padding:36px 32px;display:flex;gap:28px;align-items:center;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <h1 style="font-size:20px;font-weight:800;margin:0 0 8px;line-height:1.3">${d.title}</h1>
+            <p style="font-size:12px;opacity:.8;margin:0">${d.subtitle}</p>
+          </div>
+          <div style="background:#fff;border-radius:10px;padding:20px;min-width:200px;flex-shrink:0">
+            <input style="width:100%;border:1px solid #e5e7eb;border-radius:5px;padding:7px 9px;margin-bottom:7px;font-size:11px;box-sizing:border-box;color:#333" placeholder="Seu nome" readonly>
+            <input style="width:100%;border:1px solid #e5e7eb;border-radius:5px;padding:7px 9px;margin-bottom:9px;font-size:11px;box-sizing:border-box;color:#333" placeholder="seu@email.com" readonly>
+            <div style="background:#534CE7;color:#fff;padding:8px;border-radius:5px;text-align:center;font-size:11px;font-weight:700">${d.btnText}</div>
+          </div>
+        </div>`);
+    case 'text':
+      return wrap(`
+        <div style="padding:40px;background:#fff">
+          <h2 style="font-size:17px;font-weight:700;color:#111;margin:0 0 10px">${d.heading}</h2>
+          <p style="font-size:12px;color:#555;line-height:1.7;margin:0;max-width:560px">${d.body}</p>
+        </div>`);
+    case 'benefits':
+      return wrap(`
+        <div style="padding:36px 40px;background:#f8f9fb">
+          <h2 style="font-size:16px;font-weight:700;color:#111;margin:0 0 14px;text-align:center">${d.heading}</h2>
+          <div style="display:flex;flex-direction:column;gap:8px;max-width:440px;margin:0 auto">
+            ${d.items.map(it=>`<div style="display:flex;gap:10px;align-items:flex-start"><span style="color:#0EA679;font-size:14px;margin-top:1px;flex-shrink:0">✓</span><span style="font-size:12px;color:#444">${it}</span></div>`).join('')}
+          </div>
+        </div>`);
+    case 'cta':
+      return wrap(`
+        <div style="padding:40px;background:#EA5456;color:#fff;text-align:center">
+          <h2 style="font-size:19px;font-weight:800;margin:0 0 16px">${d.heading}</h2>
+          <div style="display:inline-block;background:#fff;color:#EA5456;padding:11px 30px;border-radius:7px;font-weight:700;font-size:13px">${d.btnText}</div>
+        </div>`);
+    case 'testimonials':
+      return wrap(`
+        <div style="padding:36px 40px;background:#fff">
+          <h2 style="font-size:16px;font-weight:700;color:#111;margin:0 0 18px;text-align:center">Depoimentos</h2>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+            ${d.items.map(t=>`
+              <div style="background:#f8f9fb;border-radius:9px;padding:18px;max-width:200px">
+                <p style="font-size:11px;color:#555;line-height:1.6;margin:0 0 10px;font-style:italic">"${t.text}"</p>
+                <div style="font-size:11px;font-weight:700;color:#111">${t.name}</div>
+                <div style="font-size:10px;color:#888">${t.role}</div>
+              </div>`).join('')}
+          </div>
+        </div>`);
+    case 'footer':
+      return wrap(`
+        <div style="padding:20px 36px;background:#1a1a2e;color:#aaa;display:flex;justify-content:space-between;align-items:center;gap:16px">
+          <span style="font-size:12px;font-weight:700;color:#fff">${d.company}</span>
+          <span style="font-size:10px">${d.copy}</span>
+        </div>`);
+    default:
+      return wrap(`<div style="padding:28px;background:#f5f5f5;text-align:center;color:#888;font-size:12px">${sec.label}</div>`);
+  }
+}
+
+function _lpSelectSec(id) {
+  _lpEditorSel = id;
+  _lpRenderSidebar();
+  _lpRenderCanvas();
+  const sec = _lpEditorSecs.find(s => s.id === id);
+  if (!sec) return;
+  // Switch sidebar to properties screen
+  document.getElementById('lp-panel-main').style.display = 'none';
+  const propsPanel = document.getElementById('lp-panel-props');
+  propsPanel.style.display = 'flex';
+  document.getElementById('lp-props-sec-label').textContent = sec.label;
+  _lpRenderProps(sec);
+}
+
+function _lpPropsEmpty() {
+  document.getElementById('lp-panel-main').style.display = 'flex';
+  document.getElementById('lp-panel-props').style.display = 'none';
+}
+
+function _lpRenderProps(sec) {
+  const d = sec.data;
+  const g = (label, input) => `<div class="form-group"><label class="form-label">${label}</label>${input}</div>`;
+  const inp = (key, val) => `<input class="form-input" value="${(val||'').replace(/"/g,'&quot;')}" oninput="_lpProp('${key}',this.value)">`;
+  const ta  = (key, val) => `<textarea class="form-input" rows="3" oninput="_lpProp('${key}',this.value)">${val||''}</textarea>`;
+  let html = `<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin-bottom:12px">${sec.label}</p>`;
+  if (sec.type === 'hero' || sec.type === 'hero-form') {
+    html += g('Título', inp('title', d.title));
+    html += g('Subtítulo', ta('subtitle', d.subtitle));
+    html += g('Texto do botão', inp('btnText', d.btnText));
+  } else if (sec.type === 'text') {
+    html += g('Título da seção', inp('heading', d.heading));
+    html += g('Texto', `<textarea class="form-input" rows="5" oninput="_lpProp('body',this.value)">${d.body||''}</textarea>`);
+  } else if (sec.type === 'benefits') {
+    html += g('Título', inp('heading', d.heading));
+    (d.items||[]).forEach((item, i) => {
+      html += g(`Item ${i+1}`, `<input class="form-input" value="${(item||'').replace(/"/g,'&quot;')}" oninput="_lpBenefit(${i},this.value)">`);
+    });
+    html += `<button class="btn btn-ghost btn-sm" style="margin-top:4px" onclick="_lpBenefitAdd()">+ Item</button>`;
+  } else if (sec.type === 'cta') {
+    html += g('Título', inp('heading', d.heading));
+    html += g('Texto do botão', inp('btnText', d.btnText));
+  } else if (sec.type === 'testimonials') {
+    const t = d.items[0] || {};
+    html += g('Nome', `<input class="form-input" value="${(t.name||'').replace(/"/g,'&quot;')}" oninput="_lpTestim('name',this.value)">`);
+    html += g('Cargo', `<input class="form-input" value="${(t.role||'').replace(/"/g,'&quot;')}" oninput="_lpTestim('role',this.value)">`);
+    html += g('Depoimento', `<textarea class="form-input" rows="3" oninput="_lpTestim('text',this.value)">${t.text||''}</textarea>`);
+  } else if (sec.type === 'footer') {
+    html += g('Empresa', inp('company', d.company));
+    html += g('Copyright', inp('copy', d.copy));
+  }
+  html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light)">
+    <button class="btn btn-ghost btn-sm" style="color:var(--error);width:100%;justify-content:center" onclick="_lpRemoveSec('${sec.id}')">Remover seção</button>
+  </div>`;
+  document.getElementById('lp-props-body').innerHTML = html;
+}
+
+function _lpProp(key, val) {
+  const sec = _lpEditorSecs.find(s => s.id === _lpEditorSel);
+  if (!sec) return;
+  sec.data[key] = val;
+  _lpRenderCanvas();
+}
+
+function _lpBenefit(idx, val) {
+  const sec = _lpEditorSecs.find(s => s.id === _lpEditorSel);
+  if (!sec || !sec.data.items) return;
+  sec.data.items[idx] = val;
+  _lpRenderCanvas();
+}
+
+function _lpBenefitAdd() {
+  const sec = _lpEditorSecs.find(s => s.id === _lpEditorSel);
+  if (!sec || !sec.data.items) return;
+  sec.data.items.push('Novo item');
+  _lpRenderCanvas();
+  _lpRenderProps(sec);
+}
+
+function _lpTestim(key, val) {
+  const sec = _lpEditorSecs.find(s => s.id === _lpEditorSel);
+  if (!sec || !sec.data.items) return;
+  sec.data.items[0][key] = val;
+  _lpRenderCanvas();
+}
+
+function _lpRemoveSec(id) {
+  _lpEditorSecs = _lpEditorSecs.filter(s => s.id !== id);
+  _lpEditorSel = null;
+  _lpRenderSidebar();
+  _lpRenderCanvas();
+  _lpPropsEmpty();
+}
+
+function _lpAddSection(type) {
+  const tile = _LP_TILES.find(t => t.type === (type || 'text')) || { type:'text', label:'Nova seção' };
+  const defaults = {
+    'hero':         { title:'Novo hero', subtitle:'Subtítulo', btnText:'Saiba mais' },
+    'hero-form':    { title:'Novo formulário', subtitle:'Preencha e receba', btnText:'Enviar' },
+    'text':         { heading:'Nova seção', body:'Adicione o conteúdo aqui.' },
+    'benefits':     { heading:'Lista de itens', items:['Item 1','Item 2','Item 3'] },
+    'cta':          { heading:'Chamada para ação', btnText:'Clique aqui' },
+    'testimonials': { items:[{name:'Nome',role:'Cargo',text:'Depoimento aqui.'}] },
+    'footer':       { company:'Sua Empresa', copy:'© 2026.' },
+    'divider':      { color:'#e5e7eb' },
+    'image':        { src:'', alt:'Imagem' },
+    'map':          { address:'São Paulo, SP' },
+    'image-text':   { heading:'Título', body:'Texto', src:'' },
+    'image-text-l': { heading:'Título', body:'Texto', src:'' },
+  };
+  const icon = { 'hero':'🎯','hero-form':'📋','text':'📝','benefits':'✅','cta':'🎯','testimonials':'💬','footer':'📌','divider':'➖','image':'🖼️','map':'📍','image-text':'📰','image-text-l':'📰' };
+  const ns = { id:'s'+Date.now(), type:tile.type, label:tile.label, icon:icon[tile.type]||'📦', data: JSON.parse(JSON.stringify(defaults[tile.type]||{heading:'Nova seção',body:''})) };
+  _lpEditorSecs.push(ns);
+  _lpRenderSidebar();
+  _lpRenderCanvas();
+  _lpSelectSec(ns.id);
+}
+
+/* ── init ── */
+function emptyState(icon, title, text) {
+  return `<div class="empty-state"><div class="empty-state-icon" style="font-size:22px">${icon}</div><div class="empty-state-title">${title}</div><div class="empty-state-text">${text}</div></div>`;
+}
+document.addEventListener('DOMContentLoaded', () => {
+  initSidebarNav();
+  switchChannel('email');
+});
+</script>
+</body>
+</html>
