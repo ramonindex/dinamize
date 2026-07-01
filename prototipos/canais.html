@@ -13,17 +13,6 @@
     .sub-nav { overflow-x:auto; flex-shrink:0; }
     .sub-nav::-webkit-scrollbar { height:2px; }
     .sub-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
-    /* LP cards */
-    .lp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-    .lp-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
-    .lp-thumb { height:130px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--bg-subtle),var(--border-light)); font-size:32px; }
-    .lp-card-body { padding:14px 16px; }
-    .lp-card-name { font-weight:600; font-size:13px; color:var(--text-1); margin-bottom:4px; }
-    .lp-card-url { font-size:11px; color:var(--text-3); font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:10px; }
-    .lp-card-stats { display:flex; gap:20px; margin-bottom:12px; }
-    .lp-stat-label { font-size:11px; color:var(--text-3); }
-    .lp-stat-val { font-weight:600; font-size:14px; color:var(--text-1); }
-    .lp-card-footer { display:flex; gap:6px; border-top:1px solid var(--border-light); padding-top:10px; }
     /* Form cards */
     .fm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
     .fm-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
@@ -381,9 +370,22 @@
             <button class="seg-btn" onclick="filterLp('draft',this)">Rascunhos</button>
             <button class="seg-btn" onclick="filterLp('archived',this)">Arquivadas</button>
           </div>
+          <div class="search-wrap" style="max-width:280px;margin-left:auto">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Buscar landing page…" oninput="renderLandingPages(this.value)">
+          </div>
         </div>
-        <div class="lp-grid" id="lp-grid"></div>
-        <div class="pagination" style="margin-top:16px"><span class="pagination-info" id="lp-count">—</span></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr>
+              <th class="sortable">Nome da página</th><th>Status</th>
+              <th class="sortable">Visitas</th><th class="sortable">Conversão</th>
+              <th>Atualizado em</th><th class="col-actions">Ações</th>
+            </tr></thead>
+            <tbody id="lp-tbody"></tbody>
+          </table>
+          <div class="pagination"><span class="pagination-info" id="lp-count">—</span></div>
+        </div>
       </main>
     </div>
 
@@ -1146,40 +1148,32 @@ function renderLandingPages(query='') {
   let rows = DB.landingPages;
   if (lpFilter !== 'all') rows = rows.filter(l => l.status === lpFilter);
   if (query) rows = rows.filter(l => l.name.toLowerCase().includes(query.toLowerCase()));
-  const el = document.getElementById('lp-grid');
-  if (!el) return;
+  const tbody = document.getElementById('lp-tbody');
+  if (!tbody) return;
   document.getElementById('lp-count').textContent = rows.length + ' página' + (rows.length !== 1 ? 's' : '');
-  if (!rows.length) { el.innerHTML=`<div style="grid-column:1/-1">${emptyState('🌐','Nenhuma landing page','Crie sua primeira landing page clicando em "Nova Landing Page".')}</div>`; return; }
-  const icons = { published:'🟢', draft:'⚪', archived:'🔘' };
-  el.innerHTML = rows.map(l => `
-    <div class="lp-card">
-      <div class="lp-thumb" style="font-size:36px">${l.status==='published'?'🌐':l.status==='draft'?'📝':'📦'}</div>
-      <div class="lp-card-body">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">
-          <div class="lp-card-name">${l.name}</div>
-          ${statusBadge(l.status)}
-        </div>
-        <div class="lp-card-url">${l.url}</div>
-        <div class="lp-card-stats">
-          <div><div class="lp-stat-label">Visitas</div><div class="lp-stat-val">${fmtNum(l.visits)}</div></div>
-          <div><div class="lp-stat-label">Conversão</div><div class="lp-stat-val">${l.convRate?fmtPct(l.convRate):'—'}</div></div>
-        </div>
-        <div class="lp-card-footer">
-          <button class="btn btn-ghost btn-sm" onclick="openLpEditor('${l.id}')">Editar</button>
-          ${l.status==='published'?`<button class="btn btn-ghost btn-sm" onclick="openLpStats('${l.id}')">Relatório</button>`:''}
-          <div class="dropdown" style="margin-left:auto">
-            <button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
-            <div class="dropdown-menu">
-              <div class="dropdown-item" onclick="openLpWizard('${l.id}')">Configurações</div>
-              <div class="dropdown-item" onclick="showToast('Duplicar em breve.',{type:'info'})">Duplicar</div>
-              ${l.status==='published'?`<div class="dropdown-item" onclick="toggleLpPublish('${l.id}')">Despublicar</div>`:`<div class="dropdown-item" onclick="toggleLpPublish('${l.id}')">Publicar</div>`}
-              <div class="dropdown-separator"></div>
-              <div class="dropdown-item danger" onclick="openDeleteSend('${l.id}','lp')">Excluir</div>
-            </div>
+  if (!rows.length) { tbody.innerHTML=`<tr><td colspan="6">${emptyState('🌐','Nenhuma landing page','Crie sua primeira landing page clicando em "Nova Landing Page".')}</td></tr>`; return; }
+  tbody.innerHTML = rows.map(l => `
+    <tr>
+      <td><div class="cell-primary truncate" style="max-width:260px">${l.name}</div><div class="cell-secondary truncate" style="max-width:260px">${l.url}</div></td>
+      <td>${statusBadge(l.status)}</td>
+      <td class="fw-5">${fmtNum(l.visits)}</td>
+      <td>${l.convRate?fmtPct(l.convRate):'—'}</td>
+      <td class="c-3 t-sm">${l.updated}</td>
+      <td class="col-actions"><div class="row-actions">
+        <button class="btn btn-ghost btn-icon-sm" onclick="openLpEditor('${l.id}')" data-tip="Editar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        ${l.status==='published'?`<button class="btn btn-ghost btn-icon-sm" onclick="openLpStats('${l.id}')" data-tip="Relatório"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></button>`:''}
+        <div class="dropdown">
+          <button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" onclick="openLpWizard('${l.id}')">Configurações</div>
+            <div class="dropdown-item" onclick="showToast('Duplicar em breve.',{type:'info'})">Duplicar</div>
+            ${l.status==='published'?`<div class="dropdown-item" onclick="toggleLpPublish('${l.id}')">Despublicar</div>`:`<div class="dropdown-item" onclick="toggleLpPublish('${l.id}')">Publicar</div>`}
+            <div class="dropdown-separator"></div>
+            <div class="dropdown-item danger" onclick="openDeleteSend('${l.id}','lp')">Excluir</div>
           </div>
         </div>
-      </div>
-    </div>`).join('');
+      </div></td>
+    </tr>`).join('');
 }
 function filterLp(f, btn) { lpFilter=f; document.querySelectorAll('#lp-tab-seg .seg-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderLandingPages(); }
 
@@ -1787,7 +1781,7 @@ function _lpSecHTML(sec) {
         </div>`);
     case 'hero-form':
       return wrap(`
-        <div style="background:linear-gradient(135deg,#534CE7,#7C3AED);color:#fff;padding:36px 32px;display:flex;gap:28px;align-items:center;flex-wrap:wrap">
+        <div style="background:linear-gradient(135deg,var(--brand),#7C3AED);color:#fff;padding:36px 32px;display:flex;gap:28px;align-items:center;flex-wrap:wrap">
           <div style="flex:1;min-width:180px">
             <h1 style="font-size:20px;font-weight:800;margin:0 0 8px;line-height:1.3">${d.title}</h1>
             <p style="font-size:12px;opacity:.8;margin:0">${d.subtitle}</p>
@@ -1795,7 +1789,7 @@ function _lpSecHTML(sec) {
           <div style="background:#fff;border-radius:10px;padding:20px;min-width:200px;flex-shrink:0">
             <input style="width:100%;border:1px solid #e5e7eb;border-radius:5px;padding:7px 9px;margin-bottom:7px;font-size:11px;box-sizing:border-box;color:#333" placeholder="Seu nome" readonly>
             <input style="width:100%;border:1px solid #e5e7eb;border-radius:5px;padding:7px 9px;margin-bottom:9px;font-size:11px;box-sizing:border-box;color:#333" placeholder="seu@email.com" readonly>
-            <div style="background:#534CE7;color:#fff;padding:8px;border-radius:5px;text-align:center;font-size:11px;font-weight:700">${d.btnText}</div>
+            <div style="background:var(--brand);color:#fff;padding:8px;border-radius:5px;text-align:center;font-size:11px;font-weight:700">${d.btnText}</div>
           </div>
         </div>`);
     case 'text':

@@ -60,7 +60,7 @@ Atualmente `--auto === --brand` — ambos são `#EA5456`. Isso cria confusão: n
 
 ### DEC-002 — Dois sistemas de CSS (prototipos/ vs V2/)
 **Data:** 2026-06-30  
-**Status:** Proposta  
+**Status:** Deprecada — substituída por DEC-009  
 **Autor:** Design System Guardian
 
 **Decisão:**
@@ -68,6 +68,9 @@ Declarar `V2/css/` como fonte da verdade oficial. `prototipos/style.css` é lega
 
 **Motivação:**
 O projeto tem dois sistemas CSS paralelos: `prototipos/style.css` (monolítico, inline nos HTMLs) e `V2/css/` (separado em tokens, base, components, layout). A coexistência cria desvio invisível — componentes surgem no monolítico que não existem no sistema.
+
+**Por que foi revertida:**
+Esta decisão foi tomada sem confirmar com o responsável do produto qual base estava de fato em evolução. Na prática, 100% do trabalho de feature subsequente a esta decisão continuou em `prototipos/dashboard-auto.html` (que usa `prototipos/style.css`), nunca em `V2/`. DEC-009 corrige isso com a confirmação explícita do responsável do produto.
 
 **Alternativas descartadas:**
 - Manter ambos em paralelo — descartado pois divergência aumenta exponencialmente
@@ -206,6 +209,54 @@ Adicionar `--accent-purple: #7F7BEE` como token oficial.
 - Afeta: `layout.css` (module-banner), `components.css` (avatar)
 - Breaking change: não
 - Prioridade: média
+
+---
+
+### DEC-008 — Cor de marca: vermelho `#EA5456`, não roxo `#534CE7`
+**Data:** 2026-06-30  
+**Status:** Aprovada  
+**Autor:** Ramon Oliver (confirmado via pergunta direta do Design System Guardian)
+
+**Decisão:**
+`var(--brand)` / `var(--auto)` = `#EA5456` (vermelho) é a cor de ação primária oficial do produto. `#534CE7` (roxo) era um valor hardcoded incorreto, não um token intencional.
+
+**Motivação:**
+Auditoria (`docs/current-system-analysis.md`, seção 2) encontrou `#534CE7` hardcoded 115 vezes em `prototipos/dashboard-auto.html` — mais do que o `#EA5456` documentado (33 vezes) — em componentes estruturais (`.cv-act-btn:hover`, `.cv-chip`, `.flow-node.action`, abas ativas). Como nenhuma das duas cores estava atrás de uma variável própria dentro do `<style>` inline do arquivo, era impossível saber qual era a intenção sem perguntar.
+
+**Alternativas descartadas:**
+- Tokenizar roxo como `--auto` oficial do módulo Automação — descartada pelo responsável do produto.
+
+**Impacto:**
+- Telas afetadas: `prototipos/dashboard-auto.html` (115 instâncias), `prototipos/canais.html` (2), `V2/canais.html` (2), `V2/ia.html` (1), `V2/ajuda.html` (7)
+- Ação executada: substituição mecânica `#534CE7` → `var(--brand)` e `#EDEEFF` (variante clara pareada) → `var(--brand-light)` nos 5 arquivos acima
+- Fora do escopo desta correção: `mp5lyxql-index.html` e `uploads/index.html` (artefatos fora do produto ativo, não tocados)
+- Gradiente `var(--brand) → #7B75F0` em `V2/ajuda.html` mantido — é o padrão documentado de gradient brand+accent-purple (`docs/12-BRANDING.md`), não o erro de cor primária
+- Breaking change: não (corrige para o valor já documentado)
+
+---
+
+### DEC-009 — Fonte da verdade: `prototipos/dashboard-auto.html`
+**Data:** 2026-06-30  
+**Status:** Aprovada  
+**Autor:** Ramon Oliver (confirmado via pergunta direta do Design System Guardian)
+
+**Decisão:**
+`prototipos/dashboard-auto.html` é o produto oficial em evolução. `V2/` passa a ser referência histórica/congelada — não recebe mais features novas. Substitui DEC-002.
+
+**Motivação:**
+Auditoria confirmou que toda feature recente (Conversões, Configurar Score, Segmentações, Canais, Fluxos, Relatórios, IA, Configurações, Ajuda) foi implementada em `dashboard-auto.html`, nunca em `V2/`, apesar de DEC-002 ter declarado `V2/css/` como fonte da verdade. A decisão anterior não correspondia ao comportamento real do projeto.
+
+**Plano de ação decorrente:**
+- Extrair o `<style>` inline de `dashboard-auto.html` (13k linhas) para um arquivo de tokens próprio, eliminando cores/z-index hardcoded — ver `docs/pending-flows.md` P1.
+- `V2/` mantido no repositório como referência de arquitetura de CSS limpa (separação tokens/base/components/layout), mas sem novas features.
+
+**Alternativas descartadas:**
+- Migrar `dashboard-auto.html` para a arquitetura multi-página de `V2/` — descartada pelo responsável do produto (esforço de migração maior antes de poder padronizar qualquer coisa).
+- Manter os dois ativos em paralelo — descartada (era o cenário que já causou a divergência da DEC-002).
+
+**Impacto:**
+- Telas afetadas: nenhuma mudança visual imediata; afeta onde o trabalho futuro acontece
+- Breaking change: não
 
 ---
 

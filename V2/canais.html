@@ -1787,7 +1787,7 @@ function _lpSecHTML(sec) {
         </div>`);
     case 'hero-form':
       return wrap(`
-        <div style="background:linear-gradient(135deg,#534CE7,#7C3AED);color:#fff;padding:36px 32px;display:flex;gap:28px;align-items:center;flex-wrap:wrap">
+        <div style="background:linear-gradient(135deg,var(--brand),#7C3AED);color:#fff;padding:36px 32px;display:flex;gap:28px;align-items:center;flex-wrap:wrap">
           <div style="flex:1;min-width:180px">
             <h1 style="font-size:20px;font-weight:800;margin:0 0 8px;line-height:1.3">${d.title}</h1>
             <p style="font-size:12px;opacity:.8;margin:0">${d.subtitle}</p>
@@ -1795,7 +1795,7 @@ function _lpSecHTML(sec) {
           <div style="background:#fff;border-radius:10px;padding:20px;min-width:200px;flex-shrink:0">
             <input style="width:100%;border:1px solid #e5e7eb;border-radius:5px;padding:7px 9px;margin-bottom:7px;font-size:11px;box-sizing:border-box;color:#333" placeholder="Seu nome" readonly>
             <input style="width:100%;border:1px solid #e5e7eb;border-radius:5px;padding:7px 9px;margin-bottom:9px;font-size:11px;box-sizing:border-box;color:#333" placeholder="seu@email.com" readonly>
-            <div style="background:#534CE7;color:#fff;padding:8px;border-radius:5px;text-align:center;font-size:11px;font-weight:700">${d.btnText}</div>
+            <div style="background:var(--brand);color:#fff;padding:8px;border-radius:5px;text-align:center;font-size:11px;font-weight:700">${d.btnText}</div>
           </div>
         </div>`);
     case 'text':
